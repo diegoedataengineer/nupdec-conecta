@@ -27,9 +27,13 @@ para DNS e deploy.
 | `/` | Página pública: o que é o projeto, link e QR code do APK, instruções de instalação |
 | `/painel` | Painel da Compdec (login obrigatório): mapa de núcleos e áreas de risco, disparo de alerta, confirmações em tempo real, ocorrências |
 
-Tecnologia do painel: **React + Vite + TypeScript**, `@supabase/supabase-js`, mapa com
-**MapLibre GL** (tiles abertos) e desenho de polígonos. Sem framework de servidor — tudo
-conversa direto com o Supabase pelo JWT do usuário.
+Tecnologia do painel: **React 18 + Vite 5 + TypeScript**, seguindo o padrão do portal web do
+NeuroAgora (`neuroagora-system-web-frontend`): **Tailwind 3 + shadcn/ui**, tokens HSL em CSS
+variables, Inter/JetBrains Mono, sidebar de 16rem com cabeçalho de 4rem, `lucide-react`,
+`recharts`, TanStack Query 5, React Router 6, react-hook-form + zod, `sonner`. Identidade
+adaptada ao azul da Defesa Civil como primário. `@supabase/supabase-js` como camada de dados
+(no lugar do `src/integrations/` deles), mapa com **MapLibre GL** (tiles abertos) e desenho de
+polígonos. Sem framework de servidor — tudo conversa direto com o Supabase pelo JWT do usuário.
 
 Subdomínio e domínio-pai serão definidos pelo autor quando o painel estiver pronto para deploy.
 
