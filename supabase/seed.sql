@@ -58,23 +58,25 @@ begin
 
   -- usuários de gestão (trigger cria perfis)
   insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
-                          raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+                          raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+                          confirmation_token, recovery_token, email_change, email_change_token_new,
+                          email_change_token_current, phone_change, phone_change_token, reauthentication_token)
   values
     (v_coord, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
      'coordenador@valesereno.exemplo', v_senha, now(),
      '{"provider":"email","providers":["email"]}',
      jsonb_build_object('nome', 'Marcos Vieira', 'papel', 'coordenador', 'municipio_id', v_mun, 'telefone', '(12) 99999-0001'),
-     now(), now()),
+     now(), now(), '', '', '', '', '', '', '', ''),
     (v_agente, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
      'agente1@valesereno.exemplo', v_senha, now(),
      '{"provider":"email","providers":["email"]}',
      jsonb_build_object('nome', 'Patrícia Ramos', 'papel', 'agente', 'municipio_id', v_mun, 'telefone', '(12) 99999-0002'),
-     now(), now()),
+     now(), now(), '', '', '', '', '', '', '', ''),
     (v_lider, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
      'lider.esperanca@valesereno.exemplo', v_senha, now(),
      '{"provider":"email","providers":["email"]}',
      jsonb_build_object('nome', 'Maria das Dores', 'papel', 'membro', 'municipio_id', v_mun, 'nucleo_id', v_nucleos[1], 'telefone', '(12) 99999-0100'),
-     now(), now());
+     now(), now(), '', '', '', '', '', '', '', '');
 
   -- líder aprovada e responsável pelo núcleo 1
   update public.membros set status = 'aprovado', funcao = 'líder', aprovado_por = v_agente, aprovado_em = now() - interval '60 days'
@@ -89,13 +91,15 @@ begin
       n := n + 1;
       v_uid := gen_random_uuid();
       insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
-                              raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+                              raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+                          confirmation_token, recovery_token, email_change, email_change_token_new,
+                          email_change_token_current, phone_change, phone_change_token, reauthentication_token)
       values (v_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
               format('membro%s@valesereno.exemplo', lpad(n::text, 2, '0')), v_senha, now(),
               '{"provider":"email","providers":["email"]}',
               jsonb_build_object('nome', v_primeiros[1 + (n % 26)] || ' ' || v_sobren[1 + (n % 15)],
                                  'papel', 'membro', 'municipio_id', v_mun, 'nucleo_id', v_nucleos[i]),
-              now() - (n || ' days')::interval, now());
+              now() - (n || ' days')::interval, now(), '', '', '', '', '', '', '', '');
       if n % 16 = 0 then
         update public.membros set status = 'pendente' where perfil_id = v_uid;
       elsif n % 48 = 1 then
@@ -185,4 +189,13 @@ begin
     where mm.status = 'aprovado' and st_contains(nn.area, st_setsrid(st_makepoint(p.x, p.y), 4326))
     order by mm.id limit 1
   ) m on true;
+
+  -- identidades (GoTrue exige uma por usuário com provider email)
+  insert into auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
+  select gen_random_uuid(), u.id, u.id::text, 'email',
+         jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true),
+         now(), now(), now()
+  from auth.users u
+  where u.email like '%@valesereno.exemplo'
+    and not exists (select 1 from auth.identities i where i.user_id = u.id);
 end $$;

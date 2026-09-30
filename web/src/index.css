@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * Identidade do Nupdec Conecta — mesma mecânica de tokens do portal NeuroAgora,
+   * cores diferentes.
+   *
+   * Tipografia: Inter no texto e nos títulos, JetBrains Mono nas etiquetas,
+   * códigos de meta (8.1.2) e contadores do acompanhamento.
+   *
+   * Cor: o primário é o azul da Defesa Civil brasileira (a cor institucional
+   * do brasão e dos coletes), não um azul de template.
+   *   azul       hsl(212 72% 32%)  — botões, links, item ativo da navegação
+   *   azul-claro hsl(212 70% 95%)  — fundo sutil de hover, secundário e accent
+   *   vermelho   hsl(351 70% 43%)  — destructive (encerrar, rejeitar, descartar)
+   * Os neutros são os mesmos do NeuroAgora: papel frio no claro, azul-noite no
+   * escuro. Raio de 1rem.
+   *
+   * Severidade do alerta é escala de estado, não cor de marca — e o painel
+   * precisa dela legível de longe, como o semáforo do Cemaden:
+   *   observacao     slate            (cinza: só monitorar)
+   *   atencao        âmbar 30 82% 42%
+   *   alerta         laranja 24 90% 48%
+   *   alerta_maximo  vermelho 351 70% 47%
+   * Cada uma tem a variante -light para fundo de badge, como as --bp-* de lá.
+   */
+  :root {
+    --background: 210 33% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 212 72% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 212 70% 95%;
+    --secondary-foreground: 212 72% 26%;
+
+    --muted: 214 28% 95%;
+    --muted-foreground: 218 16% 42%;
+
+    /* accent é o fundo sutil de hover do shadcn — não é cor de marca */
+    --accent: 212 70% 95%;
+    --accent-foreground: 212 72% 26%;
+
+    --destructive: 351 70% 43%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 25% 89%;
+    --input: 214 20% 80%;
+    --ring: 212 72% 32%;
+
+    --radius: 1rem;
+
+    /* severidade do alerta */
+    --sev-observacao: 215 16% 40%;
+    --sev-observacao-light: 214 28% 94%;
+    --sev-atencao: 30 82% 42%;
+    --sev-atencao-light: 32 88% 94%;
+    --sev-alerta: 24 90% 48%;
+    --sev-alerta-light: 24 95% 94%;
+    --sev-maximo: 351 70% 47%;
+    --sev-maximo-light: 351 80% 96%;
+
+    /* paleta de estado dos cartões e badges — azul é marca; o resto é estado */
+    --bp-azul: 212 72% 32%;
+    --bp-azul-light: 212 70% 95%;
+    --bp-amber: 30 82% 42%;
+    --bp-amber-light: 32 88% 94%;
+    --bp-emerald: 168 62% 30%;
+    --bp-emerald-light: 166 50% 94%;
+    --bp-rose: 351 70% 47%;
+    --bp-rose-light: 351 80% 96%;
+
+    --bp-shadow-soft: 0 4px 24px -8px hsl(222 47% 11% / 0.12);
+    --bp-shadow-card: 0 1px 2px hsl(222 47% 11% / 0.04), 0 12px 32px -20px hsl(222 47% 11% / 0.22);
+    --bp-shadow-elevated: 0 18px 40px -20px hsl(222 47% 11% / 0.3);
+
+    --sidebar-background: 210 30% 97%;
+    --sidebar-foreground: 218 16% 35%;
+    --sidebar-primary: 212 72% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 212 70% 94%;
+    --sidebar-accent-foreground: 212 72% 26%;
+    --sidebar-border: 214 25% 89%;
+    --sidebar-ring: 212 72% 32%;
+  }
+
+  .dark {
+    /* Azul-noite; o primário clareia para manter contraste sobre o fundo escuro. */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 92%;
+    --card: 222 44% 9%;
+    --card-foreground: 210 40% 92%;
+    --popover: 222 44% 9%;
+    --popover-foreground: 210 40% 92%;
+    --primary: 212 80% 68%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 222 40% 14%;
+    --secondary-foreground: 210 40% 88%;
+    --muted: 222 35% 12%;
+    --muted-foreground: 215 20% 62%;
+    --accent: 222 38% 16%;
+    --accent-foreground: 210 40% 90%;
+    --destructive: 351 75% 62%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 30% 15%;
+    --input: 222 28% 24%;
+    --ring: 212 80% 68%;
+
+    --sev-observacao: 215 20% 70%;
+    --sev-observacao-light: 222 30% 16%;
+    --sev-atencao: 32 85% 66%;
+    --sev-atencao-light: 30 40% 16%;
+    --sev-alerta: 24 92% 66%;
+    --sev-alerta-light: 24 45% 16%;
+    --sev-maximo: 351 78% 68%;
+    --sev-maximo-light: 351 35% 16%;
+
+    --bp-azul: 212 80% 68%;
+    --bp-azul-light: 214 40% 18%;
+    --bp-amber: 32 85% 66%;
+    --bp-amber-light: 30 40% 16%;
+    --bp-emerald: 162 60% 60%;
+    --bp-emerald-light: 164 32% 14%;
+    --bp-rose: 351 78% 68%;
+    --bp-rose-light: 351 35% 16%;
+
+    --bp-shadow-soft: 0 4px 24px -8px hsl(0 0% 0% / 0.5);
+    --bp-shadow-card: 0 1px 2px hsl(0 0% 0% / 0.4), 0 12px 32px -20px hsl(0 0% 0% / 0.7);
+    --bp-shadow-elevated: 0 18px 40px -20px hsl(0 0% 0% / 0.8);
+
+    --sidebar-background: 222 45% 7%;
+    --sidebar-foreground: 215 20% 72%;
+    --sidebar-primary: 212 80% 68%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 38% 15%;
+    --sidebar-accent-foreground: 210 40% 90%;
+    --sidebar-border: 222 30% 13%;
+    --sidebar-ring: 212 80% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Títulos também em Inter: o contraste vem do peso e do espaçamento negativo. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.022em;
+  }
+}
+
+@layer utilities {
+  .shadow-bp-soft {
+    box-shadow: var(--bp-shadow-soft);
+  }
+
+  .shadow-bp-card {
+    box-shadow: var(--bp-shadow-card);
+  }
+
+  .shadow-bp-elevated {
+    box-shadow: var(--bp-shadow-elevated);
+  }
+
+  /* etiqueta em mono: "META 8.1.2", "AO VIVO", códigos */
+  .tech-label {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--primary));
+  }
+
+  /* ============ Navegação do painel ============ */
+  /* Item ativo: pílula azul-clara com um traço azul por dentro (sem deslocar o texto) */
+  .nav-item-active {
+    background-color: hsl(var(--sidebar-accent));
+    color: hsl(var(--sidebar-accent-foreground));
+    box-shadow: inset 3px 0 0 hsl(var(--sidebar-primary));
+    font-weight: 600;
+    padding-left: 0.75rem;
+  }
+
+  .nav-item-base {
+    color: hsl(var(--sidebar-foreground));
+    padding-left: 0.75rem;
+    transition: background-color 0.15s, color 0.15s;
+  }
+
+  .nav-item-base:hover {
+    background-color: hsl(var(--sidebar-accent) / 0.6);
+    color: hsl(var(--sidebar-accent-foreground));
+  }
+}
+
+/* ============ MapLibre no tema ============ */
+.maplibregl-map {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.maplibregl-popup-content {
+  border-radius: calc(var(--radius) - 4px);
+  padding: 0.75rem 0.9rem;
+  box-shadow: var(--bp-shadow-card);
+  color: hsl(222 47% 11%);
+  font-size: 0.8125rem;
+}
+.maplibregl-ctrl-group {
+  border-radius: calc(var(--radius) - 6px);
+  overflow: hidden;
+}

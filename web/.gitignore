@@ -1,0 +1,20 @@
+# segredos
+.env
+.env.*
+!.env.example
+
+# dependências e builds
+node_modules
+dist
+dist-ssr
+*.local
+
+# APK vai para public/downloads/ só na hora do deploy
+*.apk
+
+# editor / sistema
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.log
