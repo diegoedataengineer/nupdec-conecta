@@ -1,0 +1,23 @@
+# segredos
+.env
+.env.*
+google-services.json
+*.keystore
+*.jks
+
+# dependências e builds
+node_modules/
+dist/
+build/
+.expo/
+.metro-cache/
+*.apk
+*.aab
+
+# supabase local
+supabase/.temp/
+supabase/.branches/
+
+# sistema
+.DS_Store
+Thumbs.db
