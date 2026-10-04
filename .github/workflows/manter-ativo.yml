@@ -1,0 +1,64 @@
+# Mantém o projeto Supabase (plano free) ativo durante a avaliação.
+#
+# O plano free pausa o projeto após 7 dias sem atividade externa. Este workflow
+# faz requisições leves à API a cada 12 h até a data de corte (entrega em
+# 18/10/2026 + 2 semanas para a banca), e depois se desliga sozinho.
+#
+# Secrets necessários no repositório: SUPABASE_URL, SUPABASE_ANON_KEY
+# (a anon key é pública por natureza; a segurança está na RLS).
+
+name: Manter Supabase ativo
+
+on:
+  schedule:
+    - cron: "23 5,17 * * *"   # 05:23 e 17:23 UTC (02:23 e 14:23 em Brasília)
+  workflow_dispatch:
+
+env:
+  DATA_CORTE: "2026-11-01"
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verificar janela de atividade
+        id: janela
+        run: |
+          hoje="$(date -u +%F)"
+          if [[ "$hoje" > "$DATA_CORTE" ]]; then
+            echo "Fora da janela ($hoje > $DATA_CORTE): nada a fazer."
+            echo "ativo=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Dentro da janela ($hoje <= $DATA_CORTE)."
+            echo "ativo=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ping REST (leitura pública de municípios)
+        if: steps.janela.outputs.ativo == 'true'
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -fsS "$URL/rest/v1/municipios?select=id,nome&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY"
+          echo
+
+      - name: Ping Auth (health)
+        if: steps.janela.outputs.ativo == 'true'
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -fsS "$URL/auth/v1/health" -H "apikey: $KEY"
+          echo
+
+      - name: Processar recibos de push (trabalho útil + atividade)
+        if: steps.janela.outputs.ativo == 'true'
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -fsS -X POST "$URL/functions/v1/recibos-push" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY"
+          echo
