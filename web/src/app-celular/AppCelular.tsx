@@ -22,11 +22,20 @@ function Aguardando() {
       <span className="h-16 w-16 rounded-3xl bg-sev-atencao-light text-sev-atencao flex items-center justify-center">
         <Clock className="h-8 w-8" />
       </span>
-      <h1 className="font-display text-xl font-bold">Cadastro em análise</h1>
-      <p className="text-sm text-muted-foreground">
-        A Defesa Civil de {perfil?.municipio_nome ?? "seu município"} precisa aprovar sua entrada no núcleo{" "}
-        <b>{perfil?.nucleo_nome}</b>. Você recebe uma notificação assim que for aprovado.
-      </p>
+      <h1 className="font-display text-xl font-bold">{perfil?.membro_status === "rejeitado" ? "Cadastro não aprovado" : "Cadastro em análise"}</h1>
+      {perfil?.membro_status === "pre_aprovado" ? (
+        <p className="text-sm text-muted-foreground">
+          O líder do núcleo <b>{perfil?.nucleo_nome}</b> já pré-aprovou seu cadastro. Falta a aprovação final da Defesa Civil de{" "}
+          {perfil?.municipio_nome ?? "seu município"}. Você recebe uma notificação assim que for aprovado.
+        </p>
+      ) : perfil?.membro_status === "rejeitado" ? (
+        <p className="text-sm text-muted-foreground">Seu cadastro no núcleo <b>{perfil?.nucleo_nome}</b> não foi aprovado. Procure o líder do núcleo ou a Defesa Civil para entender o motivo.</p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Primeiro o <b>líder do núcleo {perfil?.nucleo_nome}</b> confirma que conhece você; depois a Defesa Civil de{" "}
+          {perfil?.municipio_nome ?? "seu município"} dá a aprovação final. Você recebe uma notificação a cada etapa.
+        </p>
+      )}
       <Button variant="outline" onClick={() => void signOut()}>Sair</Button>
     </div>
   );

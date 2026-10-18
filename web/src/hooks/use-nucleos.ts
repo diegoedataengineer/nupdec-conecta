@@ -120,17 +120,24 @@ export function useSalvarNucleo() {
   });
 }
 
-/** Aprovar / rejeitar / desligar membro. RLS: gestor do município. */
+export type AcaoMembro = "aprovar" | "rejeitar" | "desligar" | "reabrir";
+
+/**
+ * Decisão do coordenador sobre um cadastro — sempre por RPC (security definer):
+ * aprovar exige a pré-aprovação do líder do núcleo; rejeitar vale para pendente
+ * ou pré-aprovado; desligar/reabrir cuidam do ciclo de vida depois.
+ */
 export function useTriarMembro(nucleoId: string | undefined) {
   const qc = useQueryClient();
-  const { user } = useAuth();
   return useMutation({
-    mutationFn: async ({ membroId, status }: { membroId: string; status: StatusMembro }) => {
-      const { error } = await supabase
-        .from("membros")
-        .update({ status, aprovado_por: user!.id, aprovado_em: new Date().toISOString() })
-        .eq("id", membroId);
-      if (error) throw error;
+    mutationFn: async ({ membroId, acao }: { membroId: string; acao: AcaoMembro }) => {
+      const r =
+        acao === "aprovar" || acao === "rejeitar"
+          ? await supabase.rpc("coordenador_decidir_membro", { p_membro_id: membroId, p_aprovar: acao === "aprovar" })
+          : acao === "desligar"
+            ? await supabase.rpc("coordenador_desligar_membro", { p_membro_id: membroId })
+            : await supabase.rpc("coordenador_reabrir_cadastro", { p_membro_id: membroId });
+      if (r.error) throw r.error;
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["membros", nucleoId] });

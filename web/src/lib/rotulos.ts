@@ -115,7 +115,8 @@ export const NIVEIS_RISCO: Record<NivelRisco, { rotulo: string; cor: string; bad
 };
 
 export const STATUS_MEMBRO: Record<StatusMembro, { rotulo: string; badge: string }> = {
-  pendente: { rotulo: "Pendente", badge: "bg-bp-amber-light text-bp-amber border-bp-amber/30" },
+  pendente: { rotulo: "Aguardando o líder", badge: "bg-bp-amber-light text-bp-amber border-bp-amber/30" },
+  pre_aprovado: { rotulo: "Pré-aprovado pelo líder", badge: "bg-bp-azul-light text-primary border-primary/30" },
   aprovado: { rotulo: "Aprovado", badge: "bg-bp-emerald-light text-bp-emerald border-bp-emerald/30" },
   rejeitado: { rotulo: "Rejeitado", badge: "bg-bp-rose-light text-bp-rose border-bp-rose/30" },
   desligado: { rotulo: "Desligado", badge: "bg-muted text-muted-foreground border-border" },

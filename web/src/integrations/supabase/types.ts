@@ -15,7 +15,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type Papel = "membro" | "agente" | "coordenador";
 export type StatusNucleo = "ativo" | "inativo";
-export type StatusMembro = "pendente" | "aprovado" | "rejeitado" | "desligado";
+export type StatusMembro = "pendente" | "pre_aprovado" | "aprovado" | "rejeitado" | "desligado";
 export type TipoAreaRisco = "deslizamento" | "inundacao" | "enxurrada" | "outro";
 export type NivelRisco = "baixo" | "medio" | "alto" | "muito_alto";
 export type OrigemAlerta = "manual" | "cemaden" | "inmet";
@@ -106,6 +106,9 @@ export type Database = {
           funcao: string | null;
           aprovado_por: string | null;
           aprovado_em: string | null;
+          pre_aprovado_por: string | null;
+          pre_aprovado_em: string | null;
+          motivo_rejeicao: string | null;
           criado_em: string;
         };
         Insert: {
@@ -454,6 +457,26 @@ export type Database = {
       simular_confirmacoes: {
         Args: { p_alerta_id: string; p_pct?: number };
         Returns: number;
+      };
+      lider_pre_aprovar_membro: {
+        Args: { p_membro_id: string; p_aprovar: boolean; p_motivo?: string | null };
+        Returns: StatusMembro;
+      };
+      coordenador_decidir_membro: {
+        Args: { p_membro_id: string; p_aprovar: boolean; p_motivo?: string | null };
+        Returns: StatusMembro;
+      };
+      auth_e_lider_de: {
+        Args: { p_nucleo_id: string };
+        Returns: boolean;
+      };
+      coordenador_desligar_membro: {
+        Args: { p_membro_id: string };
+        Returns: undefined;
+      };
+      coordenador_reabrir_cadastro: {
+        Args: { p_membro_id: string };
+        Returns: undefined;
       };
     };
     Enums: {

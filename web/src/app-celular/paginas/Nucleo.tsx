@@ -1,6 +1,6 @@
-import { Phone, Shield, Users } from "lucide-react";
+import { Check, Loader2, Phone, Shield, Users, X } from "lucide-react";
 import { useAppAuth } from "../AppAuthContext";
-import { useAreasRiscoApp, useNucleoDoMembro, useOcorrenciasDoNucleo } from "../hooks";
+import { useAreasRiscoApp, useNucleoDoMembro, useOcorrenciasDoNucleo, usePreAprovarMembro } from "../hooks";
 import { MapaCelular } from "../MapaCelular";
 import type { Geometry } from "geojson";
 import { TIPOS_OCORRENCIA } from "@/lib/rotulos";
@@ -17,6 +17,8 @@ export default function Nucleo() {
   const membros = q.data?.membros ?? [];
   const aprovados = membros.filter((m) => m.status === "aprovado");
   const outros = membros.filter((m) => m.status !== "aprovado");
+  const souLider = !!n?.responsavel_membro_id && n.responsavel_membro_id === perfil?.membro_id;
+  const preAprovar = usePreAprovarMembro();
 
   return (
     <div className="px-4 pt-3 pb-6 space-y-4">
@@ -76,17 +78,34 @@ export default function Nucleo() {
 
       {outros.length > 0 && (
         <section>
-          <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-2">Aguardando aprovação / desligados</p>
-          <ul className="space-y-1">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-2">Cadastros em andamento</p>
+          {souLider && outros.some((m) => m.status === "pendente") && (
+            <p className="text-xs text-muted-foreground mb-2">Como líder, você faz a <b>pré-aprovação</b>; a palavra final é da Defesa Civil.</p>
+          )}
+          <ul className="space-y-1.5">
             {outros.map((m) => (
-              <li key={m.id} className="flex items-center justify-between text-xs px-1">
-                <span className="truncate">{m.perfil?.nome ?? "—"}</span>
-                <span className={cn("rounded-full px-2 py-0.5 border", STATUS_MEMBRO[m.status as StatusMembro]?.badge)}>
-                  {STATUS_MEMBRO[m.status as StatusMembro]?.rotulo ?? m.status}
-                </span>
+              <li key={m.id} className="rounded-xl border border-border px-3 py-2 text-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate font-medium">{m.perfil?.nome ?? "—"}</span>
+                  <span className={cn("rounded-full px-2 py-0.5 border whitespace-nowrap", STATUS_MEMBRO[m.status as StatusMembro]?.badge)}>
+                    {STATUS_MEMBRO[m.status as StatusMembro]?.rotulo ?? m.status}
+                  </span>
+                </div>
+                {souLider && m.status === "pendente" && (
+                  <div className="mt-2 flex gap-2">
+                    <button type="button" disabled={preAprovar.isPending} onClick={() => preAprovar.mutate({ membroId: m.id, aprovar: true })} className="flex-1 h-8 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center gap-1 disabled:opacity-50">
+                      {preAprovar.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />} Pré-aprovar
+                    </button>
+                    <button type="button" disabled={preAprovar.isPending} onClick={() => preAprovar.mutate({ membroId: m.id, aprovar: false })} className="flex-1 h-8 rounded-lg border border-destructive text-destructive inline-flex items-center justify-center gap-1 disabled:opacity-50">
+                      <X className="h-3.5 w-3.5" /> Rejeitar
+                    </button>
+                  </div>
+                )}
+                {m.status === "pre_aprovado" && <p className="mt-1 text-[11px] text-muted-foreground">Aguardando a aprovação final da Defesa Civil.</p>}
               </li>
             ))}
           </ul>
+          {preAprovar.isError && <p className="text-xs text-destructive mt-1">{preAprovar.error.message}</p>}
         </section>
       )}
     </div>

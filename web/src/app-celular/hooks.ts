@@ -177,6 +177,21 @@ export function useOnline() {
   return online;
 }
 
+/** Líder do núcleo pré-aprova (ou rejeita) um cadastro pendente — etapa 1 da aprovação. */
+export function usePreAprovarMembro() {
+  const sb = useAppClient();
+  const qc = useQueryClient();
+  const { perfil } = useAppAuth();
+  return useMutation({
+    mutationFn: async ({ membroId, aprovar }: { membroId: string; aprovar: boolean }) => {
+      const { data, error } = await sb.rpc("lider_pre_aprovar_membro", { p_membro_id: membroId, p_aprovar: aprovar });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["app-nucleo", perfil?.nucleo_id] }),
+  });
+}
+
 /** Áreas de risco do município do membro (RLS: leitura no município). */
 export function useAreasRiscoApp() {
   const sb = useAppClient();

@@ -15,11 +15,10 @@ import { MapaSkeleton, TabelaSkeleton } from "@/components/shared/Skeletons";
 import { EstadoVazio, ErroCarregamento } from "@/components/shared/EstadoVazio";
 import { Mapa, type CamadaMapa } from "@/components/mapa/Mapa";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDefinirLider, useMembrosDoNucleo, useNucleo, useNucleosAtividade, useTriarMembro } from "@/hooks/use-nucleos";
+import { useDefinirLider, useMembrosDoNucleo, useNucleo, useNucleosAtividade, useTriarMembro, type AcaoMembro } from "@/hooks/use-nucleos";
 import { FormularioNucleo } from "./Nucleos";
 import { STATUS_MEMBRO, iniciais } from "@/lib/rotulos";
 import { bboxDe, paraFeatureCollection } from "@/lib/geo";
-import type { StatusMembro } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 
 const NucleoDetalhe = () => {
@@ -45,13 +44,13 @@ const NucleoDetalhe = () => {
   }, [nucleo.data]);
   const bounds = useMemo(() => (nucleo.data ? bboxDe([nucleo.data.area_geojson]) : null), [nucleo.data]);
 
-  const pendentes = (membros.data ?? []).filter((m) => m.status === "pendente");
+  const pendentes = (membros.data ?? []).filter((m) => m.status === "pendente" || m.status === "pre_aprovado");
   const lista = aba === "pendentes" ? pendentes : (membros.data ?? []);
 
-  const mudarStatus = async (membroId: string, status: StatusMembro) => {
+  const mudarStatus = async (membroId: string, acao: AcaoMembro) => {
     try {
-      await triar.mutateAsync({ membroId, status });
-      toast.success(status === "aprovado" ? "Membro aprovado." : status === "rejeitado" ? "Cadastro rejeitado." : "Status atualizado.");
+      await triar.mutateAsync({ membroId, acao });
+      toast.success(acao === "aprovar" ? "Membro aprovado. O núcleo foi avisado no chat." : acao === "rejeitar" ? "Cadastro rejeitado." : acao === "desligar" ? "Membro desligado." : "Cadastro reaberto: volta para a pré-aprovação do líder.");
     } catch (e) {
       toast.error("Não foi possível atualizar.", { description: e instanceof Error ? e.message : undefined });
     }
@@ -194,13 +193,27 @@ const NucleoDetalhe = () => {
                             <div className="inline-flex items-center gap-1">
                               {m.status === "pendente" && (
                                 <>
-                                  <Button size="sm" onClick={() => void mudarStatus(m.id, "aprovado")} disabled={triar.isPending}>
-                                    <Check className="h-3.5 w-3.5" /> Aprovar
-                                  </Button>
-                                  <Button size="sm" variant="outline" className="text-destructive" onClick={() => void mudarStatus(m.id, "rejeitado")} disabled={triar.isPending}>
-                                    <X className="h-3.5 w-3.5" /> Rejeitar
-                                  </Button>
+                                  <span className="text-xs text-muted-foreground mr-1" title="A aprovação final só é liberada depois que o líder do núcleo pré-aprova no aplicativo.">aguardando o líder</span>
+                                  {eCoordenador && (
+                                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => void mudarStatus(m.id, "rejeitar")} disabled={triar.isPending}>
+                                      <X className="h-3.5 w-3.5" /> Rejeitar
+                                    </Button>
+                                  )}
                                 </>
+                              )}
+                              {m.status === "pre_aprovado" && (
+                                eCoordenador ? (
+                                  <>
+                                    <Button size="sm" onClick={() => void mudarStatus(m.id, "aprovar")} disabled={triar.isPending} title="Pré-aprovado pelo líder do núcleo; sua aprovação é a final.">
+                                      <Check className="h-3.5 w-3.5" /> Aprovar
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => void mudarStatus(m.id, "rejeitar")} disabled={triar.isPending}>
+                                      <X className="h-3.5 w-3.5" /> Rejeitar
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground">aguardando o coordenador</span>
+                                )
                               )}
                               {m.status === "aprovado" && (
                                 <>
@@ -209,14 +222,16 @@ const NucleoDetalhe = () => {
                                       <Crown className="h-3.5 w-3.5" /> Líder
                                     </Button>
                                   )}
-                                  <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => void mudarStatus(m.id, "desligado")} disabled={triar.isPending}>
-                                    Desligar
-                                  </Button>
+                                  {eCoordenador && (
+                                    <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => void mudarStatus(m.id, "desligar")} disabled={triar.isPending}>
+                                      Desligar
+                                    </Button>
+                                  )}
                                 </>
                               )}
-                              {(m.status === "rejeitado" || m.status === "desligado") && (
-                                <Button size="sm" variant="ghost" onClick={() => void mudarStatus(m.id, "aprovado")} disabled={triar.isPending}>
-                                  Reaprovar
+                              {(m.status === "rejeitado" || m.status === "desligado") && eCoordenador && (
+                                <Button size="sm" variant="ghost" onClick={() => void mudarStatus(m.id, "reabrir")} disabled={triar.isPending} title="Volta para pendente; o líder pré-aprova de novo.">
+                                  Reabrir cadastro
                                 </Button>
                               )}
                               {triar.isPending && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}

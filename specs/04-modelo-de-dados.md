@@ -63,7 +63,7 @@ erDiagram
 | id | uuid pk | |
 | perfil_id | uuid fk perfis unique | |
 | nucleo_id | uuid fk | |
-| status | enum (`pendente`,`aprovado`,`rejeitado`,`desligado`) | aprovação pelo agente |
+| status | enum (`pendente`,`pre_aprovado`,`aprovado`,`rejeitado`,`desligado`) | pendente → pré-aprovado (líder do núcleo, RPC `lider_pre_aprovar_membro`) → aprovado (coordenador, RPC `coordenador_decidir_membro`); migrations 20261018001300–1500 |
 | funcao | text | ex.: "líder", "apoio", "comunicação" |
 | aprovado_por | uuid fk perfis | |
 | aprovado_em | timestamptz | |
