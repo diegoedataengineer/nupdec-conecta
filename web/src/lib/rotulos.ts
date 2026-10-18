@@ -24,13 +24,14 @@ export const PAPEIS: Record<Papel, string> = {
 
 export const SEVERIDADES: Record<
   SeveridadeAlerta,
-  { rotulo: string; cor: string; corClara: string; badge: string; texto: string; fundo: string }
+  { rotulo: string; cor: string; corClara: string; badge: string; texto: string; fundo: string; cartao: string }
 > = {
   observacao: {
     rotulo: "Observação",
     cor: "hsl(215 16% 40%)",
     corClara: "hsl(214 28% 94%)",
     badge: "bg-sev-observacao-light text-sev-observacao border-sev-observacao/30",
+    cartao: "bg-sev-observacao-light border-sev-observacao",
     texto: "text-sev-observacao",
     fundo: "bg-sev-observacao",
   },
@@ -39,6 +40,7 @@ export const SEVERIDADES: Record<
     cor: "hsl(30 82% 42%)",
     corClara: "hsl(32 88% 94%)",
     badge: "bg-sev-atencao-light text-sev-atencao border-sev-atencao/30",
+    cartao: "bg-sev-atencao-light border-sev-atencao",
     texto: "text-sev-atencao",
     fundo: "bg-sev-atencao",
   },
@@ -47,6 +49,7 @@ export const SEVERIDADES: Record<
     cor: "hsl(24 90% 48%)",
     corClara: "hsl(24 95% 94%)",
     badge: "bg-sev-alerta-light text-sev-alerta border-sev-alerta/30",
+    cartao: "bg-sev-alerta-light border-sev-alerta",
     texto: "text-sev-alerta",
     fundo: "bg-sev-alerta",
   },
@@ -55,6 +58,7 @@ export const SEVERIDADES: Record<
     cor: "hsl(351 70% 47%)",
     corClara: "hsl(351 80% 96%)",
     badge: "bg-sev-maximo-light text-sev-maximo border-sev-maximo/30",
+    cartao: "bg-sev-maximo-light border-sev-maximo",
     texto: "text-sev-maximo",
     fundo: "bg-sev-maximo",
   },

@@ -15,9 +15,8 @@ function Cartao({ a, destaque }: { a: AlertaDoMembro; destaque?: boolean }) {
       to={`/app/alerta/${a.id}`}
       className={cn(
         "block rounded-2xl border p-4 transition-colors active:bg-accent",
-        destaque ? "border-2 shadow-card" : "border-border",
+        destaque ? cn("border-2 shadow-card", sev.cartao) : "border-border",
       )}
-      style={destaque ? { borderColor: sev.cor, background: sev.corClara } : undefined}
     >
       <div className="flex items-center justify-between gap-2 mb-1">
         <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-white", sev.fundo)}>
@@ -38,7 +37,7 @@ function Cartao({ a, destaque }: { a: AlertaDoMembro; destaque?: boolean }) {
         ) : a.encerrado_em ? (
           <span className="text-muted-foreground">Encerrado</span>
         ) : (
-          <span className="font-medium" style={{ color: sev.cor }}>Toque para confirmar</span>
+          <span className={cn("font-medium", sev.texto)}>Toque para confirmar</span>
         )}
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
       </div>
