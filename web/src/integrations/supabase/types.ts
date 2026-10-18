@@ -342,6 +342,12 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["alerta_disparos"]["Insert"]>;
         Relationships: [];
       };
+      mensagens_nucleo: {
+        Row: { id: string; nucleo_id: string; autor_id: string; texto: string; alerta_id: string | null; criado_em: string };
+        Insert: { id?: string; nucleo_id: string; autor_id: string; texto: string; alerta_id?: string | null; criado_em?: string };
+        Update: { texto?: string };
+        Relationships: [];
+      };
     };
     Views: {
       v_alerta_confirmacao: {

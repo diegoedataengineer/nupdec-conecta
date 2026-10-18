@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { AppAuthProvider, useAppAuth } from "./AppAuthContext";
 import { CelularFrame } from "./CelularFrame";
 import Entrar from "./paginas/Entrar";
+import Cadastrar from "./paginas/Cadastrar";
 import Alertas from "./paginas/Alertas";
 import AlertaDetalhe from "./paginas/AlertaDetalhe";
 import Ocorrencias from "./paginas/Ocorrencias";
+import Chat from "./paginas/Chat";
 import OcorrenciaNova from "./paginas/OcorrenciaNova";
 import Nucleo from "./paginas/Nucleo";
 import Perfil from "./paginas/Perfil";
@@ -63,11 +65,13 @@ export default function AppCelular() {
       <Routes>
         <Route element={<CelularFrame comAbas={false} />}>
           <Route path="entrar" element={<Entrar />} />
+          <Route path="cadastrar" element={<Cadastrar />} />
         </Route>
         <Route element={<CelularFrame />}>
           <Route element={<Guarda />}>
             <Route index element={<Alertas />} />
             <Route path="alerta/:id" element={<AlertaDetalhe />} />
+            <Route path="chat" element={<Chat />} />
             <Route path="ocorrencias" element={<Ocorrencias />} />
             <Route path="ocorrencia/nova" element={<OcorrenciaNova />} />
             <Route path="nucleo" element={<Nucleo />} />

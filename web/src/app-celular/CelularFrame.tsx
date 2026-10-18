@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Bell, BellRing, Camera, ExternalLink, Home, User, Users, Wifi, WifiOff, X } from "lucide-react";
+import { Bell, BellRing, Camera, ExternalLink, Home, MessagesSquare, User, Users, Wifi, WifiOff, X } from "lucide-react";
 import { useAppAuth } from "./AppAuthContext";
 import { useOnline } from "./hooks";
 import { usePushSimulado } from "./usePushSimulado";
@@ -19,6 +19,7 @@ function Relogio() {
 
 const ABAS = [
   { to: "/app", label: "Alertas", icone: Bell, exato: true },
+  { to: "/app/chat", label: "Chat", icone: MessagesSquare },
   { to: "/app/ocorrencias", label: "Ocorrências", icone: Camera },
   { to: "/app/nucleo", label: "Núcleo", icone: Users },
   { to: "/app/perfil", label: "Perfil", icone: User },
@@ -102,7 +103,7 @@ export function CelularFrame({ comAbas = true }: { comAbas?: boolean }) {
             <Outlet />
           </div>
           {comAbas && perfil && (
-            <nav className="h-16 border-t border-border bg-card/95 backdrop-blur grid grid-cols-4 shrink-0">
+            <nav className="h-16 border-t border-border bg-card/95 backdrop-blur grid grid-cols-5 shrink-0">
               {ABAS.map((a) => (
                 <NavLink
                   key={a.to}

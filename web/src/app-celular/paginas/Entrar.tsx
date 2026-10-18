@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,8 +74,9 @@ export default function Entrar() {
         </div>
       </div>
 
-      <p className="mt-auto pt-6 text-center text-xs text-muted-foreground">
-        Não tem conta? No app real, o cadastro é feito aqui e aprovado pela Defesa Civil.
+      <p className="mt-auto pt-6 text-center text-sm text-muted-foreground">
+        Não tem conta?{" "}
+        <Link to="/app/cadastrar" className="underline text-primary font-medium">Cadastre-se no seu núcleo</Link>
       </p>
     </div>
   );
