@@ -99,7 +99,7 @@
 <div class="nota">A solução não mede o indicador oficial — ele é apurado pela Sedec. Ela <b>produz a evidência</b> que permite classificar um município como "com Nupdec apoiado": núcleo cadastrado, membros aprovados, alertas entregues e confirmados, ocorrências reportadas. O indicador de resultado da solução, distinto do oficial, está na seção 8.</div>
 
 <h2>4. Solução proposta</h2>
-<p><b>Nupdec Conecta</b> é um aplicativo Android para os membros dos Nupdecs e um painel web para a Compdec, sobre um backend único, que faz o cadastro do núcleo e dos membros, entrega alertas direcionados por área de risco com confirmação de recebimento, recebe reportes de ocorrência com foto e localização e oferece um chat por núcleo. Três perfis usam a solução:</p>
+<p><b>Nupdec Conecta</b> é um aplicativo Android para os membros dos Nupdecs e um painel web para a Compdec, sobre um backend único, que faz o cadastro do núcleo e dos membros, entrega alertas direcionados por área de risco com confirmação de recebimento, recebe reportes de ocorrência com foto e localização e oferece um chat por núcleo. Painel e aplicativo exibem ainda o tempo e a chuva acumulada do local (API aberta Open-Meteo), para que a Compdec e o núcleo vejam a condição que motiva o alerta antes mesmo de ele ser disparado. Três perfis usam a solução:</p>
 <table>
   <tr><th>Perfil</th><th>Onde usa</th><th>O que faz</th></tr>
   <tr><td>Membro do Nupdec</td><td>App</td><td>Cria conta e entra num núcleo; recebe alerta; confirma com um toque ("Recebi e estou ciente"); reporta ocorrência com foto e GPS; conversa no chat do núcleo; vê os membros da rede</td></tr>
@@ -125,7 +125,7 @@
   <figcaption><b>Figura 2.</b> Componentes e relações: fontes de alerta (esquerda), backend único no Supabase (centro: Auth, Postgres + PostGIS, Storage, três Edge Functions, Realtime, views de indicadores, keep-alive) e clientes (direita: Expo Push → app Android, painel web, hospedagem no subdomínio).</figcaption>
 </figure>
 <h3>5.1 Componentes tecnológicos e a função de cada um</h3>
-<p>O enunciado pede ao menos três componentes com função definida. São oito, cada um resolvendo um problema concreto dentro da arquitetura:</p>
+<p>Cada componente resolve um problema concreto dentro da arquitetura:</p>
 <table>
   <tr><th style="width:4%">#</th><th style="width:19%">Componente</th><th style="width:30%">Tecnologia concreta</th><th>Problema que resolve</th></tr>
   <tr><td>1</td><td>Aplicativo móvel</td><td>Expo SDK 54 / React Native 0.81 (APK por sideload); no protótipo, simulador web em <code>/app</code></td><td>Colocar alerta, confirmação, reporte e chat no bolso do voluntário, inclusive com rede instável</td></tr>
@@ -136,7 +136,9 @@
   <tr><td>6</td><td>Sistema de alerta</td><td>Expo Push Service sobre FCM; fila com retentativas; recibos</td><td>Entregar a notificação em segundos a centenas de aparelhos e saber se chegou</td></tr>
   <tr><td>7</td><td>Redes de computadores</td><td>HTTPS/REST (PostgREST), RPC, WebSocket (Realtime), cache offline com sincronização</td><td>Funcionar com rede instável e mostrar confirmações ao vivo</td></tr>
   <tr><td>8</td><td>Análise de dados / dashboard</td><td>Views SQL (<code>v_alerta_confirmacao</code>, <code>v_nucleo_atividade</code>, <code>v_municipio_resumo</code>) + gráficos no painel</td><td>Calcular a taxa de confirmação em 10 min e a evidência de núcleo ativo</td></tr>
+  <tr><td>9</td><td>Integração com dados meteorológicos abertos</td><td>API Open-Meteo (sem chave, CORS liberado) consumida pelo painel e pelo app; cache de 15 min</td><td>Mostrar a chuva acumulada em 24 h e 72 h e a previsão de 4 dias no centro do município e de cada núcleo, com patamares de referência (25/50/80 mm) — o mesmo tipo de variável que dispara os alertas geo-hidrológicos</td></tr>
 </table>
+<p>O enunciado pede ao menos três componentes com função definida; são nove.</p>
 <h3>5.2 Ligação com a disciplina</h3>
 <p><b>Governança e dados × informação (Unidade 1):</b> o alerta bruto vira informação acionável — "58 membros, 3 núcleos, 81% confirmaram" — com entrada, processamento e saída explícitos. <b>Arquiteturas distribuídas e segurança (Unidade 2):</b> componentes desacoplados por eventos (gatilho → fila → função), consistência eventual no modo offline e Zero Trust na prática: cada requisição carrega o JWT do usuário e cada linha é filtrada por RLS; a chave <code>service_role</code> nunca sai das Edge Functions. <b>Observabilidade (Unidade 3):</b> cada entrega registra <code>enviado_em</code>, <code>entregue_em</code>, <code>confirmado_em</code> e <code>sincronizado_em</code> — um rastro do alerta de ponta a ponta; a taxa de confirmação é um SLI com SLO de 80% em 10 minutos. <b>Ética e LGPD (Unidade 4):</b> dados pessoais mínimos, finalidade explícita, GPS lido só no momento do reporte, trilha de auditoria por design (seção 10).</p>
 
@@ -158,7 +160,7 @@
 <h3>7.1 Painel da Compdec</h3>
 <figure>
   <img src="figs/pan-02-visao-geral.png" alt="Visão geral do painel">
-  <figcaption><b>Figura 3.</b> Visão geral: núcleos ativos, membros aprovados, alertas em 30 dias e taxa média de confirmação em 10 minutos; mapa do município com os polígonos dos núcleos e as áreas de risco hachuradas por nível; alertas vigentes com barra de confirmação.</figcaption>
+  <figcaption><b>Figura 3.</b> Visão geral: núcleos ativos, membros aprovados, alertas em 30 dias e taxa média de confirmação em 10 minutos; cartão "Tempo e chuva" com condição atual, acumulados de 24 h e 72 h, previsão de 4 dias e patamar de referência (dados abertos do Open-Meteo); mapa do município com os polígonos dos núcleos e as áreas de risco hachuradas por nível; alertas vigentes com barra de confirmação.</figcaption>
 </figure>
 <figure class="row dois">
   <img src="figs/pan-03-nucleos.png" alt="Núcleos">
@@ -174,27 +176,32 @@
   <figcaption><b>Figura 6.</b> Acompanhamento ao vivo de um alerta disparado durante a captura: 19 destinatários, 13 confirmaram, <b>68,4% em 10 minutos</b> (meta 80%), tempo mediano do envio ao toque; gráfico de confirmações acumuladas com a linha dos 10 minutos; núcleos coloridos pela taxa; tabela por núcleo com o líder e o telefone; lista de quem não confirmou, separando quem não tem o aplicativo (avisar por telefone ou porta a porta).</figcaption>
 </figure>
 <h3>7.2 Aplicativo do membro (simulador)</h3>
+<figure class="row dois">
+  <img src="figs/cel-03-alertas.png" alt="Alertas com faixa de chuva">
+  <img src="figs/cel-01-entrar.png" alt="Login do app">
+  <figcaption><b>Figura 7.</b> Tela inicial do app com a faixa de chuva acumulada nas últimas 24 h e a chance de chuva no dia, calculadas para o centro do núcleo do membro (esquerda); tela de entrada com as contas de demonstração (direita).</figcaption>
+</figure>
 <figure class="row tres">
   <img src="figs/cel-04-push.png" alt="Push no celular">
   <img src="figs/cel-05-alerta-detalhe.png" alt="Detalhe do alerta">
   <img src="figs/cel-06-confirmado.png" alt="Confirmado">
-  <figcaption><b>Figura 7.</b> O alerta chega como notificação (esquerda); o toque abre o detalhe com o mapa da área do alerta, do núcleo do membro e das áreas de risco (centro); "Recebi e estou ciente" grava a confirmação com a hora do toque (direita). A confirmação aparece no painel da Figura 6 em tempo real.</figcaption>
+  <figcaption><b>Figura 8.</b> O alerta chega como notificação (esquerda); o toque abre o detalhe com o mapa da área do alerta, do núcleo do membro e das áreas de risco (centro); "Recebi e estou ciente" grava a confirmação com a hora do toque (direita). A confirmação aparece no painel da Figura 6 em tempo real.</figcaption>
 </figure>
 <figure class="row tres">
   <img src="figs/cel-07-ocorrencia-nova.png" alt="Nova ocorrência">
   <img src="figs/cel-08-ocorrencias.png" alt="Ocorrências do núcleo">
   <img src="figs/cel-09-chat.png" alt="Chat do núcleo">
-  <figcaption><b>Figura 8.</b> Reporte de ocorrência com foto, tipo, descrição e posição no mapa (esquerda); ocorrências do núcleo com status de triagem (centro); chat do núcleo em tempo real, com as mensagens da Defesa Civil destacadas (direita).</figcaption>
+  <figcaption><b>Figura 9.</b> Reporte de ocorrência com foto, tipo, descrição e posição no mapa (esquerda); ocorrências do núcleo com status de triagem (centro); chat do núcleo em tempo real, com as mensagens da Defesa Civil destacadas (direita).</figcaption>
 </figure>
 <figure class="row tres">
   <img src="figs/cel-02-cadastrar.png" alt="Cadastro">
   <img src="figs/cel-10-nucleo.png" alt="Núcleo">
   <img src="figs/cel-11-perfil.png" alt="Perfil">
-  <figcaption><b>Figura 9.</b> Auto-cadastro do membro com escolha de município e núcleo — a conta fica "em análise" até a aprovação pelo agente (esquerda); tela do núcleo com mapa, ocorrências e a rede de membros (centro); perfil com a versão do app e o dispositivo registrado para push (direita).</figcaption>
+  <figcaption><b>Figura 10.</b> Auto-cadastro do membro com escolha de município e núcleo — a conta fica "em análise" até a aprovação pelo agente (esquerda); tela do núcleo com mapa, ocorrências e a rede de membros (centro); perfil com a versão do app e o dispositivo registrado para push (direita).</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-08-ocorrencias.png" alt="Ocorrências no painel">
-  <figcaption><b>Figura 10.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 8 aparece aqui como "nova".</figcaption>
+  <figcaption><b>Figura 11.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 9 aparece aqui como "nova".</figcaption>
 </figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
@@ -240,6 +247,7 @@
   <tr><td>Login por e-mail e senha</td><td>OTP por SMS exige provedor pago</td><td>OTP por telefone</td></tr>
   <tr><td>Ingestão do Cemaden não automatizada em produção</td><td>Não há webhook público</td><td>Consulta periódica ao portal de alertas; no protótipo, alerta manual e payload simulado</td></tr>
   <tr><td>Município fictício</td><td>Sem convênio com uma Compdec real no prazo</td><td>Piloto com um município prioritário</td></tr>
+  <tr><td>Dados meteorológicos de um modelo global (Open-Meteo), não das estações oficiais</td><td>APIs do INMET e do Cemaden não têm acesso público estável com CORS</td><td>Ingestão no backend das estações do INMET e dos pluviômetros do Cemaden, mantendo o Open-Meteo como fallback</td></tr>
 </table>
 <table>
   <tr><th style="width:30%">Risco técnico</th><th>Impacto</th><th>Mitigação implementada</th></tr>
@@ -264,7 +272,7 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–10, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–11, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>
@@ -272,7 +280,7 @@
 </table>
 
 <p class="peq"><b>Declaração de uso de IA.</b> Ferramentas de IA generativa (Claude Code) foram utilizadas como assistente de desenvolvimento ao longo do trabalho — na escrita de código, migrations, documentação, roteiros de teste e na redação deste relatório — sob direção, revisão e validação do autor. A escolha da meta, as decisões de arquitetura registradas nas ADRs, a definição do indicador, a configuração dos serviços em nuvem e a verificação dos resultados no banco de dados e no protótipo publicado são de responsabilidade e autoria do autor.</p>
-<p class="peq"><b>Referências.</b> Brasil. Ministério da Integração e do Desenvolvimento Regional. <i>Plano Nacional de Proteção e Defesa Civil 2025–2035</i>. Brasília, 2025 (Quadro 11, p. 138–139) · Brasil. Decreto nº 12.652, de 2025, que institui o PN-PDC 2025–2035 · Brasil. Lei nº 12.608/2012 (Política Nacional de Proteção e Defesa Civil) · Supabase. <i>Row Level Security</i>; <i>Edge Functions</i>; <i>Realtime</i>. Documentação, 2026 · PostGIS Project. <i>PostGIS Reference</i> — ST_Intersects, ST_DWithin · Expo. <i>Sending notifications with Expo's Push API</i>, 2026 · MapLibre GL JS; OpenFreeMap (tiles abertos, OpenStreetMap) · Zebulon, I. <i>Arquiteturas Convergentes — webaulas 1 a 8</i>, CEUB, 2026.</p>
+<p class="peq"><b>Referências.</b> Brasil. Ministério da Integração e do Desenvolvimento Regional. <i>Plano Nacional de Proteção e Defesa Civil 2025–2035</i>. Brasília, 2025 (Quadro 11, p. 138–139) · Brasil. Decreto nº 12.652, de 2025, que institui o PN-PDC 2025–2035 · Brasil. Lei nº 12.608/2012 (Política Nacional de Proteção e Defesa Civil) · Supabase. <i>Row Level Security</i>; <i>Edge Functions</i>; <i>Realtime</i>. Documentação, 2026 · PostGIS Project. <i>PostGIS Reference</i> — ST_Intersects, ST_DWithin · Expo. <i>Sending notifications with Expo's Push API</i>, 2026 · MapLibre GL JS; OpenFreeMap (tiles abertos, OpenStreetMap) · Open-Meteo. <i>Weather Forecast API</i> (dados abertos, CC BY 4.0), 2026 · Zebulon, I. <i>Arquiteturas Convergentes — webaulas 1 a 8</i>, CEUB, 2026.</p>
 
 </body>
 </html>

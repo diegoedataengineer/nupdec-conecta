@@ -18,7 +18,8 @@ import { useNucleos } from "@/hooks/use-nucleos";
 import { useAreasRisco } from "@/hooks/use-areas-risco";
 import { useAlertasConfirmacao, useAlertasVigentes } from "@/hooks/use-alertas";
 import { NIVEIS_RISCO, SEVERIDADES, pct } from "@/lib/rotulos";
-import { bboxDe, paraFeatureCollection } from "@/lib/geo";
+import { bboxDe, centroDe, paraFeatureCollection } from "@/lib/geo";
+import { CartaoClima } from "@/components/clima/CartaoClima";
 import type { NivelRisco } from "@/integrations/supabase/types";
 
 const PADROES = (Object.keys(NIVEIS_RISCO) as NivelRisco[]).map((n) => ({ nome: `hachura-${n}`, cor: NIVEIS_RISCO[n].cor }));
@@ -166,6 +167,12 @@ const VisaoGeral = () => {
           />
         </div>
       )}
+
+      <CartaoClima
+        lat={municipio.data?.limite_geojson ? centroDe(municipio.data.limite_geojson)[1] : null}
+        lon={municipio.data?.limite_geojson ? centroDe(municipio.data.limite_geojson)[0] : null}
+        lugar={municipio.data ? `${municipio.data.nome} – ${municipio.data.uf}` : undefined}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Card className="shadow-bp-card overflow-hidden">

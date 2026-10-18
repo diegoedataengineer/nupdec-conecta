@@ -3,7 +3,9 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BellOff, CheckCircle2, ChevronRight, Radio, RefreshCw } from "lucide-react";
 import { useAppAuth } from "../AppAuthContext";
-import { useAlertasDoMembro, useOnline, type AlertaDoMembro } from "../hooks";
+import { useAlertasDoMembro, useNucleoDoMembro, useOnline, type AlertaDoMembro } from "../hooks";
+import { FaixaClima } from "@/components/clima/CartaoClima";
+import type { Point } from "geojson";
 import { SEVERIDADES } from "@/lib/rotulos";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +51,8 @@ export default function Alertas() {
   const { perfil } = useAppAuth();
   const q = useAlertasDoMembro();
   const online = useOnline();
+  const nucleo = useNucleoDoMembro();
+  const centro = nucleo.data?.nucleo?.centro as Point | null | undefined;
   const vigentes = (q.data ?? []).filter((a) => !a.encerrado_em);
   const historico = (q.data ?? []).filter((a) => !!a.encerrado_em);
 
@@ -63,6 +67,8 @@ export default function Alertas() {
           <RefreshCw className={cn("h-4 w-4", q.isFetching && "animate-spin")} />
         </button>
       </header>
+
+      <FaixaClima lat={centro?.coordinates[1]} lon={centro?.coordinates[0]} />
 
       {!online && (
         <div className="rounded-xl bg-sev-atencao-light text-sev-atencao text-xs px-3 py-2">
