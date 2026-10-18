@@ -22,7 +22,7 @@ const esquema = z.object({
 type Campos = z.infer<typeof esquema>;
 
 const Entrar = () => {
-  const { signIn, session, eGestor, loading } = useAuth();
+  const { signIn, session, eGestor, eDiretor, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const destino = (location.state as { de?: string } | null)?.de ?? "/painel";
@@ -31,8 +31,8 @@ const Entrar = () => {
 
   // já logado como gestor → vai direto
   useEffect(() => {
-    if (!loading && session && eGestor) navigate(destino, { replace: true });
-  }, [loading, session, eGestor, navigate, destino]);
+    if (!loading && session && eGestor) navigate(eDiretor && destino === "/painel" ? "/diretoria" : destino, { replace: true });
+  }, [loading, session, eGestor, eDiretor, navigate, destino]);
 
   const entrar = async (c: Campos) => {
     const { error } = await signIn(c.email, c.senha);
@@ -40,7 +40,7 @@ const Entrar = () => {
       toast.error("Erro ao entrar", { description: error });
       return;
     }
-    navigate(destino, { replace: true });
+    // o efeito acima redireciona assim que o perfil carrega (diretor → /diretoria)
   };
 
   return (

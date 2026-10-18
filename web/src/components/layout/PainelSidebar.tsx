@@ -7,7 +7,7 @@ import {
   Mountain,
   Siren,
   Users,
-  type LucideIcon, MessagesSquare } from "lucide-react";
+  type LucideIcon, MessagesSquare, Building2, Map } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -46,6 +46,13 @@ export const ITENS_PAINEL: ItemNavegacao[] = [
   { to: "/painel/chat", icon: MessagesSquare, label: "Chat dos núcleos" },
 ];
 
+export const ITENS_DIRETORIA: ItemNavegacao[] = [
+  { to: "/diretoria", icon: LayoutDashboard, label: "Visão da diretoria", end: true },
+  { to: "/diretoria/coordenacoes", icon: Map, label: "Coordenações" },
+  { to: "/diretoria/gestores", icon: Building2, label: "Gestores" },
+  { to: "/painel", icon: Siren, label: "Painel operacional" },
+];
+
 function ItemNav({ item, colapsado }: { item: ItemNavegacao; colapsado: boolean }) {
   return (
     <SidebarMenuItem>
@@ -71,7 +78,7 @@ function ItemNav({ item, colapsado }: { item: ItemNavegacao; colapsado: boolean 
   );
 }
 
-export function PainelSidebar() {
+export function PainelSidebar({ itens = ITENS_PAINEL, subtitulo = "Painel da Compdec", inicio = "/painel" }: { itens?: ItemNavegacao[]; subtitulo?: string; inicio?: string }) {
   const { state } = useSidebar();
   const colapsado = state === "collapsed";
   const { perfil, signOut } = useAuth();
@@ -88,7 +95,7 @@ export function PainelSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-16 justify-center px-4">
-        <NavLink to="/painel" className="flex items-center gap-2.5 no-underline min-w-0">
+        <NavLink to={inicio} className="flex items-center gap-2.5 no-underline min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <AlertTriangle className="h-4 w-4" />
           </span>
@@ -97,7 +104,7 @@ export function PainelSidebar() {
               <span className="font-display font-semibold text-lg text-sidebar-foreground block truncate">
                 Nupdec Conecta
               </span>
-              <span className="text-[11px] text-sidebar-foreground/60">Painel da Compdec</span>
+              <span className="text-[11px] text-sidebar-foreground/60">{subtitulo}</span>
             </div>
           )}
         </NavLink>
@@ -114,7 +121,7 @@ export function PainelSidebar() {
           )}
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {ITENS_PAINEL.map((item) => (
+              {itens.map((item) => (
                 <ItemNav key={item.to} item={item} colapsado={colapsado} />
               ))}
             </SidebarMenu>

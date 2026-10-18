@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { PainelSidebar, ITENS_PAINEL } from "@/components/layout/PainelSidebar";
+import { PainelSidebar, ITENS_PAINEL, ITENS_DIRETORIA } from "@/components/layout/PainelSidebar";
 import ThemeToggle from "@/components/ThemeToggle";
 
 /**
@@ -17,23 +17,28 @@ const TITULOS: Record<string, string> = {
   "/painel/areas-risco": "Áreas de risco",
   "/painel/ocorrencias": "Ocorrências",
   "/painel/chat": "Chat dos núcleos",
+  "/diretoria": "Visão da diretoria",
+  "/diretoria/coordenacoes": "Coordenações",
+  "/diretoria/gestores": "Gestores",
 };
 
 export function tituloDaRota(pathname: string): string {
   if (TITULOS[pathname]) return TITULOS[pathname];
   if (pathname.startsWith("/painel/alertas/")) return "Acompanhamento do alerta";
   if (pathname.startsWith("/painel/nucleos/")) return "Núcleo";
+  if (pathname.startsWith("/diretoria/coordenacoes/")) return "Coordenação";
   return "Painel";
 }
 
-const PainelLayout = () => {
+const PainelLayout = ({ modo = "painel" }: { modo?: "painel" | "diretoria" }) => {
   const location = useLocation();
+  const itens = modo === "diretoria" ? ITENS_DIRETORIA : ITENS_PAINEL;
   const titulo = tituloDaRota(location.pathname);
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <PainelSidebar />
+        <PainelSidebar itens={itens} subtitulo={modo === "diretoria" ? "Diretoria de Defesa Civil" : "Painel da Compdec"} inicio={modo === "diretoria" ? "/diretoria" : "/painel"} />
 
         <div className="flex-1 flex flex-col min-w-0">
           <header className="sticky top-0 z-40 h-16 flex items-center justify-between border-b border-border/60 bg-background/80 backdrop-blur-md px-4 md:px-6 gap-4">
@@ -63,7 +68,7 @@ const PainelLayout = () => {
           {/* atalhos no rodapé para telas pequenas */}
           <nav className="md:hidden sticky bottom-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur-md">
             <div className="flex items-stretch">
-              {ITENS_PAINEL.map((l) => {
+              {itens.map((l) => {
                 const ativo = l.end ? location.pathname === l.to : location.pathname.startsWith(l.to);
                 return (
                   <Link

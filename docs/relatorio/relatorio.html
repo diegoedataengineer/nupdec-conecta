@@ -59,7 +59,7 @@
   <tr><td>Meta trabalhada</td><td><b>8.1.2</b> — Incentivar a criação e manutenção de Núcleos Comunitários de Proteção e Defesa Civil (Nupdecs) em parceria com os municípios</td></tr>
   <tr><td>Repositório</td><td><a href="https://github.com/diegoedataengineer/nupdec-conecta">github.com/diegoedataengineer/nupdec-conecta</a> (ADRs, specs, migrations, Edge Functions, painel e simulador)</td></tr>
   <tr><td>Protótipo no ar</td><td><a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> — painel em <code>/painel</code>, simulador do app em <code>/app</code></td></tr>
-  <tr><td>Contas de demonstração</td><td><code>coordenador@valesereno.exemplo</code> · <code>agente1@valesereno.exemplo</code> · <code>lider.esperanca@valesereno.exemplo</code> — senha <code>Nupdec@2026</code></td></tr>
+  <tr><td>Contas de demonstração</td><td><code>diretoria.sp@valesereno.exemplo</code> (diretoria) · <code>coordenador@valesereno.exemplo</code> · <code>agente1@valesereno.exemplo</code> · <code>lider.esperanca@valesereno.exemplo</code> — senha <code>Nupdec@2026</code></td></tr>
   <tr><td>Vídeo-pitch</td><td>enviado junto com este relatório</td></tr>
 </table>
 
@@ -99,11 +99,12 @@
 <div class="nota">A solução não mede o indicador oficial — ele é apurado pela Sedec. Ela <b>produz a evidência</b> que permite classificar um município como "com Nupdec apoiado": núcleo cadastrado, membros aprovados, alertas entregues e confirmados, ocorrências reportadas. O indicador de resultado da solução, distinto do oficial, está na seção 8.</div>
 
 <h2>4. Solução proposta</h2>
-<p><b>Nupdec Conecta</b> é um aplicativo Android para os membros dos Nupdecs e um painel web para a Compdec, sobre um backend único, que faz o cadastro do núcleo e dos membros, entrega alertas direcionados por área de risco com confirmação de recebimento, recebe reportes de ocorrência com foto e localização e oferece um chat por núcleo. Painel e aplicativo exibem ainda o tempo e a chuva acumulada do local (API aberta Open-Meteo), para que a Compdec e o núcleo vejam a condição que motiva o alerta antes mesmo de ele ser disparado. Três perfis usam a solução:</p>
+<p><b>Nupdec Conecta</b> é um aplicativo Android para os membros dos Nupdecs e um painel web para a Compdec e para a diretoria estadual/regional, sobre um backend único, que faz o cadastro do núcleo e dos membros, entrega alertas direcionados por área de risco com confirmação de recebimento, recebe reportes de ocorrência com foto e localização e oferece um chat por núcleo. Painel e aplicativo exibem ainda o tempo e a chuva acumulada do local (API aberta Open-Meteo), para que a Compdec e o núcleo vejam a condição que motiva o alerta antes mesmo de ele ser disparado. Como no país e nos estados há muitas coordenações com áreas delimitadas, existe uma camada de governança acima delas — a <b>diretoria</b> —, que cria cada coordenação com seu polígono de abrangência e designa quem a coordena; os núcleos ficam vinculados à coordenação cuja área os contém (a menor área vence quando há sobreposição). Quatro perfis usam a solução:</p>
 <table>
   <tr><th>Perfil</th><th>Onde usa</th><th>O que faz</th></tr>
   <tr><td>Membro do Nupdec</td><td>App</td><td>Cria conta e entra num núcleo; recebe alerta; confirma com um toque ("Recebi e estou ciente"); reporta ocorrência com foto e GPS; conversa no chat do núcleo; vê os membros da rede. O <b>líder</b> do núcleo faz a pré-aprovação dos novos cadastros</td></tr>
   <tr><td>Agente da Defesa Civil</td><td>App e painel</td><td>Acompanha os cadastros; faz triagem de ocorrências; vê alertas do município; acompanha e responde no chat dos núcleos</td></tr>
+  <tr><td>Diretoria de Defesa Civil (estadual/regional)</td><td>Painel, área <code>/diretoria</code></td><td>Cria <b>coordenações com área delimitada</b> (polígono), cria as contas de coordenadores e agentes e os vincula a cada coordenação; acompanha núcleos, membros, alertas e confirmação por coordenação</td></tr>
   <tr><td>Coordenador da Compdec</td><td>Painel</td><td>Cadastra núcleos (polígono) e áreas de risco; dispara alerta manual com prévia de alcance; acompanha confirmações ao vivo e métricas; lê e responde no chat de cada núcleo; dá a <b>aprovação final</b> dos membros</td></tr>
 </table>
 <h3>4.1 Entrada, processamento e saída</h3>
@@ -143,9 +144,10 @@
 <p><b>Governança e dados × informação (Unidade 1):</b> o alerta bruto vira informação acionável — "58 membros, 3 núcleos, 81% confirmaram" — com entrada, processamento e saída explícitos. <b>Arquiteturas distribuídas e segurança (Unidade 2):</b> componentes desacoplados por eventos (gatilho → fila → função), consistência eventual no modo offline e Zero Trust na prática: cada requisição carrega o JWT do usuário e cada linha é filtrada por RLS; a chave <code>service_role</code> nunca sai das Edge Functions. <b>Observabilidade (Unidade 3):</b> cada entrega registra <code>enviado_em</code>, <code>entregue_em</code>, <code>confirmado_em</code> e <code>sincronizado_em</code> — um rastro do alerta de ponta a ponta; a taxa de confirmação é um SLI com SLO de 80% em 10 minutos. <b>Ética e LGPD (Unidade 4):</b> dados pessoais mínimos, finalidade explícita, GPS lido só no momento do reporte, trilha de auditoria por design (seção 10).</p>
 
 <h2>6. Modelo de dados e regras</h2>
-<p>O schema tem 11 tabelas no PostgreSQL com PostGIS (SRID 4326): <code>municipios</code>, <code>perfis</code> (1:1 com o usuário autenticado, com papel e município), <code>nucleos</code> (polígono de atuação), <code>membros</code> (vínculo perfil → núcleo com status pendente/aprovado/rejeitado/desligado), <code>dispositivos</code> (token push), <code>areas_risco</code> (polígono, tipo e nível), <code>alertas</code> (multipolígono, severidade na escala do Cemaden, origem manual/cemaden/inmet), <code>alerta_entregas</code> (uma linha por membro atingido, com os quatro carimbos de tempo), <code>ocorrencias</code> (ponto, foto, status de triagem, área de risco associada por gatilho), <code>alerta_disparos</code> (fila) e <code>mensagens_nucleo</code> (chat). Toda tabela nasce com RLS habilitada na mesma migration que a cria.</p>
+<p>O schema tem 11 tabelas no PostgreSQL com PostGIS (SRID 4326): <code>municipios</code>, <code>perfis</code> (1:1 com o usuário autenticado, com papel e município), <code>nucleos</code> (polígono de atuação), <code>membros</code> (vínculo perfil → núcleo com status pendente/aprovado/rejeitado/desligado), <code>dispositivos</code> (token push), <code>areas_risco</code> (polígono, tipo e nível), <code>alertas</code> (multipolígono, severidade na escala do Cemaden, origem manual/cemaden/inmet), <code>alerta_entregas</code> (uma linha por membro atingido, com os quatro carimbos de tempo), <code>ocorrencias</code> (ponto, foto, status de triagem, área de risco associada por gatilho), <code>alerta_disparos</code> (fila), <code>mensagens_nucleo</code> (chat) e <code>coordenacoes</code> (nome, nível municipal/regional/estadual, UF, município de referência e polígono de abrangência; <code>perfis.coordenacao_id</code> e <code>nucleos.coordenacao_id</code> fazem o vínculo, o dos núcleos por gatilho geoespacial). Toda tabela nasce com RLS habilitada na mesma migration que a cria.</p>
 <table>
   <tr><th>Tabela</th><th>Membro</th><th>Agente</th><th>Coordenador</th></tr>
+  <tr><td>coordenacoes</td><td>lê</td><td>lê</td><td>lê; só a <b>diretoria</b> cria e edita (RPC <code>diretor_salvar_coordenacao</code>); contas de gestores pela Edge Function <code>criar-gestor</code></td></tr>
   <tr><td>nucleos / areas_risco</td><td>lê</td><td>lê</td><td>lê, cria, edita (no seu município)</td></tr>
   <tr><td>membros</td><td>vê os do seu núcleo; edita o próprio; o líder pré-aprova (RPC)</td><td>vê os do município</td><td>aprovação final, rejeição, desligamento e reabertura (RPCs); nenhum gestor muda status por update direto</td></tr>
   <tr><td>alertas</td><td>vê os que recebeu</td><td>vê os do município</td><td>cria (RPC <code>criar_alerta</code>) e encerra</td></tr>
@@ -216,6 +218,10 @@
   <img src="figs/pan-10-aprovacao.png" alt="Aprovação final pelo coordenador no painel">
   <figcaption><b>Figura 14.</b> Aprovação em duas etapas. À esquerda, a líder do núcleo vê os cadastros pendentes no app e faz a pré-aprovação (quem conhece a pessoa decide primeiro); à direita, o coordenador da Compdec só encontra o botão "Aprovar" nos cadastros já pré-aprovados — os demais aparecem como "aguardando o líder". A função no banco recusa a aprovação final sem a etapa anterior, e cada aprovação gera um aviso no chat do núcleo.</figcaption>
 </figure>
+<figure>
+  <img src="figs/pan-11-diretoria.png" alt="Visão da diretoria">
+  <figcaption><b>Figura 15.</b> Área da diretoria (<code>/diretoria</code>): coordenações ativas, núcleos cobertos, membros e confirmação média; mapa com as áreas das coordenações (tracejado por nível) e os núcleos por cima; resumo por coordenação. A diretoria cria coordenações desenhando o polígono, cria as contas dos coordenadores e agentes e os vincula a cada coordenação.</figcaption>
+</figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
 
@@ -285,7 +291,7 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–14, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–15, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>

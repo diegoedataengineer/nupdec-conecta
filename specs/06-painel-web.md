@@ -17,6 +17,7 @@ Código em `web/`. React + Vite + TypeScript, `@supabase/supabase-js`, MapLibre 
 | `/painel/alertas` | coordenador, agente | Histórico com taxa de confirmação; **Novo alerta** (coordenador) |
 | `/painel/alertas/:id` | coordenador, agente | Acompanhamento ao vivo: % confirmado, tempo mediano, lista por núcleo, quem não confirmou |
 | `/painel/ocorrencias` | coordenador, agente | Mapa + lista; triagem |
+| `/diretoria`, `/diretoria/coordenacoes`, `/diretoria/coordenacoes/:id`, `/diretoria/gestores` | diretor | Camada acima das coordenações: cria coordenações com polígono (RPC `diretor_salvar_coordenacao`), vê resumo por coordenação (`v_coordenacao_resumo`), cria contas de coordenadores/agentes (Edge Function `criar-gestor`) e os vincula (`diretor_vincular_gestor`). Núcleos se vinculam à coordenação cuja área contém seu centro (gatilho). Migrations 20261018001800–1900 |
 | `/painel/chat` | coordenador, agente | Chat de cada núcleo: lista de núcleos ordenada pela última mensagem, conversa em tempo real, resposta como Defesa Civil (destacada no app) |
 
 ## Telas do protótipo

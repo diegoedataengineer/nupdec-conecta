@@ -13,7 +13,8 @@ import type { Geometry, MultiPolygon, Point, Polygon } from "geojson";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type Papel = "membro" | "agente" | "coordenador";
+export type Papel = "membro" | "agente" | "coordenador" | "diretor";
+export type NivelCoordenacao = "municipal" | "regional" | "estadual";
 export type StatusNucleo = "ativo" | "inativo";
 export type StatusMembro = "pendente" | "pre_aprovado" | "aprovado" | "rejeitado" | "desligado";
 export type TipoAreaRisco = "deslizamento" | "inundacao" | "enxurrada" | "outro";
@@ -51,6 +52,12 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["municipios"]["Insert"]>;
         Relationships: [];
       };
+      coordenacoes: {
+        Row: { id: string; nome: string; nivel: NivelCoordenacao; uf: string; municipio_id: string | null; descricao: string | null; status: "ativa" | "inativa"; criado_por: string | null; criado_em: string; area_geojson: MultiPolygon | null };
+        Insert: { nome: string; nivel?: NivelCoordenacao; uf: string; municipio_id?: string | null; descricao?: string | null; status?: "ativa" | "inativa"; area: string };
+        Update: Partial<{ nome: string; nivel: NivelCoordenacao; uf: string; municipio_id: string | null; descricao: string | null; status: "ativa" | "inativa" }>;
+        Relationships: [];
+      };
       perfis: {
         Row: {
           id: string;
@@ -58,6 +65,7 @@ export type Database = {
           telefone: string | null;
           papel: Papel;
           municipio_id: string;
+          coordenacao_id: string | null;
           criado_em: string;
         };
         Insert: {
@@ -75,6 +83,7 @@ export type Database = {
         Row: {
           id: string;
           municipio_id: string;
+          coordenacao_id: string | null;
           nome: string;
           comunidade: string;
           area: unknown;
@@ -353,6 +362,10 @@ export type Database = {
       };
     };
     Views: {
+      v_coordenacao_resumo: {
+        Row: { coordenacao_id: string; nome: string; nivel: NivelCoordenacao; uf: string; status: "ativa" | "inativa"; nucleos_ativos: number; membros_aprovados: number; coordenadores: number; agentes: number; alertas_30d: number; pct_confirmado_10min_30d: number | null; ocorrencias_30d: number };
+        Relationships: [];
+      };
       v_alerta_confirmacao: {
         Row: {
           alerta_id: string;
@@ -470,6 +483,18 @@ export type Database = {
         Args: { p_nucleo_id: string };
         Returns: boolean;
       };
+      diretor_salvar_coordenacao: {
+        Args: { p_id: string | null; p_nome: string; p_nivel: NivelCoordenacao; p_uf: string; p_municipio_id: string | null; p_descricao: string | null; p_area_geojson: Json; p_status?: string };
+        Returns: string;
+      };
+      diretor_vincular_gestor: {
+        Args: { p_perfil_id: string; p_coordenacao_id: string | null; p_papel: Papel };
+        Returns: undefined;
+      };
+      auth_e_diretor: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
       coordenador_desligar_membro: {
         Args: { p_membro_id: string };
         Returns: undefined;
@@ -481,6 +506,7 @@ export type Database = {
     };
     Enums: {
       papel: Papel;
+      nivel_coordenacao: NivelCoordenacao;
       status_nucleo: StatusNucleo;
       status_membro: StatusMembro;
       tipo_area_risco: TipoAreaRisco;
@@ -501,6 +527,7 @@ export type Views<T extends keyof Database["public"]["Views"]> = Database["publi
 
 export type Perfil = Tables<"perfis">;
 export type Nucleo = Tables<"nucleos">;
+export type Coordenacao = Tables<"coordenacoes">;
 export type Membro = Tables<"membros">;
 export type AreaRisco = Tables<"areas_risco">;
 export type Alerta = Tables<"alertas">;

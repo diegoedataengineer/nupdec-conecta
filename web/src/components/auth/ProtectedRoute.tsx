@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
  * Guarda das rotas /painel/*: exige sessão e papel agente ou coordenador.
  * A verificação no cliente é só conforto de navegação — quem garante é a RLS.
  */
-const ProtectedRoute = () => {
-  const { session, perfil, loading, eGestor, signOut } = useAuth();
+const ProtectedRoute = ({ somenteDiretor = false }: { somenteDiretor?: boolean }) => {
+  const { session, perfil, loading, eGestor, eDiretor, signOut } = useAuth();
   const location = useLocation();
 
   if (loading || (session && !perfil)) {
@@ -21,6 +21,10 @@ const ProtectedRoute = () => {
 
   if (!session) {
     return <Navigate to="/painel/entrar" replace state={{ de: location.pathname }} />;
+  }
+
+  if (somenteDiretor && !eDiretor) {
+    return <Navigate to="/painel" replace />;
   }
 
   if (!eGestor) {

@@ -1,4 +1,5 @@
 import type {
+  NivelCoordenacao,
   NivelRisco,
   Papel,
   SeveridadeAlerta,
@@ -20,6 +21,13 @@ export const PAPEIS: Record<Papel, string> = {
   membro: "Membro",
   agente: "Agente da Defesa Civil",
   coordenador: "Coordenador da Compdec",
+  diretor: "Diretoria de Defesa Civil",
+};
+
+export const NIVEIS_COORDENACAO: Record<NivelCoordenacao, string> = {
+  municipal: "Municipal (Compdec)",
+  regional: "Regional",
+  estadual: "Estadual",
 };
 
 export const SEVERIDADES: Record<

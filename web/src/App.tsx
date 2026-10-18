@@ -17,6 +17,10 @@ import NovoAlerta from "./pages/painel/NovoAlerta";
 import AlertaAcompanhamento from "./pages/painel/AlertaAcompanhamento";
 import Ocorrencias from "./pages/painel/Ocorrencias";
 import ChatNucleos from "./pages/painel/ChatNucleos";
+import VisaoDiretoria from "./pages/diretoria/VisaoDiretoria";
+import Coordenacoes from "./pages/diretoria/Coordenacoes";
+import CoordenacaoDetalhe from "./pages/diretoria/CoordenacaoDetalhe";
+import Gestores from "./pages/diretoria/Gestores";
 import AppCelular from "./app-celular/AppCelular";
 import QuadCelulares from "./app-celular/QuadCelulares";
 
@@ -58,6 +62,16 @@ const App = () => (
                 <Route path="alertas/:id" element={<AlertaAcompanhamento />} />
                 <Route path="ocorrencias" element={<Ocorrencias />} />
                 <Route path="chat" element={<ChatNucleos />} />
+              </Route>
+            </Route>
+
+            {/* diretoria: só papel diretor */}
+            <Route element={<ProtectedRoute somenteDiretor />}>
+              <Route path="/diretoria" element={<PainelLayout modo="diretoria" />}>
+                <Route index element={<VisaoDiretoria />} />
+                <Route path="coordenacoes" element={<Coordenacoes />} />
+                <Route path="coordenacoes/:id" element={<CoordenacaoDetalhe />} />
+                <Route path="gestores" element={<Gestores />} />
               </Route>
             </Route>
 

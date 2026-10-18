@@ -22,6 +22,7 @@ interface AuthContextType {
   /** agente ou coordenador */
   eGestor: boolean;
   eCoordenador: boolean;
+  eDiretor: boolean;
   signIn: (email: string, senha: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
@@ -37,13 +38,14 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   eGestor: false,
   eCoordenador: false,
+  eDiretor: false,
   signIn: async () => ({ error: "não inicializado" }),
   signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
-const GESTORES: Papel[] = ["agente", "coordenador"];
+const GESTORES: Papel[] = ["agente", "coordenador", "diretor"];
 
 async function carregarPerfil(user: User): Promise<PerfilSessao | null> {
   const [{ data: rpc, error: erroRpc }, { data: linha }] = await Promise.all([
@@ -123,10 +125,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const eGestor = !!perfil && GESTORES.includes(perfil.papel);
   const eCoordenador = perfil?.papel === "coordenador";
+  const eDiretor = perfil?.papel === "diretor";
 
   return (
     <AuthContext.Provider
-      value={{ session, user: session?.user ?? null, perfil, loading, eGestor, eCoordenador, signIn, signOut }}
+      value={{ session, user: session?.user ?? null, perfil, loading, eGestor, eCoordenador, eDiretor, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>
