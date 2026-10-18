@@ -1,0 +1,114 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;color:#0f172a}
+  .wrap{width:1240px;padding:22px 24px;box-sizing:border-box;position:relative}
+  .title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .title h2{margin:0;font-size:17px;font-weight:700}
+  .title span{font-family:"IBM Plex Mono",monospace;font-size:10px;color:#475569}
+  .grid{display:grid;grid-template-columns:118px repeat(6,1fr);gap:0;position:relative}
+  .lane-h{padding:10px 8px;text-align:center;border-bottom:2px solid #1e4e8c;margin:0 6px 10px}
+  .lane-h b{display:block;font-size:13.5px}
+  .lane-h small{display:block;font-size:10.5px;color:#475569;line-height:1.3;margin-top:2px}
+  .proc{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#1e4e8c;text-transform:uppercase;letter-spacing:.06em;padding:12px 8px 0 0;border-top:1px dashed #cbd5e1}
+  .proc span{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:#334155;text-transform:none;letter-spacing:0;margin-top:3px;line-height:1.3}
+  .row{display:contents}
+  .cell{min-height:112px;padding:5px 4px 26px;border-top:1px dashed #e2e8f0;box-sizing:border-box;display:flex;align-items:flex-start}
+  .cell.first{border-top:1px dashed #cbd5e1}
+  .box{position:relative;z-index:2;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;padding:7px 9px;font-size:12.6px;line-height:1.3;width:100%;box-sizing:border-box}
+  .box b{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+  .box.sys{border-style:dashed;background:#f8fafc}
+  .box.dir{border-color:#6423C8;background:#f6f1fd}
+  .box.coord{border-color:#1e4e8c;background:#eef3fb}
+  .box.ag{border-color:#0E88C8;background:#eaf5fb}
+  .box.lid{border-color:#b45309;background:#fff7ed}
+  .box.mem{border-color:#15803d;background:#f0fdf4}
+  .n{position:absolute;top:-9px;left:-9px;width:20px;height:20px;border-radius:999px;background:#0f172a;color:#fff;font-family:"IBM Plex Mono",monospace;font-size:10.5px;display:flex;align-items:center;justify-content:center;z-index:3}
+  svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .legend{display:flex;gap:16px;margin-top:14px;font-size:11.5px;color:#475569;font-family:"IBM Plex Mono",monospace;flex-wrap:wrap}
+  .legend i{display:inline-block;width:14px;height:10px;border-radius:3px;border:1.5px solid #94a3b8;vertical-align:middle;margin-right:5px}
+</style></head><body><div class="wrap">
+<div class="title"><h2>Processos do Nupdec Conecta — da diretoria ao membro</h2><span>raias por perfil · setas = sequência · tracejado = automação no backend</span></div>
+<div class="grid" id="grid">
+  <div></div>
+  <div class="lane-h"><b>Diretoria</b><small>estadual / regional (federal)</small></div>
+  <div class="lane-h"><b>Coordenador da Compdec</b><small>decide, dispara, aprova</small></div>
+  <div class="lane-h"><b>Agente da Defesa Civil</b><small>acompanha e faz triagem</small></div>
+  <div class="lane-h"><b>Líder do núcleo</b><small>membro responsável pelo Nupdec</small></div>
+  <div class="lane-h"><b>Membro do Nupdec</b><small>morador voluntário, no app</small></div>
+  <div class="lane-h"><b>Sistema</b><small>Supabase: regras, gatilhos, push</small></div>
+</div>
+<svg class="arrows" id="arrows"><defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs></svg>
+<div class="legend">
+  <span><i style="border-color:#6423C8;background:#f6f1fd"></i>Diretoria</span><span><i style="border-color:#1e4e8c;background:#eef3fb"></i>Coordenador</span><span><i style="border-color:#0E88C8;background:#eaf5fb"></i>Agente</span><span><i style="border-color:#b45309;background:#fff7ed"></i>Líder</span><span><i style="border-color:#15803d;background:#f0fdf4"></i>Membro</span><span><i style="border-style:dashed;background:#f8fafc"></i>Sistema (automático)</span>
+</div>
+</div>
+<script>
+const LANES = ["dir","coord","ag","lid","mem","sys"];
+const CLS = { dir:"dir", coord:"coord", ag:"ag", lid:"lid", mem:"mem", sys:"sys" };
+// processos → linhas; cada etapa: [id, raia, título, descrição]
+const PROCESSOS = [
+  { nome: "A · Estruturação", desc: "coordenações, gestores, áreas e núcleos", etapas: [
+    ["1","dir","Cria a coordenação","Nome, nível (municipal/regional/estadual), UF e área: polígono desenhado ou limite oficial do município (IBGE)."],
+    ["2","dir","Cria e vincula gestores","Contas de coordenador e agente (Edge Function) ligadas à coordenação."],
+    ["3","sys","Vincula os núcleos","Núcleo cujo centro cai na área passa à coordenação (menor área vence)."],
+    ["4","coord","Cadastra áreas de risco e núcleos","Polígonos no mapa; define o líder de cada núcleo."],
+  ]},
+  { nome: "B · Entrada de membro", desc: "aprovação em duas etapas", etapas: [
+    ["5","mem","Cadastra-se no app","E-mail, senha, município e núcleo; registra o dispositivo para push."],
+    ["6","sys","Cria perfil e vínculo pendente","Gatilho no cadastro; status = pendente."],
+    ["7","lid","Pré-aprova ou rejeita","Quem conhece a pessoa decide primeiro (aba Núcleo)."],
+    ["8","coord","Aprovação final","Só liberada com a pré-aprovação do líder; pode rejeitar ou desligar."],
+    ["9","sys","Avisa o núcleo no chat","Membro ativo; passa a receber alertas da sua área."],
+  ]},
+  { nome: "C · Alerta", desc: "disparo, entrega, confirmação, acompanhamento", etapas: [
+    ["10","coord","Dispara o alerta","Tipo, severidade, área (áreas de risco, desenho ou município) e mensagem — ou ingestão Cemaden/INMET."],
+    ["11","sys","Seleciona e envia","ST_Intersects entre área do alerta e núcleos → uma entrega por membro → push em lotes."],
+    ["12","mem","Recebe e confirma","Notificação no celular; toque em “Recebi e estou ciente” (vale offline)."],
+    ["13","sys","Mede o resultado","confirmado_em por membro; % em 10 min, mediana, quem não confirmou."],
+    ["14","coord","Acompanha ao vivo","Gráfico e tabela por núcleo; liga para os líderes dos que não confirmaram."],
+    ["15","lid","Repasse porta a porta","Avisa quem não tem o app; coordena o núcleo pelo chat."],
+    ["16","dir","Acompanha a rede","Indicadores por coordenação: núcleos, membros, confirmação em 10 min."],
+  ]},
+  { nome: "D · Ocorrência", desc: "reporte, triagem, retorno ao núcleo", etapas: [
+    ["17","mem","Reporta ocorrência","Foto, GPS, tipo e descrição; pode ser ligada ao alerta vigente."],
+    ["18","sys","Publica no chat do núcleo","Associa à área de risco mais próxima; cartão no chat; mapa do painel."],
+    ["19","ag","Faz a triagem","Nova → em análise → atendida / descartada, com observação."],
+    ["20","sys","Devolve o status ao núcleo","Mudança de status vira mensagem no chat; indicador de triagem em 24 h."],
+  ]},
+];
+const EDGES = [["1","2"],["1","3"],["2","4"],["5","6"],["6","7"],["7","8"],["8","9"],["10","11"],["11","12"],["12","13"],["13","14"],["14","15"],["13","16"],["17","18"],["18","19"],["19","20"]];
+const parte = new URLSearchParams(location.search).get("parte");
+const PROCS = parte === "1" ? PROCESSOS.slice(0, 2) : parte === "2" ? PROCESSOS.slice(2) : PROCESSOS;
+const idsVisiveis = new Set(PROCS.flatMap((p) => p.etapas.map((e) => e[0])));
+if (parte) document.querySelector(".title h2").textContent += parte === "1" ? " — processos A e B" : " — processos C e D";
+const grid = document.getElementById("grid");
+const pos = {};
+for (const p of PROCS) {
+  let first = true;
+  for (const [id, lane, t, d] of p.etapas) {
+    const row = document.createElement("div"); row.className = "row";
+    const lab = document.createElement("div"); lab.className = "proc";
+    if (first) { lab.innerHTML = p.nome + "<span>" + p.desc + "</span>"; first = false; } else { lab.style.borderTop = "0"; }
+    row.appendChild(lab);
+    for (const l of LANES) {
+      const c = document.createElement("div"); c.className = "cell" + (lab.innerHTML ? " first" : "");
+      if (l === lane) { const b = document.createElement("div"); b.className = "box " + CLS[l]; b.id = "s" + id; b.innerHTML = '<span class="n">' + id + '</span><b>' + t + '</b>' + d; c.appendChild(b); }
+      row.appendChild(c);
+    }
+    grid.appendChild(row);
+  }
+}
+// setas
+const svg = document.getElementById("arrows"); const wrap = document.querySelector(".wrap").getBoundingClientRect();
+for (const [a, b] of EDGES.filter(([a, b]) => idsVisiveis.has(a) && idsVisiveis.has(b))) {
+  const A = document.getElementById("s" + a).getBoundingClientRect(), B = document.getElementById("s" + b).getBoundingClientRect();
+  const ax = A.left + A.width / 2 - wrap.left, ay = A.bottom - wrap.top, bx = B.left + B.width / 2 - wrap.left, by = B.top - wrap.top;
+  const my = ay + 14;
+  const d = Math.abs(ax - bx) < 4 ? `M${ax},${ay} L${bx},${by}` : `M${ax},${ay} L${ax},${my} L${bx},${my} L${bx},${by}`;
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d); path.setAttribute("fill", "none"); path.setAttribute("stroke", "#475569"); path.setAttribute("stroke-width", "1.8"); path.setAttribute("stroke-linejoin", "round"); path.setAttribute("marker-end", "url(#m)");
+  svg.appendChild(path);
+}
+</script>
+</body></html>

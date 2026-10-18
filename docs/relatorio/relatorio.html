@@ -107,6 +107,14 @@
   <tr><td>Diretoria de Defesa Civil (estadual/regional)</td><td>Painel, área <code>/diretoria</code></td><td>Cria <b>coordenações com área delimitada</b> (polígono), cria as contas de coordenadores e agentes e os vincula a cada coordenação; acompanha núcleos, membros, alertas e confirmação por coordenação</td></tr>
   <tr><td>Coordenador da Compdec</td><td>Painel</td><td>Cadastra núcleos (polígono) e áreas de risco; dispara alerta manual com prévia de alcance; acompanha confirmações ao vivo e métricas; lê e responde no chat de cada núcleo; dá a <b>aprovação final</b> dos membros</td></tr>
 </table>
+<figure>
+  <img src="figs/processos-1.png" alt="Processos A e B: estruturação e entrada de membro">
+  <figcaption><b>Figura 2.</b> Processos por perfil, da diretoria ao membro — parte 1 (raias: Diretoria, Coordenador, Agente, Líder do núcleo, Membro e Sistema; caixas tracejadas são automações no backend). <b>A — Estruturação:</b> a diretoria cria a coordenação com área (polígono ou limite oficial do município) e as contas dos gestores; o sistema vincula os núcleos pela área; o coordenador cadastra áreas de risco e núcleos e define os líderes. <b>B — Entrada de membro:</b> cadastro no app, pré-aprovação pelo líder (quem conhece a pessoa), aprovação final pelo coordenador e aviso no chat do núcleo.</figcaption>
+</figure>
+<figure>
+  <img src="figs/processos-2.png" alt="Processos C e D: alerta e ocorrência">
+  <figcaption><b>Figura 3.</b> Processos por perfil — parte 2. <b>C — Alerta:</b> o coordenador dispara (ou a ingestão Cemaden/INMET cria o alerta); o sistema seleciona núcleos e membros por interseção geoespacial e envia o push; o membro confirma; o sistema mede (% em 10 min, mediana, quem não confirmou); o coordenador acompanha ao vivo e aciona os líderes; o líder faz o repasse porta a porta a quem não tem o app; a diretoria acompanha os indicadores por coordenação. <b>D — Ocorrência:</b> o membro reporta com foto e GPS; o sistema associa à área de risco e publica no chat do núcleo; o agente faz a triagem; o status volta ao núcleo pelo chat.</figcaption>
+</figure>
 <h3>4.1 Entrada, processamento e saída</h3>
 <table>
   <tr><th style="width:12%">Fluxo</th><th>Entrada</th><th>Processamento</th><th>Saída</th></tr>
@@ -120,10 +128,10 @@
 <p>O Cemaden emite alerta de risco alto de deslizamento para o município, ou a Compdec dispara manualmente. O backend cruza a área do alerta com os polígonos dos núcleos e encontra, por exemplo, 3 núcleos e 58 membros. O push chega nos 58 celulares em segundos e o app abre a tela do alerta. Nos primeiros 10 minutos, 47 membros tocam em "Recebi" e o painel mostra 81%. O coordenador vê os 11 que não confirmaram e liga para os líderes desses núcleos. Um membro fotografa uma trinca no muro de arrimo e envia com GPS; o agente faz a triagem ("em análise" → equipe vai ao local → "atendida"). Ao fim do evento, o histórico vira o relatório do núcleo — a evidência de Nupdec ativo. O que a solução <b>não</b> é: não substitui o alerta oficial por cell broadcast ou SMS 40199 (ela complementa, garantindo que o alerta chegue à rede organizada e volte com confirmação) e não é um sistema de monitoramento por sensores (ela consome alertas de quem monitora).</p>
 
 <h2>5. Arquitetura e tecnologias</h2>
-<p>A arquitetura (Figura 2) tem um backend único e dois clientes. As fontes de alerta — Cemaden/INMET por ingestão ou o coordenador pelo painel — produzem um registro em <code>alertas</code>; um gatilho enfileira o disparo e a Edge Function <code>disparar-alerta</code> seleciona os destinatários por interseção geoespacial, envia o push em lotes de 100 pelo Expo Push Service (FCM) e grava os tickets. O membro confirma no app; a confirmação e as ocorrências voltam ao banco e chegam ao painel por Realtime. As decisões que sustentam o desenho estão registradas como ADRs no repositório (<code>docs/adr/0001</code> a <code>0008</code>).</p>
+<p>A arquitetura (Figura 4) tem um backend único e dois clientes. As fontes de alerta — Cemaden/INMET por ingestão ou o coordenador pelo painel — produzem um registro em <code>alertas</code>; um gatilho enfileira o disparo e a Edge Function <code>disparar-alerta</code> seleciona os destinatários por interseção geoespacial, envia o push em lotes de 100 pelo Expo Push Service (FCM) e grava os tickets. O membro confirma no app; a confirmação e as ocorrências voltam ao banco e chegam ao painel por Realtime. As decisões que sustentam o desenho estão registradas como ADRs no repositório (<code>docs/adr/0001</code> a <code>0008</code>).</p>
 <figure>
   <img src="figs/arquitetura.png" alt="Diagrama de arquitetura">
-  <figcaption><b>Figura 2.</b> Componentes e relações: fontes de alerta (esquerda), backend único no Supabase (centro: Auth, Postgres + PostGIS, Storage, três Edge Functions, Realtime, views de indicadores, keep-alive) e clientes (direita: Expo Push → app Android, painel web, hospedagem no subdomínio).</figcaption>
+  <figcaption><b>Figura 4.</b> Componentes e relações: fontes de alerta (esquerda), backend único no Supabase (centro: Auth, Postgres + PostGIS, Storage, três Edge Functions, Realtime, views de indicadores, keep-alive) e clientes (direita: Expo Push → app Android, painel web, hospedagem no subdomínio).</figcaption>
 </figure>
 <h3>5.1 Componentes tecnológicos e a função de cada um</h3>
 <p>Cada componente resolve um problema concreto dentro da arquitetura:</p>
@@ -162,70 +170,70 @@
 <h3>7.1 Painel da Compdec</h3>
 <figure>
   <img src="figs/pan-02-visao-geral.png" alt="Visão geral do painel">
-  <figcaption><b>Figura 3.</b> Visão geral: núcleos ativos, membros aprovados, alertas em 30 dias e taxa média de confirmação em 10 minutos; cartão "Tempo e chuva" com condição atual, acumulados de 24 h e 72 h, previsão de 4 dias e patamar de referência (dados abertos do Open-Meteo); mapa do município com os polígonos dos núcleos e as áreas de risco hachuradas por nível; alertas vigentes com barra de confirmação.</figcaption>
+  <figcaption><b>Figura 5.</b> Visão geral: núcleos ativos, membros aprovados, alertas em 30 dias e taxa média de confirmação em 10 minutos; cartão "Tempo e chuva" com condição atual, acumulados de 24 h e 72 h, previsão de 4 dias e patamar de referência (dados abertos do Open-Meteo); mapa do município com os polígonos dos núcleos e as áreas de risco hachuradas por nível; alertas vigentes com barra de confirmação.</figcaption>
 </figure>
 <figure class="row dois">
   <img src="figs/pan-03-nucleos.png" alt="Núcleos">
   <img src="figs/pan-04-areas-risco.png" alt="Áreas de risco">
-  <figcaption><b>Figura 4.</b> Cadastro dos núcleos (esquerda) e das áreas de risco (direita), com desenho de polígonos no mapa. O coordenador cria e edita; o agente consulta e aprova membros no detalhe do núcleo.</figcaption>
+  <figcaption><b>Figura 6.</b> Cadastro dos núcleos (esquerda) e das áreas de risco (direita), com desenho de polígonos no mapa. O coordenador cria e edita; o agente consulta e aprova membros no detalhe do núcleo.</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-06-novo-alerta.png" alt="Novo alerta">
-  <figcaption><b>Figura 5.</b> Novo alerta: tipo e severidade, área (áreas de risco existentes, desenho livre ou município inteiro), <b>prévia de alcance</b> calculada pela RPC <code>previa_alerta</code> antes do disparo ("1 núcleo e 19 membros") e mensagem com modelos por tipo.</figcaption>
+  <figcaption><b>Figura 7.</b> Novo alerta: tipo e severidade, área (áreas de risco existentes, desenho livre ou município inteiro), <b>prévia de alcance</b> calculada pela RPC <code>previa_alerta</code> antes do disparo ("1 núcleo e 19 membros") e mensagem com modelos por tipo.</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-07-acompanhamento.png" alt="Acompanhamento do alerta">
-  <figcaption><b>Figura 6.</b> Acompanhamento ao vivo de um alerta disparado durante a captura: 19 destinatários, 13 confirmaram, <b>68,4% em 10 minutos</b> (meta 80%), tempo mediano do envio ao toque; gráfico de confirmações acumuladas com a linha dos 10 minutos; núcleos coloridos pela taxa; tabela por núcleo com o líder e o telefone; lista de quem não confirmou, separando quem não tem o aplicativo (avisar por telefone ou porta a porta).</figcaption>
+  <figcaption><b>Figura 8.</b> Acompanhamento ao vivo de um alerta disparado durante a captura: 19 destinatários, 13 confirmaram, <b>68,4% em 10 minutos</b> (meta 80%), tempo mediano do envio ao toque; gráfico de confirmações acumuladas com a linha dos 10 minutos; núcleos coloridos pela taxa; tabela por núcleo com o líder e o telefone; lista de quem não confirmou, separando quem não tem o aplicativo (avisar por telefone ou porta a porta).</figcaption>
 </figure>
 <h3>7.2 Aplicativo do membro (simulador)</h3>
 <figure class="row dois">
   <img src="figs/cel-03-alertas.png" alt="Alertas com faixa de chuva">
   <img src="figs/cel-01-entrar.png" alt="Login do app">
-  <figcaption><b>Figura 7.</b> Tela inicial do app com a faixa de chuva acumulada nas últimas 24 h e a chance de chuva no dia, calculadas para o centro do núcleo do membro (esquerda); tela de entrada com as contas de demonstração (direita).</figcaption>
+  <figcaption><b>Figura 9.</b> Tela inicial do app com a faixa de chuva acumulada nas últimas 24 h e a chance de chuva no dia, calculadas para o centro do núcleo do membro (esquerda); tela de entrada com as contas de demonstração (direita).</figcaption>
 </figure>
 <figure class="row tres">
   <img src="figs/cel-04-push.png" alt="Push no celular">
   <img src="figs/cel-05-alerta-detalhe.png" alt="Detalhe do alerta">
   <img src="figs/cel-06-confirmado.png" alt="Confirmado">
-  <figcaption><b>Figura 8.</b> O alerta chega como notificação (esquerda); o toque abre o detalhe com o mapa da área do alerta, do núcleo do membro e das áreas de risco (centro); "Recebi e estou ciente" grava a confirmação com a hora do toque (direita). A confirmação aparece no painel da Figura 6 em tempo real.</figcaption>
+  <figcaption><b>Figura 10.</b> O alerta chega como notificação (esquerda); o toque abre o detalhe com o mapa da área do alerta, do núcleo do membro e das áreas de risco (centro); "Recebi e estou ciente" grava a confirmação com a hora do toque (direita). A confirmação aparece no painel da Figura 8 em tempo real.</figcaption>
 </figure>
 <figure class="row tres">
   <img src="figs/cel-07-ocorrencia-nova.png" alt="Nova ocorrência">
   <img src="figs/cel-08-ocorrencias.png" alt="Ocorrências do núcleo">
   <img src="figs/cel-09-chat.png" alt="Chat do núcleo">
-  <figcaption><b>Figura 9.</b> Reporte de ocorrência com foto, tipo, descrição e posição no mapa (esquerda); ocorrências do núcleo com status de triagem (centro); chat do núcleo em tempo real, com as mensagens da Defesa Civil destacadas (direita).</figcaption>
+  <figcaption><b>Figura 11.</b> Reporte de ocorrência com foto, tipo, descrição e posição no mapa (esquerda); ocorrências do núcleo com status de triagem (centro); chat do núcleo em tempo real, com as mensagens da Defesa Civil destacadas (direita).</figcaption>
 </figure>
 <figure class="row tres">
   <img src="figs/cel-02-cadastrar.png" alt="Cadastro">
   <img src="figs/cel-10-nucleo.png" alt="Núcleo">
   <img src="figs/cel-11-perfil.png" alt="Perfil">
-  <figcaption><b>Figura 10.</b> Auto-cadastro do membro com escolha de município e núcleo — a conta fica "em análise" até a pré-aprovação do líder do núcleo e a aprovação final do coordenador (esquerda); tela do núcleo com mapa, ocorrências e a rede de membros (centro); perfil com a versão do app e o dispositivo registrado para push (direita).</figcaption>
+  <figcaption><b>Figura 12.</b> Auto-cadastro do membro com escolha de município e núcleo — a conta fica "em análise" até a pré-aprovação do líder do núcleo e a aprovação final do coordenador (esquerda); tela do núcleo com mapa, ocorrências e a rede de membros (centro); perfil com a versão do app e o dispositivo registrado para push (direita).</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-08-ocorrencias.png" alt="Ocorrências no painel">
-  <figcaption><b>Figura 11.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 9 aparece aqui como "nova".</figcaption>
+  <figcaption><b>Figura 13.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 11 aparece aqui como "nova".</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-09-chat.png" alt="Chat dos núcleos no painel">
-  <figcaption><b>Figura 12.</b> Chat dos núcleos no painel: a Compdec vê a conversa de cada Nupdec (lista à esquerda, ordenada pela última mensagem) e responde como Defesa Civil; a mensagem chega em tempo real no aplicativo dos membros, destacada com o escudo "Defesa Civil" (Figura 9, à direita). Toda ocorrência reportada por um membro, e cada mudança de status na triagem, entra automaticamente no chat do núcleo como um cartão, por gatilhos no banco.</figcaption>
+  <figcaption><b>Figura 14.</b> Chat dos núcleos no painel: a Compdec vê a conversa de cada Nupdec (lista à esquerda, ordenada pela última mensagem) e responde como Defesa Civil; a mensagem chega em tempo real no aplicativo dos membros, destacada com o escudo "Defesa Civil" (Figura 11, à direita). Toda ocorrência reportada por um membro, e cada mudança de status na triagem, entra automaticamente no chat do núcleo como um cartão, por gatilhos no banco.</figcaption>
 </figure>
 <figure>
   <img src="figs/web-02-demo-quad-chat.png" alt="Demonstração com quatro celulares">
-  <figcaption><b>Figura 13.</b> Modo de demonstração (<code>/demo</code>): quatro celulares lado a lado, cada um com sessão e navegação próprias, logados como membros diferentes. O celular 2 reportou uma ocorrência e ela apareceu no chat do núcleo no celular 1 como "ocorrência do núcleo"; a mesma conversa é visível à Compdec na Figura 12.</figcaption>
+  <figcaption><b>Figura 15.</b> Modo de demonstração (<code>/demo</code>): quatro celulares lado a lado, cada um com sessão e navegação próprias, logados como membros diferentes. O celular 2 reportou uma ocorrência e ela apareceu no chat do núcleo no celular 1 como "ocorrência do núcleo"; a mesma conversa é visível à Compdec na Figura 14.</figcaption>
 </figure>
 <figure class="row dois">
   <img src="figs/cel-12-pre-aprovacao.png" alt="Pré-aprovação pelo líder no app">
   <img src="figs/pan-10-aprovacao.png" alt="Aprovação final pelo coordenador no painel">
-  <figcaption><b>Figura 14.</b> Aprovação em duas etapas. À esquerda, a líder do núcleo vê os cadastros pendentes no app e faz a pré-aprovação (quem conhece a pessoa decide primeiro); à direita, o coordenador da Compdec só encontra o botão "Aprovar" nos cadastros já pré-aprovados — os demais aparecem como "aguardando o líder". A função no banco recusa a aprovação final sem a etapa anterior, e cada aprovação gera um aviso no chat do núcleo.</figcaption>
+  <figcaption><b>Figura 16.</b> Aprovação em duas etapas. À esquerda, a líder do núcleo vê os cadastros pendentes no app e faz a pré-aprovação (quem conhece a pessoa decide primeiro); à direita, o coordenador da Compdec só encontra o botão "Aprovar" nos cadastros já pré-aprovados — os demais aparecem como "aguardando o líder". A função no banco recusa a aprovação final sem a etapa anterior, e cada aprovação gera um aviso no chat do núcleo.</figcaption>
 </figure>
 <figure>
   <img src="figs/pan-11-diretoria.png" alt="Visão da diretoria">
-  <figcaption><b>Figura 15.</b> Área da diretoria (<code>/diretoria</code>): coordenações ativas, núcleos cobertos, membros e confirmação média; mapa com as áreas das coordenações (tracejado por nível) e os núcleos por cima; resumo por coordenação. A diretoria cria coordenações desenhando o polígono ou usando o limite oficial do município (malha IBGE), cria as contas dos coordenadores e agentes e os vincula a cada coordenação.</figcaption>
+  <figcaption><b>Figura 17.</b> Área da diretoria (<code>/diretoria</code>): coordenações ativas, núcleos cobertos, membros e confirmação média; mapa com as áreas das coordenações (tracejado por nível) e os núcleos por cima; resumo por coordenação. A diretoria cria coordenações desenhando o polígono ou usando o limite oficial do município (malha IBGE), cria as contas dos coordenadores e agentes e os vincula a cada coordenação.</figcaption>
 </figure>
 <figure class="row dois">
   <img src="figs/pan-14-satelite.png" alt="Áreas de risco sobre satélite">
   <img src="figs/cel-13-satelite.png" alt="Alerta sobre satélite no app" style="max-width:30%">
-  <figcaption><b>Figura 16.</b> Mapa base alternável em todos os mapas (botão "Mapa / Satélite"): áreas de risco do painel sobre a imagem de satélite (esquerda) e a área do alerta no app sobre a foto real da encosta (direita). Imagens Esri World Imagery com rótulos de referência; a preferência fica guardada no navegador.</figcaption>
+  <figcaption><b>Figura 18.</b> Mapa base alternável em todos os mapas (botão "Mapa / Satélite"): áreas de risco do painel sobre a imagem de satélite (esquerda) e a área do alerta no app sobre a foto real da encosta (direita). Imagens Esri World Imagery com rótulos de referência; a preferência fica guardada no navegador.</figcaption>
 </figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
@@ -292,11 +300,11 @@
 <hr>
 <table>
   <tr><th style="width:5%">#</th><th>Item da entrega</th><th style="width:22%">Onde está</th><th style="width:5%">#</th><th>Item da entrega</th><th style="width:22%">Onde está</th></tr>
-  <tr><td>1</td><td>Nome do projeto</td><td>Nupdec Conecta (capa)</td><td>10</td><td>Solução proposta</td><td>Seção 4</td></tr>
+  <tr><td>1</td><td>Nome do projeto</td><td>Nupdec Conecta (capa)</td><td>10</td><td>Solução proposta</td><td>Seção 4, Figuras 2–3 (processos)</td></tr>
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
-  <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
+  <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 4, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–16, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 5–18, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>
