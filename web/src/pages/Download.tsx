@@ -64,6 +64,20 @@ const Download = () => {
       </header>
 
       <main>
+        {/* tarja: app nativo condicionado à aprovação; demo via web */}
+        <div className="border-b border-sev-atencao/40 bg-sev-atencao-light">
+          <div className="container max-w-5xl px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 text-sm">
+            <p className="flex-1 text-sev-atencao leading-relaxed">
+              <b>Aviso:</b> o aplicativo Android nativo (APK) só será desenvolvido caso o projeto seja aprovado. Enquanto isso, a demonstração
+              completa pode ser <b>simulada pela web</b>, com o mesmo backend, as mesmas regras e o mesmo fluxo de alerta, confirmação e reporte.
+            </p>
+            <div className="flex gap-2 shrink-0">
+              <Button asChild size="sm" variant="secondary"><Link to="/app"><Smartphone className="h-4 w-4" /> Simular 1 celular</Link></Button>
+              <Button asChild size="sm" variant="outline"><Link to="/demo">4 celulares</Link></Button>
+            </div>
+          </div>
+        </div>
+
         {/* hero */}
         <section className="container max-w-5xl px-4 pt-12 pb-10 md:pt-20 md:pb-14">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-center">
@@ -95,7 +109,7 @@ const Download = () => {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground font-mono">
-                versão {APK_VERSION} · Android 8 ou superior · instalação fora da Play Store (sideload)
+                versão {APK_VERSION} · Android 8 ou superior · instalação fora da Play Store (sideload) · APK disponível após a aprovação do projeto
               </p>
             </div>
 
@@ -145,12 +159,8 @@ const Download = () => {
           <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {PASSOS.map((p, i) => (
               <li key={p.titulo} className="rounded-xl border bg-card overflow-hidden shadow-bp-card flex flex-col">
-                {/* placeholder de captura: substitua por <img src={`/capturas/passo-${i + 1}.png`} /> */}
-                <div className="aspect-[9/12] max-h-56 bg-muted border-b flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <Smartphone className="h-8 w-8 mx-auto mb-1 opacity-60" />
-                    <span className="text-[11px] font-mono uppercase tracking-wider">captura {i + 1}</span>
-                  </div>
+                <div className="bg-muted border-b p-3">
+                  <img src={`/capturas/passo-${i + 1}.png`} alt={`Passo ${i + 1}: ${p.titulo}`} loading="lazy" className="w-full aspect-[3/4] object-cover object-top rounded-xl shadow-sm" />
                 </div>
                 <div className="p-4 space-y-1.5">
                   <div className="flex items-center gap-2">

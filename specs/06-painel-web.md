@@ -53,7 +53,9 @@ Código em `web/`. React + Vite + TypeScript, `@supabase/supabase-js`, MapLibre 
 - Cabeçalho: "Nupdec Conecta — o alerta da Defesa Civil no celular do seu núcleo".
 - Botão "Baixar APK (Android)" + QR code apontando para o mesmo arquivo.
 - Passo a passo: baixar → abrir → permitir "instalar apps desconhecidos" → instalar → abrir e
-  cadastrar. Uma captura por passo.
+  cadastrar. Uma captura por passo (`public/capturas/passo-1..5.png`, geradas de `passos.html`).
+- Tarja no topo: o APK nativo só será desenvolvido se o projeto for aprovado; a demo roda na web
+  (`/app` e `/demo`).
 - Rodapé: meta 8.1.2 do PN-PDC, link para o repositório, versão do build.
 
 ## Simulador do app Android (`/app`) — adicionado em 18/10/2026
