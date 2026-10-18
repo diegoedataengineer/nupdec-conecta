@@ -16,6 +16,7 @@ const TITULOS: Record<string, string> = {
   "/painel/nucleos": "Núcleos",
   "/painel/areas-risco": "Áreas de risco",
   "/painel/ocorrencias": "Ocorrências",
+  "/painel/chat": "Chat dos núcleos",
 };
 
 export function tituloDaRota(pathname: string): string {

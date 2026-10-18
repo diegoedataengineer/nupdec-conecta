@@ -7,8 +7,7 @@ import {
   Mountain,
   Siren,
   Users,
-  type LucideIcon,
-} from "lucide-react";
+  type LucideIcon, MessagesSquare } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -44,6 +43,7 @@ export const ITENS_PAINEL: ItemNavegacao[] = [
   { to: "/painel/nucleos", icon: Users, label: "Núcleos" },
   { to: "/painel/areas-risco", icon: Mountain, label: "Áreas de risco" },
   { to: "/painel/ocorrencias", icon: MapPinned, label: "Ocorrências" },
+  { to: "/painel/chat", icon: MessagesSquare, label: "Chat dos núcleos" },
 ];
 
 function ItemNav({ item, colapsado }: { item: ItemNavegacao; colapsado: boolean }) {

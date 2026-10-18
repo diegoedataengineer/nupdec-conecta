@@ -17,6 +17,7 @@ Código em `web/`. React + Vite + TypeScript, `@supabase/supabase-js`, MapLibre 
 | `/painel/alertas` | coordenador, agente | Histórico com taxa de confirmação; **Novo alerta** (coordenador) |
 | `/painel/alertas/:id` | coordenador, agente | Acompanhamento ao vivo: % confirmado, tempo mediano, lista por núcleo, quem não confirmou |
 | `/painel/ocorrencias` | coordenador, agente | Mapa + lista; triagem |
+| `/painel/chat` | coordenador, agente | Chat de cada núcleo: lista de núcleos ordenada pela última mensagem, conversa em tempo real, resposta como Defesa Civil (destacada no app) |
 
 ## Telas do protótipo
 

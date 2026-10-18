@@ -103,8 +103,8 @@
 <table>
   <tr><th>Perfil</th><th>Onde usa</th><th>O que faz</th></tr>
   <tr><td>Membro do Nupdec</td><td>App</td><td>Cria conta e entra num núcleo; recebe alerta; confirma com um toque ("Recebi e estou ciente"); reporta ocorrência com foto e GPS; conversa no chat do núcleo; vê os membros da rede</td></tr>
-  <tr><td>Agente da Defesa Civil</td><td>App e painel</td><td>Aprova ou rejeita membros; faz triagem de ocorrências; vê alertas do município</td></tr>
-  <tr><td>Coordenador da Compdec</td><td>Painel</td><td>Cadastra núcleos (polígono) e áreas de risco; dispara alerta manual com prévia de alcance; acompanha confirmações ao vivo e métricas</td></tr>
+  <tr><td>Agente da Defesa Civil</td><td>App e painel</td><td>Aprova ou rejeita membros; faz triagem de ocorrências; vê alertas do município; acompanha e responde no chat dos núcleos</td></tr>
+  <tr><td>Coordenador da Compdec</td><td>Painel</td><td>Cadastra núcleos (polígono) e áreas de risco; dispara alerta manual com prévia de alcance; acompanha confirmações ao vivo e métricas; lê e responde no chat de cada núcleo</td></tr>
 </table>
 <h3>4.1 Entrada, processamento e saída</h3>
 <table>
@@ -151,7 +151,7 @@
   <tr><td>alertas</td><td>vê os que recebeu</td><td>vê os do município</td><td>cria (RPC <code>criar_alerta</code>) e encerra</td></tr>
   <tr><td>alerta_entregas</td><td>vê as próprias; confirma (RPC)</td><td colspan="2">leem as do município; inserção só pela Edge Function</td></tr>
   <tr><td>ocorrencias</td><td>cria; vê as do seu núcleo</td><td colspan="2">veem e triam as do município</td></tr>
-  <tr><td>mensagens_nucleo</td><td>lê e escreve no seu núcleo (se aprovado)</td><td colspan="2">leem e escrevem nos núcleos do município</td></tr>
+  <tr><td>mensagens_nucleo</td><td>lê e escreve no seu núcleo (se aprovado)</td><td colspan="2">leem e escrevem em todos os núcleos do município (página "Chat dos núcleos")</td></tr>
 </table>
 <p>As regras de negócio que precisam de privilégio rodam como funções <code>security definer</code> no banco: <code>gerar_entregas</code> (interseção e criação das entregas), <code>previa_alerta</code> (quantos núcleos e membros uma área atinge, antes de disparar), <code>criar_alerta</code>, <code>confirmar_alerta</code>, <code>registrar_dispositivo</code> e os gatilhos <code>handle_novo_usuario</code> (cria perfil e vínculo pendente no cadastro) e <code>ocorrencia_area_risco</code>. As três Edge Functions (<code>ingerir-alerta</code>, <code>disparar-alerta</code>, <code>recibos-push</code>) foram testadas de ponta a ponta no projeto remoto: um alerta injetado pela ingestão gerou 36 entregas por interseção, a deduplicação por <code>origem_ref</code> recusou a repetição e a fila ficou "concluído".</p>
 
@@ -202,6 +202,10 @@
 <figure>
   <img src="figs/pan-08-ocorrencias.png" alt="Ocorrências no painel">
   <figcaption><b>Figura 11.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 9 aparece aqui como "nova".</figcaption>
+</figure>
+<figure>
+  <img src="figs/pan-09-chat.png" alt="Chat dos núcleos no painel">
+  <figcaption><b>Figura 12.</b> Chat dos núcleos no painel: a Compdec vê a conversa de cada Nupdec (lista à esquerda, ordenada pela última mensagem) e responde como Defesa Civil; a mensagem chega em tempo real no aplicativo dos membros, destacada com o escudo "Defesa Civil" (Figura 9, à direita).</figcaption>
 </figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
@@ -272,7 +276,7 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–11, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–12, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>

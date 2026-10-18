@@ -16,6 +16,7 @@ import Alertas from "./pages/painel/Alertas";
 import NovoAlerta from "./pages/painel/NovoAlerta";
 import AlertaAcompanhamento from "./pages/painel/AlertaAcompanhamento";
 import Ocorrencias from "./pages/painel/Ocorrencias";
+import ChatNucleos from "./pages/painel/ChatNucleos";
 import AppCelular from "./app-celular/AppCelular";
 
 const queryClient = new QueryClient({
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="alertas/novo" element={<NovoAlerta />} />
                 <Route path="alertas/:id" element={<AlertaAcompanhamento />} />
                 <Route path="ocorrencias" element={<Ocorrencias />} />
+                <Route path="chat" element={<ChatNucleos />} />
               </Route>
             </Route>
 
