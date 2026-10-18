@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nupdec Conecta — alerta, confirmação e reporte no celular dos Núcleos Comunitários de Proteção e Defesa Civil</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10.3pt; line-height: 1.42; color: #0f172a; }
+  .logo { height: 44px; margin: 0 0 14px; }
+  h1 { font-size: 21pt; line-height: 1.2; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { font-size: 11.5pt; font-weight: 600; color: #1e293b; margin: 0 0 12px; }
+  h2 { font-size: 13.5pt; font-weight: 700; margin: 20px 0 7px; padding-top: 6px; border-top: 1px solid #e2e8f0; page-break-after: avoid; }
+  h2:first-of-type { border-top: 0; }
+  h3 { font-size: 11pt; font-weight: 600; margin: 12px 0 5px; page-break-after: avoid; }
+  p { margin: 0 0 7px; text-align: left; }
+  b, strong { font-weight: 600; }
+  code, .mono { font-family: "IBM Plex Mono", monospace; font-size: 9.2pt; background: #f1f5f9; padding: 0 3px; border-radius: 3px; }
+  pre { font-family: "IBM Plex Mono", monospace; font-size: 8.6pt; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; margin: 6px 0 9px; white-space: pre-wrap; line-height: 1.35; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.4pt; page-break-inside: auto; }
+  th, td { border: 1px solid #e2e8f0; padding: 4px 7px; vertical-align: top; text-align: left; }
+  th { background: #f1f5f9; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  table.meta td:first-child { width: 29%; background: #f8fafc; font-weight: 600; }
+  a { color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+  ul { margin: 2px 0 8px 18px; padding: 0; } li { margin: 0 0 3px; }
+  figure { margin: 10px 0 12px; page-break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; max-height: 150mm; width: auto; border: 1px solid #e2e8f0; border-radius: 6px; }
+  figure.row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: flex-start; }
+  figure.row img { flex: 0 0 auto; }
+  figure.row.tres img { width: 32%; }
+  figure.row.dois img { width: 49%; }
+  figcaption { font-size: 8.8pt; color: #475569; margin-top: 5px; line-height: 1.35; text-align: left; }
+  figure.row figcaption { flex: 0 0 100%; }
+  .nota { background: #f8fafc; border-left: 3px solid #1e4e8c; padding: 6px 10px; margin: 8px 0 10px; font-size: 9.6pt; }
+  .kpi { display: flex; gap: 10px; margin: 6px 0 10px; }
+  .kpi div { flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 10px; }
+  .kpi b { display: block; font-size: 15pt; font-weight: 700; }
+  .kpi span { font-size: 8.8pt; color: #475569; }
+  .quebra { page-break-before: always; }
+  .peq { font-size: 9.2pt; color: #334155; }
+  hr { border: 0; border-top: 1px solid #e2e8f0; margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<img class="logo" src="figs/ceub.png" alt="CEUB">
+
+<h1>Nupdec Conecta — alerta, confirmação e reporte no celular dos Núcleos Comunitários de Proteção e Defesa Civil</h1>
+<p class="sub">Sistematização — Arquiteturas Convergentes</p>
+
+<table class="meta">
+  <tr><td>Disciplina</td><td>Arquiteturas Convergentes — Prof. Me. Israel Zebulon (Turma C, Campus Virtual)</td></tr>
+  <tr><td>Autor</td><td>Diego Nunes de Morais — trabalho individual</td></tr>
+  <tr><td>Data</td><td>18 de outubro de 2026</td></tr>
+  <tr><td>Desafio</td><td>Computação aplicada à Proteção e Defesa Civil — PN-PDC 2025–2035</td></tr>
+  <tr><td>Meta trabalhada</td><td><b>8.1.2</b> — Incentivar a criação e manutenção de Núcleos Comunitários de Proteção e Defesa Civil (Nupdecs) em parceria com os municípios</td></tr>
+  <tr><td>Repositório</td><td><a href="https://github.com/diegoedataengineer/nupdec-conecta">github.com/diegoedataengineer/nupdec-conecta</a> (ADRs, specs, migrations, Edge Functions, painel e simulador)</td></tr>
+  <tr><td>Protótipo no ar</td><td><a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> — painel em <code>/painel</code>, simulador do app em <code>/app</code></td></tr>
+  <tr><td>Contas de demonstração</td><td><code>coordenador@valesereno.exemplo</code> · <code>agente1@valesereno.exemplo</code> · <code>lider.esperanca@valesereno.exemplo</code> — senha <code>Nupdec@2026</code></td></tr>
+  <tr><td>Vídeo-pitch</td><td>enviado junto com este relatório</td></tr>
+</table>
+
+<h2>1. Introdução</h2>
+<p>Este documento descreve, ponta a ponta, uma solução computacional para uma meta oficial do primeiro Plano Nacional de Proteção e Defesa Civil (PN-PDC 2025–2035), seguindo a sequência exigida pela sistematização: <b>problema real → meta do PN-PDC → solução computacional → arquitetura → protótipo → pitch</b>. O escopo cobre a escolha e a contextualização da meta, a definição do problema e do público, o desenho da solução com entrada, processamento e saída, a arquitetura com os componentes tecnológicos e a função de cada um, um protótipo funcional publicado na web (painel da Defesa Civil municipal e simulador do aplicativo do membro, ambos sobre o mesmo backend) e um indicador de resultado mensurável calculado a partir do próprio banco de dados.</p>
+<p>Duas escolhas orientaram o trabalho. A primeira foi fugir das metas mais óbvias para uma disciplina de computação — as de monitoramento e alerta por sensores (Objetivo 2.2) — e trabalhar uma meta de <b>participação social</b>, em que o problema é de informação e organização, não de instrumentação: o alerta já existe; o que falta é que ele chegue à rede organizada da comunidade e volte com confirmação. A segunda foi construir um protótipo que funcione de verdade, com backend real, regras de acesso por linha e tempo real, em vez de telas estáticas: todo número deste relatório vem de consultas ao banco do protótipo, e a demonstração em vídeo mostra o fluxo completo acontecendo.</p>
+<p>O texto está organizado conforme os itens da entrega. A seção 2 define o problema e o público; a 3, a meta e seu contexto no plano; a 4, a solução e seu fluxo; a 5, a arquitetura e as tecnologias; a 6, o modelo de dados e as regras; a 7, o protótipo; a 8, o indicador de resultado; a 9, o benefício esperado; a 10, limitações e riscos; a 11 conclui. A tabela final relaciona cada um dos 17 itens da entrega à seção que o responde.</p>
+
+<h2>2. Problema e público afetado</h2>
+<p><b>O que está acontecendo.</b> Os Núcleos Comunitários de Proteção e Defesa Civil (Nupdecs) são a ponta da cadeia de alerta: voluntários da própria comunidade, organizados pela Defesa Civil municipal (Compdec), que recebem a informação de risco e a repassam porta a porta, ajudam na evacuação e relatam o que veem na rua. O PN-PDC cita os Nupdecs repetidamente como elo entre poder público e população. Na prática, a maioria dos núcleos opera em grupos de WhatsApp: não há cadastro estruturado de quem está ativo, não há registro de que o alerta chegou a cada pessoa, e o relato de uma trinca ou de um alagamento é um áudio solto, sem localização nem triagem. A Compdec dispara o alerta e fica sem saber se foi lido.</p>
+<p><b>Quem é afetado.</b> Moradores de áreas de risco nos municípios prioritários do Sinpdec — o Cemaden monitora cerca de 1.100 municípios e o plano fala em 1.942 sob maior risco —, predominantemente famílias de baixa renda em encostas e margens de rios; os voluntários dos Nupdecs, que carregam a responsabilidade do repasse sem ferramenta; e os agentes e coordenadores das Compdecs, sem visibilidade do que acontece depois do disparo.</p>
+<p><b>Onde ocorre.</b> Nos municípios prioritários, com concentração no Sudeste (Serra Fluminense, Baixada Santista, Grande BH), no Sul (vale do Itajaí, região metropolitana de Porto Alegre) e no Nordeste (Recife, Salvador). O protótipo usa um município fictício, Vale Sereno – SP, com dados de demonstração.</p>
+<p><b>Por que uma solução computacional contribui.</b> Porque o problema é de informação: o alerta existe e o voluntário existe; falta o canal com cadastro, entrega direcionada por área, confirmação de recebimento e retorno. Um backend com cadastro geoespacial e push, um aplicativo no celular do voluntário e um painel para a Compdec fecham esse ciclo e, de quebra, produzem o dado que o indicador oficial da meta precisa: quantos municípios têm Nupdec apoiado e ativo.</p>
+<table>
+  <tr><th>Público</th><th>Papel na solução</th><th>No município de demonstração</th></tr>
+  <tr><td>Moradores de áreas de risco organizados em Nupdecs</td><td>Membro: recebe o alerta, confirma, reporta ocorrência, conversa no chat do núcleo</td><td>7 núcleos, 89 membros aprovados</td></tr>
+  <tr><td>Agentes da Defesa Civil municipal</td><td>Agente: aprova cadastros, faz triagem de ocorrências</td><td>3</td></tr>
+  <tr><td>Coordenação da Compdec</td><td>Coordenador: cadastra áreas de risco e núcleos, dispara alertas, acompanha confirmações e métricas</td><td>1</td></tr>
+</table>
+
+<h2>3. Meta do PN-PDC 2025–2035</h2>
+<p>O PN-PDC 2025–2035 (Decreto nº 12.652/2025) é o primeiro plano nacional da área e organiza 20 objetivos e 163 metas em cinco eixos — prevenção, mitigação, preparação, resposta e recuperação — com horizontes de curto (2027), médio (2031) e longo prazo (2035). A meta selecionada consta do Quadro 11 — Objetivos, metas e indicadores da Diretriz Participação da Sociedade Civil (p. 138–139 do plano), reproduzido na Figura 1.</p>
+<table class="meta">
+  <tr><td>Identificação da meta</td><td><b>8.1.2</b></td></tr>
+  <tr><td>Descrição oficial</td><td>Incentivar a criação e manutenção de Núcleos Comunitários de Proteção e Defesa Civil (Nupdecs) em parceria com os municípios.</td></tr>
+  <tr><td>Objetivo vinculado</td><td><b>8.1</b> — Fomentar ação integrada entre instituições da sociedade civil organizada, entidades privadas e entes federativos</td></tr>
+  <tr><td>Diretriz</td><td>8 — Participação da sociedade civil na gestão de riscos e de desastres</td></tr>
+  <tr><td>Eixos de atuação</td><td>Os cinco: prevenção (Pv), mitigação (Mt), preparação (Pp), resposta (Rp) e recuperação (Rc). A solução atua com mais força em <b>preparação</b> (cadastro, áreas de risco, membros validados) e <b>resposta</b> (alerta, confirmação, reporte).</td></tr>
+  <tr><td>Prazo e alvos</td><td>Curto prazo (2027): <b>30%</b> · médio prazo (2031): <b>40%</b> · longo prazo (2035): <b>90%</b>. Linha de base não informada.</td></tr>
+  <tr><td>Indicador oficial</td><td>Percentual de municípios prioritários com Nupdecs apoiados. Fonte de dados e responsável: Sedec; ministério: MIDR.</td></tr>
+</table>
+<figure>
+  <img src="../pnpdc-quadro-11-p138-139.png" alt="Quadro 11 do PN-PDC com a meta 8.1.2">
+  <figcaption><b>Figura 1.</b> Quadro 11 do PN-PDC 2025–2035 (p. 138–139), com a meta 8.1.2, os alvos 30%/40%/90%, o indicador oficial e a marcação nos cinco eixos de atuação.</figcaption>
+</figure>
+<p>A escolha considerou cinco candidatas (registradas em <code>docs/adr/0001</code>): 2.2.4 (alertas antecipados do Cemaden), 1.1.7 (banco de dados sobre população em áreas de risco), 3.1.3/3.1.4 (cadastro nacional de voluntários), 8.2.2 (cozinhas comunitárias) e 8.1.2. A 8.1.2 venceu por três motivos: tem alvo numérico com faixa, enquanto várias metas têm alvo binário ("X"), o que enfraquece a mensuração; cadastro e alerta estão no núcleo da meta, não como acessório; e o problema humano é simples de contar.</p>
+<div class="nota">A solução não mede o indicador oficial — ele é apurado pela Sedec. Ela <b>produz a evidência</b> que permite classificar um município como "com Nupdec apoiado": núcleo cadastrado, membros aprovados, alertas entregues e confirmados, ocorrências reportadas. O indicador de resultado da solução, distinto do oficial, está na seção 8.</div>
+
+<h2>4. Solução proposta</h2>
+<p><b>Nupdec Conecta</b> é um aplicativo Android para os membros dos Nupdecs e um painel web para a Compdec, sobre um backend único, que faz o cadastro do núcleo e dos membros, entrega alertas direcionados por área de risco com confirmação de recebimento, recebe reportes de ocorrência com foto e localização e oferece um chat por núcleo. Três perfis usam a solução:</p>
+<table>
+  <tr><th>Perfil</th><th>Onde usa</th><th>O que faz</th></tr>
+  <tr><td>Membro do Nupdec</td><td>App</td><td>Cria conta e entra num núcleo; recebe alerta; confirma com um toque ("Recebi e estou ciente"); reporta ocorrência com foto e GPS; conversa no chat do núcleo; vê os membros da rede</td></tr>
+  <tr><td>Agente da Defesa Civil</td><td>App e painel</td><td>Aprova ou rejeita membros; faz triagem de ocorrências; vê alertas do município</td></tr>
+  <tr><td>Coordenador da Compdec</td><td>Painel</td><td>Cadastra núcleos (polígono) e áreas de risco; dispara alerta manual com prévia de alcance; acompanha confirmações ao vivo e métricas</td></tr>
+</table>
+<h3>4.1 Entrada, processamento e saída</h3>
+<table>
+  <tr><th style="width:12%">Fluxo</th><th>Entrada</th><th>Processamento</th><th>Saída</th></tr>
+  <tr><td>Cadastro</td><td>Dados do núcleo, polígono desenhado no mapa, dados do membro, token push do aparelho</td><td>Validação; vínculo membro → núcleo → município; aprovação pelo agente; políticas de acesso por linha (RLS)</td><td>Núcleo ativo com membros aprovados e dispositivos aptos a receber push</td></tr>
+  <tr><td>Alerta</td><td>Alerta manual (painel) ou externo (Cemaden/INMET) com área e severidade</td><td><code>ST_Intersects(área do alerta, área do núcleo)</code> seleciona os núcleos; gera uma entrega por membro aprovado; envia push em lotes; registra o ticket</td><td>Notificação no celular de cada membro afetado; registro em <code>alerta_entregas</code> por membro</td></tr>
+  <tr><td>Confirmação</td><td>Toque do membro em "Recebi e estou ciente" (online ou offline)</td><td>Grava <code>confirmado_em</code> (hora do toque) e <code>sincronizado_em</code> (hora de chegada ao servidor); recalcula a taxa por alerta</td><td>Painel mostra % confirmado em 10 min, tempo mediano e quem não confirmou, para contato direto</td></tr>
+  <tr><td>Ocorrência</td><td>Foto, coordenadas GPS, tipo, descrição</td><td>Upload ao Storage; ponto geográfico; associação automática à área de risco mais próxima (≤ 200 m); fila de triagem</td><td>Ocorrência no mapa do painel com status (nova, em análise, atendida, descartada)</td></tr>
+  <tr><td>Métricas</td><td>Tabelas de entregas, confirmações e ocorrências</td><td>Views SQL agregadas por alerta, núcleo e período</td><td>Indicador de resultado e evidência de núcleo ativo para o indicador oficial</td></tr>
+</table>
+<h3>4.2 O fluxo em um dia de chuva forte</h3>
+<p>O Cemaden emite alerta de risco alto de deslizamento para o município, ou a Compdec dispara manualmente. O backend cruza a área do alerta com os polígonos dos núcleos e encontra, por exemplo, 3 núcleos e 58 membros. O push chega nos 58 celulares em segundos e o app abre a tela do alerta. Nos primeiros 10 minutos, 47 membros tocam em "Recebi" e o painel mostra 81%. O coordenador vê os 11 que não confirmaram e liga para os líderes desses núcleos. Um membro fotografa uma trinca no muro de arrimo e envia com GPS; o agente faz a triagem ("em análise" → equipe vai ao local → "atendida"). Ao fim do evento, o histórico vira o relatório do núcleo — a evidência de Nupdec ativo. O que a solução <b>não</b> é: não substitui o alerta oficial por cell broadcast ou SMS 40199 (ela complementa, garantindo que o alerta chegue à rede organizada e volte com confirmação) e não é um sistema de monitoramento por sensores (ela consome alertas de quem monitora).</p>
+
+<h2>5. Arquitetura e tecnologias</h2>
+<p>A arquitetura (Figura 2) tem um backend único e dois clientes. As fontes de alerta — Cemaden/INMET por ingestão ou o coordenador pelo painel — produzem um registro em <code>alertas</code>; um gatilho enfileira o disparo e a Edge Function <code>disparar-alerta</code> seleciona os destinatários por interseção geoespacial, envia o push em lotes de 100 pelo Expo Push Service (FCM) e grava os tickets. O membro confirma no app; a confirmação e as ocorrências voltam ao banco e chegam ao painel por Realtime. As decisões que sustentam o desenho estão registradas como ADRs no repositório (<code>docs/adr/0001</code> a <code>0008</code>).</p>
+<figure>
+  <img src="figs/arquitetura.png" alt="Diagrama de arquitetura">
+  <figcaption><b>Figura 2.</b> Componentes e relações: fontes de alerta (esquerda), backend único no Supabase (centro: Auth, Postgres + PostGIS, Storage, três Edge Functions, Realtime, views de indicadores, keep-alive) e clientes (direita: Expo Push → app Android, painel web, hospedagem no subdomínio).</figcaption>
+</figure>
+<h3>5.1 Componentes tecnológicos e a função de cada um</h3>
+<p>O enunciado pede ao menos três componentes com função definida. São oito, cada um resolvendo um problema concreto dentro da arquitetura:</p>
+<table>
+  <tr><th style="width:4%">#</th><th style="width:19%">Componente</th><th style="width:30%">Tecnologia concreta</th><th>Problema que resolve</th></tr>
+  <tr><td>1</td><td>Aplicativo móvel</td><td>Expo SDK 54 / React Native 0.81 (APK por sideload); no protótipo, simulador web em <code>/app</code></td><td>Colocar alerta, confirmação, reporte e chat no bolso do voluntário, inclusive com rede instável</td></tr>
+  <tr><td>2</td><td>Aplicação web</td><td>React 18 + Vite 5 + TypeScript, Tailwind + shadcn/ui</td><td>Dar à Compdec um lugar para cadastrar áreas, disparar alertas e acompanhar resultados</td></tr>
+  <tr><td>3</td><td>Banco de dados</td><td>PostgreSQL 17 (Supabase), 11 tabelas, 23 políticas RLS</td><td>Verdade única de cadastro, alertas, entregas e ocorrências, com controle de acesso por linha</td></tr>
+  <tr><td>4</td><td>Geoprocessamento / SIG</td><td>PostGIS (<code>ST_Intersects</code>, <code>ST_DWithin</code>) + MapLibre GL com tiles abertos (OpenFreeMap)</td><td>Decidir quem recebe o alerta por interseção de polígonos; desenhar áreas; mapa de ocorrências</td></tr>
+  <tr><td>5</td><td>Computação em nuvem</td><td>Supabase (Auth, Storage, Edge Functions em Deno, Realtime) em São Paulo + Hostinger</td><td>Não manter servidor; escalar o disparo; hospedar o painel com HTTPS</td></tr>
+  <tr><td>6</td><td>Sistema de alerta</td><td>Expo Push Service sobre FCM; fila com retentativas; recibos</td><td>Entregar a notificação em segundos a centenas de aparelhos e saber se chegou</td></tr>
+  <tr><td>7</td><td>Redes de computadores</td><td>HTTPS/REST (PostgREST), RPC, WebSocket (Realtime), cache offline com sincronização</td><td>Funcionar com rede instável e mostrar confirmações ao vivo</td></tr>
+  <tr><td>8</td><td>Análise de dados / dashboard</td><td>Views SQL (<code>v_alerta_confirmacao</code>, <code>v_nucleo_atividade</code>, <code>v_municipio_resumo</code>) + gráficos no painel</td><td>Calcular a taxa de confirmação em 10 min e a evidência de núcleo ativo</td></tr>
+</table>
+<h3>5.2 Ligação com a disciplina</h3>
+<p><b>Governança e dados × informação (Unidade 1):</b> o alerta bruto vira informação acionável — "58 membros, 3 núcleos, 81% confirmaram" — com entrada, processamento e saída explícitos. <b>Arquiteturas distribuídas e segurança (Unidade 2):</b> componentes desacoplados por eventos (gatilho → fila → função), consistência eventual no modo offline e Zero Trust na prática: cada requisição carrega o JWT do usuário e cada linha é filtrada por RLS; a chave <code>service_role</code> nunca sai das Edge Functions. <b>Observabilidade (Unidade 3):</b> cada entrega registra <code>enviado_em</code>, <code>entregue_em</code>, <code>confirmado_em</code> e <code>sincronizado_em</code> — um rastro do alerta de ponta a ponta; a taxa de confirmação é um SLI com SLO de 80% em 10 minutos. <b>Ética e LGPD (Unidade 4):</b> dados pessoais mínimos, finalidade explícita, GPS lido só no momento do reporte, trilha de auditoria por design (seção 10).</p>
+
+<h2>6. Modelo de dados e regras</h2>
+<p>O schema tem 11 tabelas no PostgreSQL com PostGIS (SRID 4326): <code>municipios</code>, <code>perfis</code> (1:1 com o usuário autenticado, com papel e município), <code>nucleos</code> (polígono de atuação), <code>membros</code> (vínculo perfil → núcleo com status pendente/aprovado/rejeitado/desligado), <code>dispositivos</code> (token push), <code>areas_risco</code> (polígono, tipo e nível), <code>alertas</code> (multipolígono, severidade na escala do Cemaden, origem manual/cemaden/inmet), <code>alerta_entregas</code> (uma linha por membro atingido, com os quatro carimbos de tempo), <code>ocorrencias</code> (ponto, foto, status de triagem, área de risco associada por gatilho), <code>alerta_disparos</code> (fila) e <code>mensagens_nucleo</code> (chat). Toda tabela nasce com RLS habilitada na mesma migration que a cria.</p>
+<table>
+  <tr><th>Tabela</th><th>Membro</th><th>Agente</th><th>Coordenador</th></tr>
+  <tr><td>nucleos / areas_risco</td><td>lê</td><td>lê</td><td>lê, cria, edita (no seu município)</td></tr>
+  <tr><td>membros</td><td>vê os do seu núcleo; edita o próprio</td><td colspan="2">vê os do município; aprova ou rejeita</td></tr>
+  <tr><td>alertas</td><td>vê os que recebeu</td><td>vê os do município</td><td>cria (RPC <code>criar_alerta</code>) e encerra</td></tr>
+  <tr><td>alerta_entregas</td><td>vê as próprias; confirma (RPC)</td><td colspan="2">leem as do município; inserção só pela Edge Function</td></tr>
+  <tr><td>ocorrencias</td><td>cria; vê as do seu núcleo</td><td colspan="2">veem e triam as do município</td></tr>
+  <tr><td>mensagens_nucleo</td><td>lê e escreve no seu núcleo (se aprovado)</td><td colspan="2">leem e escrevem nos núcleos do município</td></tr>
+</table>
+<p>As regras de negócio que precisam de privilégio rodam como funções <code>security definer</code> no banco: <code>gerar_entregas</code> (interseção e criação das entregas), <code>previa_alerta</code> (quantos núcleos e membros uma área atinge, antes de disparar), <code>criar_alerta</code>, <code>confirmar_alerta</code>, <code>registrar_dispositivo</code> e os gatilhos <code>handle_novo_usuario</code> (cria perfil e vínculo pendente no cadastro) e <code>ocorrencia_area_risco</code>. As três Edge Functions (<code>ingerir-alerta</code>, <code>disparar-alerta</code>, <code>recibos-push</code>) foram testadas de ponta a ponta no projeto remoto: um alerta injetado pela ingestão gerou 36 entregas por interseção, a deduplicação por <code>origem_ref</code> recusou a repetição e a fila ficou "concluído".</p>
+
+<h2 class="quebra">7. Protótipo</h2>
+<p>O protótipo está publicado em <a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> e conversa com o backend real. Tem três partes no mesmo build: a página pública de download, o painel da Compdec (<code>/painel</code>) e o <b>simulador do aplicativo</b> (<code>/app</code>) — uma moldura de celular com as telas do app, sessão própria do membro (de modo que o membro e o coordenador convivem no mesmo navegador) e a notificação push simulada por Realtime: quando a Edge Function cria a entrega, o "celular" vibra, bipa e mostra o banner. O app Android nativo (Expo) está especificado e decidido em ADR, com a mesma stack do app em produção do autor; não foi compilado no prazo, e o simulador cobre a demonstração com o mesmo backend, as mesmas regras e o mesmo fluxo.</p>
+<h3>7.1 Painel da Compdec</h3>
+<figure>
+  <img src="figs/pan-02-visao-geral.png" alt="Visão geral do painel">
+  <figcaption><b>Figura 3.</b> Visão geral: núcleos ativos, membros aprovados, alertas em 30 dias e taxa média de confirmação em 10 minutos; mapa do município com os polígonos dos núcleos e as áreas de risco hachuradas por nível; alertas vigentes com barra de confirmação.</figcaption>
+</figure>
+<figure class="row dois">
+  <img src="figs/pan-03-nucleos.png" alt="Núcleos">
+  <img src="figs/pan-04-areas-risco.png" alt="Áreas de risco">
+  <figcaption><b>Figura 4.</b> Cadastro dos núcleos (esquerda) e das áreas de risco (direita), com desenho de polígonos no mapa. O coordenador cria e edita; o agente consulta e aprova membros no detalhe do núcleo.</figcaption>
+</figure>
+<figure>
+  <img src="figs/pan-06-novo-alerta.png" alt="Novo alerta">
+  <figcaption><b>Figura 5.</b> Novo alerta: tipo e severidade, área (áreas de risco existentes, desenho livre ou município inteiro), <b>prévia de alcance</b> calculada pela RPC <code>previa_alerta</code> antes do disparo ("1 núcleo e 19 membros") e mensagem com modelos por tipo.</figcaption>
+</figure>
+<figure>
+  <img src="figs/pan-07-acompanhamento.png" alt="Acompanhamento do alerta">
+  <figcaption><b>Figura 6.</b> Acompanhamento ao vivo de um alerta disparado durante a captura: 19 destinatários, 13 confirmaram, <b>68,4% em 10 minutos</b> (meta 80%), tempo mediano do envio ao toque; gráfico de confirmações acumuladas com a linha dos 10 minutos; núcleos coloridos pela taxa; tabela por núcleo com o líder e o telefone; lista de quem não confirmou, separando quem não tem o aplicativo (avisar por telefone ou porta a porta).</figcaption>
+</figure>
+<h3>7.2 Aplicativo do membro (simulador)</h3>
+<figure class="row tres">
+  <img src="figs/cel-04-push.png" alt="Push no celular">
+  <img src="figs/cel-05-alerta-detalhe.png" alt="Detalhe do alerta">
+  <img src="figs/cel-06-confirmado.png" alt="Confirmado">
+  <figcaption><b>Figura 7.</b> O alerta chega como notificação (esquerda); o toque abre o detalhe com o mapa da área do alerta, do núcleo do membro e das áreas de risco (centro); "Recebi e estou ciente" grava a confirmação com a hora do toque (direita). A confirmação aparece no painel da Figura 6 em tempo real.</figcaption>
+</figure>
+<figure class="row tres">
+  <img src="figs/cel-07-ocorrencia-nova.png" alt="Nova ocorrência">
+  <img src="figs/cel-08-ocorrencias.png" alt="Ocorrências do núcleo">
+  <img src="figs/cel-09-chat.png" alt="Chat do núcleo">
+  <figcaption><b>Figura 8.</b> Reporte de ocorrência com foto, tipo, descrição e posição no mapa (esquerda); ocorrências do núcleo com status de triagem (centro); chat do núcleo em tempo real, com as mensagens da Defesa Civil destacadas (direita).</figcaption>
+</figure>
+<figure class="row tres">
+  <img src="figs/cel-02-cadastrar.png" alt="Cadastro">
+  <img src="figs/cel-10-nucleo.png" alt="Núcleo">
+  <img src="figs/cel-11-perfil.png" alt="Perfil">
+  <figcaption><b>Figura 9.</b> Auto-cadastro do membro com escolha de município e núcleo — a conta fica "em análise" até a aprovação pelo agente (esquerda); tela do núcleo com mapa, ocorrências e a rede de membros (centro); perfil com a versão do app e o dispositivo registrado para push (direita).</figcaption>
+</figure>
+<figure>
+  <img src="figs/pan-08-ocorrencias.png" alt="Ocorrências no painel">
+  <figcaption><b>Figura 10.</b> Ocorrências no painel: mapa com pontos por status, filtros por status, tipo, núcleo e período, e triagem pelo agente. A ocorrência reportada na Figura 8 aparece aqui como "nova".</figcaption>
+</figure>
+<h3>7.3 Verificação</h3>
+<p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
+
+<h2>8. Indicador de resultado</h2>
+<p>Dois indicadores distintos. O <b>indicador da meta</b> é o oficial — percentual de municípios prioritários com Nupdecs apoiados — e é apurado pela Sedec; a solução produz a evidência que o alimenta (<code>v_nucleo_atividade</code>: membros aprovados, última confirmação, ocorrências em 90 dias por núcleo). O <b>indicador de resultado da solução</b> é:</p>
+<div class="nota"><b>Aumentar de 0% para 80% o percentual de membros de Nupdec que confirmam o recebimento do alerta em até 10 minutos após o envio.</b> Linha de base 0% porque hoje não existe confirmação: a Compdec dispara e não sabe se chegou. Dez minutos é a janela em que o repasse porta a porta ainda muda o desfecho em um evento de chuva intensa.</div>
+<pre>pct_confirmado_10min(alerta) =
+    nº de entregas com confirmado_em ≤ enviado_em + 10 min
+    ─────────────────────────────────────────────────────── × 100
+    nº de entregas do alerta (inclui quem não tem dispositivo)</pre>
+<p>O denominador inclui de propósito quem não tem o aplicativo: membro cadastrado sem dispositivo é um problema que a Compdec precisa enxergar, não esconder. <code>confirmado_em</code> é a hora do toque no aparelho, não a hora em que a confirmação chegou ao servidor (<code>sincronizado_em</code>); assim, quem confirmou sem rede conta, e a diferença entre os dois é um segundo indicador de saúde da rede. O cálculo é a view <code>v_alerta_confirmacao</code>, consultada diretamente no banco do protótipo:</p>
+<table>
+  <tr><th>Alerta</th><th>Destinatários</th><th>Com o app</th><th>Confirmaram em 10 min</th><th>% em 10 min</th><th>Tempo mediano</th></tr>
+  <tr><td>Risco alto de deslizamento — chuva acumulada (histórico)</td><td>54</td><td>43</td><td>33</td><td><b>61,1%</b></td><td>5 min 15 s</td></tr>
+  <tr><td>Córrego Sereno transbordando — evacuar margens (histórico)</td><td>55</td><td>44</td><td>46</td><td><b>83,6%</b></td><td>4 min 27 s</td></tr>
+  <tr><td>Risco alto de deslizamento — chuva prevista para a noite (disparado na captura)</td><td>19</td><td>15</td><td>13</td><td><b>68,4%</b></td><td>12 s</td></tr>
+</table>
+<p class="peq">Os dois alertas históricos fazem parte dos dados de demonstração; o terceiro foi disparado ao vivo durante a captura das figuras, com uma confirmação real pelo simulador e as demais pela função de demonstração <code>simular_confirmacoes</code>, que só toca entregas de dispositivos simulados. Em operação real, os números viriam exclusivamente dos toques dos membros.</p>
+<table>
+  <tr><th>Indicador secundário</th><th>Cálculo</th><th>Serve para</th></tr>
+  <tr><td>Tempo mediano até a confirmação</td><td>mediana de <code>confirmado_em − enviado_em</code></td><td>Ver se a rede está ficando mais rápida</td></tr>
+  <tr><td>Cobertura de dispositivo</td><td>membros aprovados com token válido ÷ membros aprovados</td><td>Saber quem precisa de ajuda para instalar</td></tr>
+  <tr><td>Taxa de entrega do push</td><td><code>entregue_em</code> preenchido ÷ enviados</td><td>Distinguir "push não chegou" de "pessoa não viu"</td></tr>
+  <tr><td>Ocorrências triadas em 24 h</td><td>status ≠ nova em ≤ 24 h ÷ total</td><td>Medir a resposta da Compdec, não só da comunidade</td></tr>
+  <tr><td>Núcleos ativos</td><td>≥ 1 confirmação ou ocorrência em 90 dias</td><td>Evidência para o indicador oficial</td></tr>
+</table>
+
+<h2>9. Benefício esperado</h2>
+<ul>
+  <li><b>Para o morador:</b> o alerta chega no celular de quem conhece a rua e sabe em que porta bater; a comunidade age nos primeiros minutos em vez de esperar.</li>
+  <li><b>Para o Nupdec:</b> cadastro, função e área definidos; chat com histórico ligado ao núcleo; o voluntário deixa de depender da memória do grupo de WhatsApp.</li>
+  <li><b>Para a Compdec:</b> saber, em minutos, que percentual da rede recebeu o alerta e quem não recebeu; ocorrências georreferenciadas com foto em vez de áudio solto; triagem com trilha.</li>
+  <li><b>Para a meta 8.1.2:</b> o próprio banco de dados é a evidência de "Nupdec apoiado e ativo", algo que hoje precisa ser levantado por formulário.</li>
+  <li><b>Para o Sinpdec:</b> modelo replicável, distribuído sem loja de aplicativos (o próprio agente envia o APK pelo grupo da comunidade) e com custo de operação próximo de zero para um município pequeno.</li>
+</ul>
+
+<h2>10. Limitações e riscos</h2>
+<table>
+  <tr><th style="width:30%">Limitação</th><th>Por quê</th><th>Evolução prevista</th></tr>
+  <tr><td>App Android entregue como simulador web</td><td>O APK (Expo, sideload) está especificado, mas não foi compilado no prazo</td><td>Build EAS com perfil <code>apk</code>; mesma conta, mesmo backend; push real por Expo/FCM</td></tr>
+  <tr><td>Push não é garantido</td><td>Celular desligado, sem internet, otimização de bateria</td><td>SMS como canal complementar; o app já consulta alertas ao abrir e mostra banner</td></tr>
+  <tr><td>Login por e-mail e senha</td><td>OTP por SMS exige provedor pago</td><td>OTP por telefone</td></tr>
+  <tr><td>Ingestão do Cemaden não automatizada em produção</td><td>Não há webhook público</td><td>Consulta periódica ao portal de alertas; no protótipo, alerta manual e payload simulado</td></tr>
+  <tr><td>Município fictício</td><td>Sem convênio com uma Compdec real no prazo</td><td>Piloto com um município prioritário</td></tr>
+</table>
+<table>
+  <tr><th style="width:30%">Risco técnico</th><th>Impacto</th><th>Mitigação implementada</th></tr>
+  <tr><td>Edge Function estourar o tempo com muitos membros</td><td>Alerta não chega a todos</td><td>Lotes de 100; fila <code>alerta_disparos</code> com até 5 retentativas</td></tr>
+  <tr><td>Token push inválido acumulado</td><td>Push "enviado" sem chegar</td><td><code>recibos-push</code> remove tokens mortos; painel mostra cobertura de dispositivo</td></tr>
+  <tr><td>RLS mal configurada</td><td>Vazamento entre municípios</td><td>RLS na mesma migration da tabela; testes por papel antes do deploy</td></tr>
+  <tr><td>Relógio do aparelho errado</td><td><code>confirmado_em</code> inválido</td><td>Servidor grava também <code>sincronizado_em</code> e limita o valor ao instante atual</td></tr>
+  <tr><td>Projeto no plano gratuito pausar por inatividade</td><td>Protótipo fora do ar na avaliação</td><td>Workflow no GitHub Actions faz requisições a cada 12 h até 01/11/2026</td></tr>
+</table>
+<h3>10.1 Ética e proteção de dados</h3>
+<p><b>Minimização:</b> só nome, e-mail, telefone opcional e núcleo; sem CPF, sem endereço exato. <b>Finalidade:</b> alerta, confirmação e reporte de Defesa Civil, declarada no cadastro. <b>Localização:</b> o GPS é lido apenas no momento do reporte, com consentimento na hora; não há rastreamento contínuo. <b>Fotos:</b> bucket privado, URL assinada de 1 hora, orientação para não fotografar pessoas. <b>Exclusão digital:</b> quem não tem celular não some do sistema — entra como "sem dispositivo", e a cobertura de dispositivo é exibida justamente para não esconder a lacuna; o líder é orientado a fazer o repasse presencial. <b>Accountability:</b> todo alerta tem <code>criado_por</code>, toda triagem tem <code>triado_por</code>; a trilha de auditoria é de projeto, não de ferramenta externa. <b>Responsabilidade:</b> o app não decide evacuar ninguém; a decisão é da Compdec e da própria pessoa — a solução transporta informação e registra confirmação.</p>
+
+<h2>11. Conclusão</h2>
+<p>A sistematização partiu de um problema de informação na ponta da cadeia de alerta — núcleos comunitários sem cadastro, sem confirmação e sem retorno — e o ligou a uma meta oficial do PN-PDC com alvo numérico (8.1.2). A solução fecha o ciclo alerta → confirmação → ocorrência com oito componentes tecnológicos, cada um com função definida, sobre um backend único com regras de acesso por linha, geoprocessamento e tempo real. O protótipo está publicado e funcional, e o indicador de resultado — percentual de membros que confirmam em 10 minutos, meta de 80% — sai de uma view SQL sobre dados reais do sistema, não de um slide: 61,1% e 83,6% nos alertas de demonstração, 68,4% no alerta disparado ao vivo durante a captura.</p>
+<p><b>Achados que valem registro.</b> A pergunta "quem recebe o alerta?" é geoespacial, e resolvê-la no banco (<code>ST_Intersects</code> entre o polígono do núcleo e a área do alerta) simplificou tudo o que vem depois — a prévia de alcance, a entrega por membro e o cálculo por núcleo são a mesma consulta. O indicador precisou de dois carimbos de tempo, não um: sem separar a hora do toque da hora de sincronização, quem confirma sem rede desapareceria da estatística. E a decisão de incluir no denominador quem não tem o aplicativo mudou o que o painel mostra: a lista de "não confirmaram" separa quem não viu de quem não tem como ver, e isso é o que o coordenador precisa para agir.</p>
+<p><b>Trabalhos futuros.</b> Compilar o APK e validar o push real em aparelho; integrar a ingestão ao portal de alertas do Cemaden; SMS como canal complementar; classificação das fotos de ocorrência por gravidade com um modelo de visão, para priorizar a triagem; e um piloto com uma Compdec real, que é o que transformaria a evidência produzida pelo sistema em apoio efetivo ao indicador oficial da meta.</p>
+
+<hr>
+<table>
+  <tr><th style="width:5%">#</th><th>Item da entrega</th><th style="width:22%">Onde está</th><th style="width:5%">#</th><th>Item da entrega</th><th style="width:22%">Onde está</th></tr>
+  <tr><td>1</td><td>Nome do projeto</td><td>Nupdec Conecta (capa)</td><td>10</td><td>Solução proposta</td><td>Seção 4</td></tr>
+  <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
+  <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
+  <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–10, site</td></tr>
+  <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
+  <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
+  <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>
+  <tr><td>9</td><td>Indicador da meta</td><td>Seção 3 e 8</td><td></td><td>Pitch</td><td>Vídeo anexo (5 perguntas)</td></tr>
+</table>
+
+<p class="peq"><b>Declaração de uso de IA.</b> Ferramentas de IA generativa (Claude Code) foram utilizadas como assistente de desenvolvimento ao longo do trabalho — na escrita de código, migrations, documentação, roteiros de teste e na redação deste relatório — sob direção, revisão e validação do autor. A escolha da meta, as decisões de arquitetura registradas nas ADRs, a definição do indicador, a configuração dos serviços em nuvem e a verificação dos resultados no banco de dados e no protótipo publicado são de responsabilidade e autoria do autor.</p>
+<p class="peq"><b>Referências.</b> Brasil. Ministério da Integração e do Desenvolvimento Regional. <i>Plano Nacional de Proteção e Defesa Civil 2025–2035</i>. Brasília, 2025 (Quadro 11, p. 138–139) · Brasil. Decreto nº 12.652, de 2025, que institui o PN-PDC 2025–2035 · Brasil. Lei nº 12.608/2012 (Política Nacional de Proteção e Defesa Civil) · Supabase. <i>Row Level Security</i>; <i>Edge Functions</i>; <i>Realtime</i>. Documentação, 2026 · PostGIS Project. <i>PostGIS Reference</i> — ST_Intersects, ST_DWithin · Expo. <i>Sending notifications with Expo's Push API</i>, 2026 · MapLibre GL JS; OpenFreeMap (tiles abertos, OpenStreetMap) · Zebulon, I. <i>Arquiteturas Convergentes — webaulas 1 a 8</i>, CEUB, 2026.</p>
+
+</body>
+</html>

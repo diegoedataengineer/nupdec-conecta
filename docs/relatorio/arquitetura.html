@@ -1,0 +1,62 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;color:#0f172a}
+  .wrap{width:1400px;padding:28px 32px;box-sizing:border-box}
+  .grid{display:grid;grid-template-columns:260px 1fr 300px;gap:28px;align-items:stretch}
+  .col{display:flex;flex-direction:column;gap:14px}
+  .box{border:1.5px solid #cbd5e1;border-radius:14px;padding:12px 14px;background:#fff}
+  .box h4{margin:0 0 4px;font-size:15px;font-weight:600}
+  .box p{margin:0;font-size:12.5px;color:#475569;line-height:1.35}
+  .tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:#1d4ed8;background:#e8effb;border-radius:6px;padding:2px 6px;margin-bottom:6px;letter-spacing:.02em}
+  .core{border:2px solid #1e4e8c;background:#f3f7fc;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .core > h3{margin:0;font-size:17px;font-weight:700;color:#1e4e8c;display:flex;justify-content:space-between;align-items:baseline}
+  .core > h3 small{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:400;color:#475569}
+  .svc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .svc .box{padding:10px 12px}
+  .arrow{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#475569;text-align:center;padding:2px 0}
+  .title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+  .title h2{margin:0;font-size:20px;font-weight:700}
+  .title span{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:#475569}
+  .lane{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#1e4e8c;text-transform:uppercase;letter-spacing:.08em;margin-bottom:-4px}
+  .sev{border-color:#c2410c;background:#fff4ec}
+  .fx{border-style:dashed}
+  .legend{display:flex;gap:18px;margin-top:16px;font-size:11.5px;color:#475569;font-family:"IBM Plex Mono",monospace}
+  .legend i{display:inline-block;width:22px;border-top:2px solid #475569;vertical-align:middle;margin-right:6px}
+  .legend i.d{border-top-style:dashed}
+</style></head><body><div class="wrap">
+<div class="title"><h2>Arquitetura do Nupdec Conecta</h2><span>backend único · dois clientes · fluxo alerta → confirmação → ocorrência</span></div>
+<div class="grid">
+  <div class="col">
+    <div class="lane">Fontes de alerta</div>
+    <div class="box sev"><span class="tag">externo</span><h4>Cemaden / INMET</h4><p>Avisos geo-hidrológicos e meteorológicos (webhook ou consulta periódica).</p></div>
+    <div class="box sev"><span class="tag">humano</span><h4>Coordenador da Compdec</h4><p>Alerta manual no painel: tipo, severidade, área (áreas de risco, desenho ou município), mensagem.</p></div>
+    <div class="arrow">↓ payload / RPC criar_alerta</div>
+    <div class="box fx"><span class="tag">edge function</span><h4>ingerir-alerta</h4><p>Normaliza o payload externo, resolve a geometria, deduplica por origem_ref e insere em <b>alertas</b>.</p></div>
+  </div>
+  <div class="core">
+    <h3>Supabase <small>sa-east-1 · Postgres 17</small></h3>
+    <div class="svc">
+      <div class="box"><span class="tag">auth</span><h4>Supabase Auth</h4><p>E-mail + senha; JWT com papel (membro, agente, coordenador) lido pela RLS.</p></div>
+      <div class="box"><span class="tag">dados</span><h4>Postgres + PostGIS</h4><p>municípios · núcleos (polígono) · membros · dispositivos · áreas de risco · alertas · entregas · ocorrências · mensagens. RLS por linha.</p></div>
+      <div class="box"><span class="tag">arquivos</span><h4>Storage</h4><p>Bucket privado <code>ocorrencias</code>; fotos por URL assinada (1 h).</p></div>
+      <div class="box fx"><span class="tag">edge function</span><h4>disparar-alerta</h4><p><code>ST_Intersects</code>(núcleo, alerta) → uma entrega por membro aprovado → push em lotes de 100 → tickets.</p></div>
+      <div class="box fx"><span class="tag">edge function</span><h4>recibos-push</h4><p>Lê recibos do Expo, marca entregue/falha, remove tokens mortos. Cron 15 min.</p></div>
+      <div class="box"><span class="tag">tempo real</span><h4>Realtime</h4><p>Mudanças em entregas, ocorrências, alertas e mensagens chegam ao painel e ao app sem recarregar.</p></div>
+    </div>
+    <div class="svc" style="grid-template-columns:1fr 1fr">
+      <div class="box"><span class="tag">indicadores</span><h4>Views SQL</h4><p><code>v_alerta_confirmacao</code> (% confirmado em 10 min, mediana), <code>v_nucleo_atividade</code>, <code>v_municipio_resumo</code>.</p></div>
+      <div class="box"><span class="tag">operação</span><h4>GitHub Actions · keep-alive</h4><p>Ping a cada 12 h até 01/11/2026 para o plano free não pausar durante a avaliação.</p></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="lane">Clientes</div>
+    <div class="box"><span class="tag">push</span><h4>Expo Push Service → FCM</h4><p>Leva a notificação ao celular do membro em segundos.</p></div>
+    <div class="arrow">↓</div>
+    <div class="box" style="border-color:#1e4e8c"><span class="tag">android</span><h4>App do membro (Expo / RN)</h4><p>Cadastro, alerta, <b>“Recebi e estou ciente”</b>, ocorrência com foto e GPS, chat do núcleo. Offline-first; APK por sideload. Protótipo: simulador em <code>/app</code>.</p></div>
+    <div class="box" style="border-color:#1e4e8c"><span class="tag">web</span><h4>Painel da Compdec (React + Vite)</h4><p>Núcleos, áreas de risco, novo alerta com prévia de alcance, acompanhamento ao vivo, triagem de ocorrências.</p></div>
+    <div class="box"><span class="tag">hospedagem</span><h4>Hostinger · subdomínio</h4><p>Site estático com HTTPS: painel, simulador e página de download do APK.</p></div>
+  </div>
+</div>
+<div class="legend"><span><i></i> requisições (HTTPS/REST, RPC)</span><span><i class="d"></i> processamento assíncrono (fila + Edge Function)</span><span>▸ confirmação do membro grava <code>confirmado_em</code> → indicador de resultado</span></div>
+</div></body></html>
