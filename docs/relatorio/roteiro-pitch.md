@@ -1,6 +1,6 @@
 # Roteiro do pitch — Nupdec Conecta (até 5 minutos)
 
-Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~680 palavras ≈ 4 min 25 s**, com folga para as pausas de demonstração.
+Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~716 palavras faladas ≈ 4 min 46 s a 150 palavras/min**, com folga para as pausas de demonstração.
 
 Antes de gravar:
 - Abra duas janelas lado a lado: `https://nupdec-conecta.mundodosdadosbr.com/painel` (logado como `coordenador@valesereno.exemplo`) e `…/app` (logado como `lider.esperanca@valesereno.exemplo`), senha `Nupdec@2026`.
