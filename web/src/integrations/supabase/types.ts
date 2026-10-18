@@ -495,6 +495,14 @@ export type Database = {
         Args: Record<string, never>;
         Returns: boolean;
       };
+      municipios_com_nucleos: {
+        Args: Record<string, never>;
+        Returns: { id: string; nome: string; uf: string }[];
+      };
+      diretor_definir_limite_municipio: {
+        Args: { p_municipio_id: string; p_geojson: Json };
+        Returns: undefined;
+      };
       coordenador_desligar_membro: {
         Args: { p_membro_id: string };
         Returns: undefined;

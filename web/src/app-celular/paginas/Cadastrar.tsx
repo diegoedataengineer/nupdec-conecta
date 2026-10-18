@@ -32,7 +32,8 @@ export default function Cadastrar() {
   const municipios = useQuery({
     queryKey: ["app-municipios"],
     queryFn: async () => {
-      const { data, error } = await sb.from("municipios").select("id, nome, uf").order("nome");
+      // só municípios que já têm Nupdec ativo (a tabela tem os 5.570 do IBGE)
+      const { data, error } = await sb.rpc("municipios_com_nucleos");
       if (error) throw error;
       return data;
     },

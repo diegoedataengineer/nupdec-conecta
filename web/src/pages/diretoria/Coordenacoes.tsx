@@ -3,10 +3,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useQuery } from "@tanstack/react-query";
 import type maplibregl from "maplibre-gl";
-import type { Polygon } from "geojson";
-import { ArrowRight, Loader2, Pencil, Plus } from "lucide-react";
+import type { MultiPolygon, Polygon } from "geojson";
+import { ArrowRight, Globe, Loader2, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,9 +20,8 @@ import { TabelaSkeleton } from "@/components/shared/Skeletons";
 import { EstadoVazio } from "@/components/shared/EstadoVazio";
 import { Mapa, type CamadaMapa } from "@/components/mapa/Mapa";
 import { DesenhoPoligono } from "@/components/mapa/DesenhoPoligono";
-import { supabase } from "@/integrations/supabase/client";
-import { useCoordenacoes, useSalvarCoordenacao, type CoordenacaoLista } from "@/hooks/use-coordenacoes";
-import { NIVEIS_COORDENACAO } from "@/lib/rotulos";
+import { buscarLimiteIbge, useCoordenacoes, useDefinirLimiteMunicipio, useMunicipiosPorUf, useSalvarCoordenacao, type CoordenacaoLista } from "@/hooks/use-coordenacoes";
+import { NIVEIS_COORDENACAO, UFS } from "@/lib/rotulos";
 import { bboxDe, fecharPoligono, paraFeatureCollection } from "@/lib/geo";
 import type { NivelCoordenacao } from "@/integrations/supabase/types";
 
@@ -43,14 +41,10 @@ export function FormularioCoordenacao({ coordenacao, aberto, onFechar }: { coord
   const inicial = coordenacao?.area_geojson ? ({ type: "Polygon", coordinates: coordenacao.area_geojson.coordinates[0] } as Polygon) : null;
   const [poligono, setPoligono] = useState<Polygon | null>(inicial);
   const [erroArea, setErroArea] = useState<string | null>(null);
-  const municipios = useQuery({
-    queryKey: ["municipios-todos"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("municipios").select("id, nome, uf").order("nome");
-      if (error) throw error;
-      return data;
-    },
-  });
+  /** área vinda da malha oficial do IBGE (quando a coordenação é o município inteiro) */
+  const [areaIbge, setAreaIbge] = useState<Polygon | MultiPolygon | null>(null);
+  const [buscandoIbge, setBuscandoIbge] = useState(false);
+  const definirLimite = useDefinirLimiteMunicipio();
 
   const form = useForm<Campos>({
     resolver: zodResolver(esquema),
@@ -64,11 +58,34 @@ export function FormularioCoordenacao({ coordenacao, aberto, onFechar }: { coord
     },
   });
 
+  const uf = form.watch("uf");
+  const municipioId = form.watch("municipio_id");
+  const municipios = useMunicipiosPorUf(uf);
+  const municipioSel = municipios.data?.find((m) => m.id === municipioId);
+
+  const usarLimiteIbge = async () => {
+    if (!municipioSel) return;
+    setBuscandoIbge(true);
+    try {
+      const g = await buscarLimiteIbge(municipioSel.codigo_ibge);
+      setAreaIbge(g);
+      setPoligono(null);
+      setErroArea(null);
+      toast.success(`Limite oficial de ${municipioSel.nome} carregado do IBGE.`);
+    } catch (e) {
+      toast.error("Não foi possível obter a malha do IBGE.", { description: e instanceof Error ? e.message : undefined });
+    } finally {
+      setBuscandoIbge(false);
+    }
+  };
+
   const enviar = async (c: Campos) => {
-    if (!poligono) return setErroArea("Desenhe a área de abrangência no mapa.");
+    const area = areaIbge ?? (poligono ? fecharPoligono(poligono) : null);
+    if (!area) return setErroArea("Desenhe a área de abrangência no mapa ou use o limite oficial do município.");
     setErroArea(null);
     try {
-      await salvar.mutateAsync({ id: coordenacao?.id ?? null, nome: c.nome, nivel: c.nivel as NivelCoordenacao, uf: c.uf, municipio_id: c.municipio_id, descricao: c.descricao || null, status: c.status, area: fecharPoligono(poligono) });
+      if (areaIbge) await definirLimite.mutateAsync({ municipioId: c.municipio_id, area: areaIbge });
+      await salvar.mutateAsync({ id: coordenacao?.id ?? null, nome: c.nome, nivel: c.nivel as NivelCoordenacao, uf: c.uf, municipio_id: c.municipio_id, descricao: c.descricao || null, status: c.status, area });
       toast.success(coordenacao ? "Coordenação atualizada." : "Coordenação criada. Os núcleos dentro da área foram vinculados.");
       onFechar();
     } catch (e) {
@@ -96,13 +113,25 @@ export function FormularioCoordenacao({ coordenacao, aberto, onFechar }: { coord
                   </Select><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="uf" render={({ field }) => (
-                <FormItem><FormLabel>UF</FormLabel><FormControl><Input maxLength={2} className="uppercase" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Estado (UF)</FormLabel>
+                  <Select value={field.value} onValueChange={(v) => { field.onChange(v); form.setValue("municipio_id", ""); setAreaIbge(null); }}><FormControl><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger></FormControl>
+                    <SelectContent>{Object.entries(UFS).map(([sigla, nome]) => <SelectItem key={sigla} value={sigla}>{sigla} — {nome}</SelectItem>)}</SelectContent>
+                  </Select><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="municipio_id" render={({ field }) => (
                 <FormItem><FormLabel>Município de referência (sede)</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder={municipios.isLoading ? "Carregando…" : "Selecione"} /></SelectTrigger></FormControl>
-                    <SelectContent>{municipios.data?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome} – {m.uf}</SelectItem>)}</SelectContent>
-                  </Select><FormMessage /></FormItem>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={field.value}
+                      onChange={(e) => { field.onChange(e.target.value); setAreaIbge(null); }}
+                      disabled={!uf || municipios.isLoading}
+                    >
+                      <option value="">{!uf ? "Escolha o estado" : municipios.isLoading ? "Carregando…" : `Selecione (${municipios.data?.length ?? 0} municípios)`}</option>
+                      {municipios.data?.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                    </select>
+                  </FormControl>
+                  <FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="descricao" render={({ field }) => (
                 <FormItem className="sm:col-span-2"><FormLabel>Descrição (opcional)</FormLabel><FormControl><Textarea rows={2} {...field} /></FormControl><FormMessage /></FormItem>
@@ -117,9 +146,24 @@ export function FormularioCoordenacao({ coordenacao, aberto, onFechar }: { coord
               )}
             </div>
             <div className="space-y-1.5">
-              <p className="text-sm font-medium">Área de abrangência</p>
-              <Mapa camadas={[]} bounds={poligono ? bboxDe([poligono]) : null} className="h-[360px]" onCarregado={setMapa} alternarBase={false}>
-                <DesenhoPoligono mapa={mapa} valor={inicial} onChange={setPoligono} cor="#6423C8" />
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <p className="text-sm font-medium">Área de abrangência</p>
+                <Button type="button" variant="outline" size="sm" disabled={!municipioSel || buscandoIbge} onClick={() => void usarLimiteIbge()} title="Carrega o polígono oficial do município (malha IBGE) como área da coordenação">
+                  {buscandoIbge ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Globe className="h-3.5 w-3.5" />} Usar limite oficial do município (IBGE)
+                </Button>
+              </div>
+              {areaIbge && <p className="text-xs text-muted-foreground">Área = limite oficial de <b>{municipioSel?.nome}</b>. Para desenhar outra área, clique em "Redesenhar" no mapa.</p>}
+              <Mapa
+                camadas={areaIbge ? [
+                  { id: "ibge-fill", tipo: "fill", dados: paraFeatureCollection([{ geometria: areaIbge, propriedades: {} }]), paint: { "fill-color": "#6423C8", "fill-opacity": 0.12 } },
+                  { id: "ibge-line", tipo: "line", dados: paraFeatureCollection([{ geometria: areaIbge, propriedades: {} }]), paint: { "line-color": "#6423C8", "line-width": 2.5 } },
+                ] : []}
+                bounds={areaIbge ? bboxDe([areaIbge]) : poligono ? bboxDe([poligono]) : null}
+                className="h-[360px]"
+                onCarregado={setMapa}
+                alternarBase={false}
+              >
+                <DesenhoPoligono mapa={mapa} valor={inicial} onChange={(p) => { setPoligono(p); if (p) setAreaIbge(null); }} cor="#6423C8" />
               </Mapa>
               {erroArea && <p className="text-sm font-medium text-destructive">{erroArea}</p>}
             </div>

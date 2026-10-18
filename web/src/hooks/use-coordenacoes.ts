@@ -171,3 +171,38 @@ export function useVincularGestor() {
     },
   });
 }
+
+/** Municípios de uma UF (tabela carregada do IBGE: 5.570 municípios). */
+export function useMunicipiosPorUf(uf: string | undefined) {
+  return useQuery({
+    queryKey: ["municipios-uf", uf],
+    enabled: !!uf && uf.length === 2,
+    staleTime: 60 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("municipios").select("id, nome, uf, codigo_ibge").eq("uf", uf!.toUpperCase()).order("nome");
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+/** Malha oficial do município na API do IBGE (GeoJSON, sem chave, CORS liberado). */
+export async function buscarLimiteIbge(codigoIbge: string): Promise<Polygon | MultiPolygon> {
+  const r = await fetch(`https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${codigoIbge}?formato=application/vnd.geo+json`);
+  if (!r.ok) throw new Error(`IBGE ${r.status}`);
+  const fc = await r.json();
+  const g = fc?.features?.[0]?.geometry;
+  if (!g || (g.type !== "Polygon" && g.type !== "MultiPolygon")) throw new Error("malha indisponível para este município");
+  return g;
+}
+
+export function useDefinirLimiteMunicipio() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ municipioId, area }: { municipioId: string; area: Polygon | MultiPolygon }) => {
+      const { error } = await supabase.rpc("diretor_definir_limite_municipio", { p_municipio_id: municipioId, p_geojson: area as unknown as Json });
+      if (error) throw error;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["municipio"] }),
+  });
+}
