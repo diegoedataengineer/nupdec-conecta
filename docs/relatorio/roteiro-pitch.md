@@ -1,6 +1,6 @@
 # Roteiro do pitch — Nupdec Conecta (até 5 minutos)
 
-Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~716 palavras faladas ≈ 4 min 46 s a 150 palavras/min**, com folga para as pausas de demonstração.
+Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~677 palavras faladas ≈ 4 min 30 s a 150 palavras/min (5 min 00 s a 135)**, com folga para as pausas de demonstração.
 
 Antes de gravar:
 - Abra duas janelas lado a lado: `https://nupdec-conecta.mundodosdadosbr.com/painel` (logado como `coordenador@valesereno.exemplo`) e `…/app` (logado como `lider.esperanca@valesereno.exemplo`), senha `Nupdec@2026`.
@@ -12,9 +12,9 @@ Antes de gravar:
 ## 0:00 – 0:45 · 1. Qual é o problema?
 **Tela:** página inicial do projeto (landing) e, em seguida, a Figura 1 do relatório ou um print de um grupo de WhatsApp genérico.
 
-> Chove forte numa encosta. O Cemaden emite o alerta, a Defesa Civil municipal dispara o aviso… e ninguém sabe se ele chegou na dona Maria, que mora na última casa da viela.
+> Chove forte numa encosta. O Cemaden emite o alerta, a Defesa Civil dispara o aviso… e ninguém sabe se ele chegou na dona Maria, na última casa da viela.
 >
-> Entre a Defesa Civil e o morador existe um elo que o próprio Plano Nacional de Proteção e Defesa Civil reconhece: o **Nupdec**, o Núcleo Comunitário de Proteção e Defesa Civil — voluntários da própria comunidade que repassam o alerta porta a porta.
+> Entre a Defesa Civil e o morador existe um elo que o Plano Nacional reconhece: o **Nupdec**, o Núcleo Comunitário de Proteção e Defesa Civil — voluntários da comunidade que repassam o alerta porta a porta.
 >
 > Na prática, esses núcleos funcionam em grupos de WhatsApp: sem cadastro de quem está ativo, sem registro de que o alerta chegou a cada pessoa, sem canal para dizer "tem uma trinca no muro da casa 14". A Compdec dispara e fica no escuro. Não falta alerta — falta **informação organizada** na ponta.
 
@@ -23,7 +23,7 @@ Antes de gravar:
 
 > A meta escolhida é a **8.1.2** do PN-PDC 2025–2035: *"Incentivar a criação e manutenção de Núcleos Comunitários de Proteção e Defesa Civil em parceria com os municípios."*
 >
-> Ela está no Objetivo 8.1, da diretriz de participação da sociedade civil, marcada nos cinco eixos — prevenção, mitigação, preparação, resposta e recuperação — e tem alvo numérico: **30% dos municípios prioritários com Nupdec apoiado até 2027, 40% até 2031 e 90% até 2035**. O indicador oficial é medido pela Sedec.
+> Está no Objetivo 8.1, diretriz de participação da sociedade civil, nos cinco eixos — prevenção, mitigação, preparação, resposta e recuperação — com alvo numérico: **30% dos municípios prioritários com Nupdec apoiado até 2027, 40% até 2031 e 90% até 2035**, medido pela Sedec.
 >
 > Escolhi uma meta de participação, e não de monitoramento, porque o gargalo aqui é de informação — onde a Computação resolve mais com menos.
 
@@ -36,7 +36,7 @@ Antes de gravar:
 >
 > Nos clientes: um painel web para a Compdec e para a diretoria, e o aplicativo do voluntário — hoje simulado na web, com o mesmo backend.
 >
-> E a governança acompanha a realidade do país: uma **diretoria** cria coordenações com área delimitada e designa os coordenadores; o coordenador cadastra núcleos e áreas de risco; o líder do núcleo pré-aprova quem entra; o coordenador dá a palavra final.
+> E a governança segue a realidade do país: a **diretoria** cria coordenações com área delimitada e designa coordenadores; o coordenador cadastra núcleos e áreas de risco; o líder pré-aprova quem entra; o coordenador dá a palavra final.
 
 ## 2:10 – 4:00 · 4. Como a solução funciona? (demonstração)
 **Tela:** painel + celular lado a lado. Fale enquanto executa; não narre o que a tela já mostra.
@@ -45,13 +45,13 @@ Antes de gravar:
 >
 > *(painel → Alertas → Novo alerta)* A coordenadora cria um alerta de deslizamento. Escolhe a área de risco "Encosta do Morro da Esperança" e, antes de disparar, o sistema já diz: **1 núcleo e 19 membros** serão atingidos. Disparo.
 >
-> *(celular)* Dois segundos depois, o celular da líder do núcleo vibra: a notificação chega. Ela toca, vê a mensagem, o mapa com a área do alerta sobre a foto de satélite da encosta, e confirma: **"Recebi e estou ciente"**.
+> *(celular)* Dois segundos depois o celular da líder vibra. Ela toca, vê a mensagem e o mapa da área sobre a foto de satélite da encosta, e confirma: **"Recebi e estou ciente"**.
 >
 > *(painel → acompanhamento)* No painel, a confirmação aparece na hora. Clico em "simular comunidade" para representar os outros membros — o painel sobe para **68%** em dez minutos e lista quem não confirmou, inclusive quem nem tem o aplicativo: esses a líder avisa de porta em porta.
 >
-> *(celular → Reportar ocorrência)* A líder vê uma trinca no muro de arrimo. Foto, GPS, tipo "trinca", enviar. *(painel → Ocorrências)* A ocorrência aparece no mapa da Compdec e, ao mesmo tempo, **no chat do núcleo**, para que todos saibam. A agente faz a triagem e o status volta para o núcleo.
+> *(celular → Reportar ocorrência)* A líder vê uma trinca no muro de arrimo: foto, GPS, enviar. *(painel → Ocorrências)* A ocorrência aparece no mapa da Compdec e **no chat do núcleo**; a agente faz a triagem e o status volta ao núcleo.
 >
-> *(aba diretoria, rápido)* E a diretoria vê a rede inteira: coordenações no mapa, núcleos cobertos, confirmação média por coordenação.
+> *(aba diretoria)* E a diretoria vê a rede inteira: coordenações no mapa, núcleos cobertos, confirmação por coordenação.
 
 ## 4:00 – 4:40 · 5. Como será medido o resultado?
 **Tela:** seção 8 do relatório (fórmula) e o cartão "Em 10 minutos" do painel; opcionalmente a view no SQL editor.
