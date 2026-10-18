@@ -21,3 +21,6 @@ supabase/.branches/
 # sistema
 .DS_Store
 Thumbs.db
+
+# pacotes de deploy
+web/*.zip
