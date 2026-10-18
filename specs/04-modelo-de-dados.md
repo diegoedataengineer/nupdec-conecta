@@ -146,6 +146,18 @@ Unique `(alerta_id, membro_id)`.
 
 Índice: `gist(local)`.
 
+### `mensagens_nucleo` (chat do núcleo — adicionada em 18/10/2026)
+| Coluna | Tipo | Obs |
+|---|---|---|
+| id | uuid pk | |
+| nucleo_id | uuid fk | |
+| autor_id | uuid fk perfis | membro aprovado do núcleo ou gestor do município |
+| texto | text | 1–2000 caracteres |
+| alerta_id | uuid fk | opcional: mensagem no contexto de um alerta |
+| criado_em | timestamptz | |
+
+RLS via `pode_ver_nucleo(nucleo_id)`; publicada no Realtime.
+
 ## Views para indicadores
 
 ```sql

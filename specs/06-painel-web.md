@@ -73,6 +73,14 @@ ocorrências do núcleo, núcleo, perfil). Pontos de desenho:
 - **Botão "Simular comunidade (demo)"** no acompanhamento do alerta: RPC `simular_confirmacoes`
   confirma ~80 % das entregas de dispositivos simulados (seed), nunca de dispositivos reais.
 
+- **Cadastro** (`/app/cadastrar`): nome, e-mail, senha, telefone, município e núcleo → `signUp` com
+  metadados; o trigger cria perfil + membro **pendente**; o agente aprova no painel. O projeto
+  roda com `mailer_autoconfirm = true` (sem e-mail de confirmação) para o protótipo.
+- **Chat do núcleo** (aba Chat): tabela `mensagens_nucleo` (RLS: membros aprovados do núcleo e
+  gestores do município; Realtime). Substitui o grupo de WhatsApp, com histórico ligado ao núcleo.
+- **Mapas** nas telas de alerta, núcleo e novo reporte com o mesmo MapLibre do painel
+  (`MapaCelular`).
+
 Código em `web/src/app-celular/`. Rota pública de entrada: `/app/entrar`; link na página de download.
 
 ## Build e deploy
