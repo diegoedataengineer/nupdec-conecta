@@ -60,7 +60,8 @@
   <tr><td>Repositório</td><td><a href="https://github.com/diegoedataengineer/nupdec-conecta">github.com/diegoedataengineer/nupdec-conecta</a> (ADRs, specs, migrations, Edge Functions, painel e simulador)</td></tr>
   <tr><td>Protótipo no ar</td><td><a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> — painel em <code>/painel</code>, simulador do app em <code>/app</code></td></tr>
   <tr><td>Contas de demonstração</td><td><code>diretoria.sp@valesereno.exemplo</code> (diretoria) · <code>coordenador@valesereno.exemplo</code> · <code>agente1@valesereno.exemplo</code> · <code>lider.esperanca@valesereno.exemplo</code> — senha <code>Nupdec@2026</code>; lista completa por perfil no Anexo A</td></tr>
-  <tr><td>Vídeo-pitch</td><td>publicado no YouTube (não listado); o link está no arquivo <span class="mono">VIDEO-PITCH-LEIA-ME.txt</span> do pacote de entrega</td></tr>
+  <tr><td>Vídeo-pitch</td><td><a href="https://www.youtube.com/watch?v=6U5VBzkiwD8">youtube.com/watch?v=6U5VBzkiwD8</a> (até 5 min; publicado no YouTube porque o arquivo ultrapassa o limite de envio)</td></tr>
+  <tr><td>Manual de operação</td><td><i>Nupdec Conecta — Manual de operação</i> (PDF no pacote de entrega; fonte em <code>docs/manual/</code>): uso do painel e do aplicativo por papel, da Diretoria ao membro de apoio, com capturas de todas as telas</td></tr>
 </table>
 
 <h2>1. Introdução</h2>
@@ -235,7 +236,9 @@
   <img src="figs/cel-13-satelite.png" alt="Alerta sobre satélite no app" style="max-width:30%">
   <figcaption><b>Figura 18.</b> Mapa base alternável em todos os mapas (botão "Mapa / Satélite"): áreas de risco do painel sobre a imagem de satélite (esquerda) e a área do alerta no app sobre a foto real da encosta (direita). Imagens Esri World Imagery com rótulos de referência; a preferência fica guardada no navegador.</figcaption>
 </figure>
-<h3>7.3 Verificação</h3>
+<h3>7.3 Manual de operação</h3>
+<p>O uso do protótipo por cada papel está documentado no <b>Manual de operação</b> (27 páginas, 41 capturas de tela), entregue como PDF junto com este relatório e mantido no repositório em <code>docs/manual/manual.html</code>. O manual segue a cadeia de responsabilidades: Diretoria (coordenações, áreas e gestores), coordenador da Compdec (áreas de risco, núcleos, aprovação final, disparo e acompanhamento de alertas, triagem e chat), agente (acompanhamento e triagem, com a tabela de permissões), líder do núcleo (pré-aprovação de cadastros) e membro de apoio (cadastro, confirmação de alertas, reporte de ocorrências e chat), além do modo de demonstração e de uma lista de problemas comuns com as respectivas respostas.</p>
+<h3>7.4 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
 
 <h2>8. Indicador de resultado</h2>
@@ -304,11 +307,11 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 4, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 5–18, site, Anexo A (contas)</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 5–18, site, Manual de operação, Anexo A (contas)</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>
-  <tr><td>9</td><td>Indicador da meta</td><td>Seção 3 e 8</td><td></td><td>Pitch</td><td>Vídeo no YouTube (link no pacote)</td></tr>
+  <tr><td>9</td><td>Indicador da meta</td><td>Seção 3 e 8</td><td></td><td>Pitch</td><td>Vídeo no YouTube (link na capa)</td></tr>
 </table>
 
 <p class="peq"><b>Declaração de uso de IA.</b> Ferramentas de IA generativa (Claude Code) foram utilizadas como assistente de desenvolvimento ao longo do trabalho — na escrita de código, migrations, documentação, roteiros de teste e na redação deste relatório — sob direção, revisão e validação do autor. A escolha da meta, as decisões de arquitetura registradas nas ADRs, a definição do indicador, a configuração dos serviços em nuvem e a verificação dos resultados no banco de dados e no protótipo publicado são de responsabilidade e autoria do autor.</p>
