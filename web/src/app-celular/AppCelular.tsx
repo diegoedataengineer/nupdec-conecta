@@ -2,6 +2,7 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppAuthProvider, useAppAuth } from "./AppAuthContext";
+import { AppClientContext, clienteApp } from "./client";
 import { CelularFrame } from "./CelularFrame";
 import Entrar from "./paginas/Entrar";
 import Cadastrar from "./paginas/Cadastrar";
@@ -59,8 +60,9 @@ function SairBotao() {
 }
 
 /** Rotas do simulador (/app/*), espelhando as rotas do expo-router da spec 05. */
-export default function AppCelular() {
+export default function AppCelular({ slot = 0 }: { slot?: number }) {
   return (
+    <AppClientContext.Provider value={{ slot, sb: clienteApp(slot) }}>
     <AppAuthProvider>
       <Routes>
         <Route element={<CelularFrame comAbas={false} />}>
@@ -81,5 +83,6 @@ export default function AppCelular() {
         <Route path="*" element={<Navigate to="/app" replace />} />
       </Routes>
     </AppAuthProvider>
+    </AppClientContext.Provider>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Point } from "geojson";
-import { appSupabase } from "./client";
+import { useAppClient } from "./client";
 import { useAppAuth } from "./AppAuthContext";
 import type { AlertaEntrega, TipoOcorrencia } from "@/integrations/supabase/types";
 
@@ -22,6 +22,7 @@ export interface AlertaDoMembro {
 
 /** Alertas que o membro recebeu (a RLS só devolve os que têm entrega para ele). */
 export function useAlertasDoMembro() {
+  const sb = useAppClient();
   const { perfil } = useAppAuth();
   return useQuery({
     queryKey: ["app-alertas", perfil?.membro_id],
@@ -29,8 +30,8 @@ export function useAlertasDoMembro() {
     refetchInterval: 20_000,
     queryFn: async (): Promise<AlertaDoMembro[]> => {
       const [{ data: alertas, error }, { data: entregas }] = await Promise.all([
-        appSupabase.from("alertas").select(COLUNAS_ALERTA).order("inicio_em", { ascending: false }).limit(50),
-        appSupabase.from("alerta_entregas").select("id, alerta_id, status, enviado_em, confirmado_em").eq("membro_id", perfil!.membro_id!),
+        sb.from("alertas").select(COLUNAS_ALERTA).order("inicio_em", { ascending: false }).limit(50),
+        sb.from("alerta_entregas").select("id, alerta_id, status, enviado_em, confirmado_em").eq("membro_id", perfil!.membro_id!),
       ]);
       if (error) throw error;
       const mapa = new Map((entregas ?? []).map((e) => [e.alerta_id, e]));
@@ -46,11 +47,12 @@ export function useAlertaDoMembro(id: string | undefined) {
 
 /** Botão "Recebi e estou ciente": RPC confirmar_alerta com a hora do toque. */
 export function useConfirmarAlerta() {
+  const sb = useAppClient();
   const qc = useQueryClient();
   const { perfil } = useAppAuth();
   return useMutation({
     mutationFn: async (alertaId: string) => {
-      const { error } = await appSupabase.rpc("confirmar_alerta", {
+      const { error } = await sb.rpc("confirmar_alerta", {
         p_alerta_id: alertaId,
         p_confirmado_em: new Date().toISOString(),
       });
@@ -61,14 +63,15 @@ export function useConfirmarAlerta() {
 }
 
 export function useNucleoDoMembro() {
+  const sb = useAppClient();
   const { perfil } = useAppAuth();
   return useQuery({
     queryKey: ["app-nucleo", perfil?.nucleo_id],
     enabled: !!perfil?.nucleo_id,
     queryFn: async () => {
       const [{ data: nucleo, error }, { data: membros }] = await Promise.all([
-        appSupabase.from("nucleos").select("id, nome, comunidade, status, responsavel_membro_id, area_geojson, centro").eq("id", perfil!.nucleo_id!).single(),
-        appSupabase
+        sb.from("nucleos").select("id, nome, comunidade, status, responsavel_membro_id, area_geojson, centro").eq("id", perfil!.nucleo_id!).single(),
+        sb
           .from("membros")
           .select("id, status, funcao, perfil:perfis!membros_perfil_id_fkey(nome, telefone)")
           .eq("nucleo_id", perfil!.nucleo_id!)
@@ -84,13 +87,14 @@ export function useNucleoDoMembro() {
 }
 
 export function useOcorrenciasDoNucleo() {
+  const sb = useAppClient();
   const { perfil } = useAppAuth();
   return useQuery({
     queryKey: ["app-ocorrencias", perfil?.nucleo_id],
     enabled: !!perfil?.nucleo_id,
     refetchInterval: 20_000,
     queryFn: async () => {
-      const { data, error } = await appSupabase
+      const { data, error } = await sb
         .from("ocorrencias")
         .select("id, tipo, descricao, status, foto_path, criado_em, membro_id, local_geojson, membro:membros(perfil:perfis!membros_perfil_id_fkey(nome))")
         .eq("nucleo_id", perfil!.nucleo_id!)
@@ -106,12 +110,13 @@ export function useOcorrenciasDoNucleo() {
 }
 
 export function useFotoApp(fotoPath: string | null | undefined) {
+  const sb = useAppClient();
   return useQuery({
     queryKey: ["app-foto", fotoPath],
     enabled: !!fotoPath,
     staleTime: 50 * 60 * 1000,
     queryFn: async () => {
-      const { data, error } = await appSupabase.storage.from("ocorrencias").createSignedUrl(fotoPath!, 3600);
+      const { data, error } = await sb.storage.from("ocorrencias").createSignedUrl(fotoPath!, 3600);
       if (error) throw error;
       return data.signedUrl;
     },
@@ -129,6 +134,7 @@ export interface NovaOcorrencia {
 
 /** Reporte: foto → Storage (caminho municipio/nucleo/id.jpg) e insert com id gerado no cliente. */
 export function useReportarOcorrencia() {
+  const sb = useAppClient();
   const qc = useQueryClient();
   const { perfil } = useAppAuth();
   return useMutation({
@@ -138,10 +144,10 @@ export function useReportarOcorrencia() {
       let foto_path: string | null = null;
       if (o.foto) {
         foto_path = `${perfil.municipio_id}/${perfil.nucleo_id}/${id}.jpg`;
-        const { error: eUp } = await appSupabase.storage.from("ocorrencias").upload(foto_path, o.foto, { contentType: o.foto.type || "image/jpeg", upsert: true });
+        const { error: eUp } = await sb.storage.from("ocorrencias").upload(foto_path, o.foto, { contentType: o.foto.type || "image/jpeg", upsert: true });
         if (eUp) throw eUp;
       }
-      const { error } = await appSupabase.from("ocorrencias").insert({
+      const { error } = await sb.from("ocorrencias").insert({
         id,
         membro_id: perfil.membro_id,
         nucleo_id: perfil.nucleo_id,
@@ -173,13 +179,14 @@ export function useOnline() {
 
 /** Áreas de risco do município do membro (RLS: leitura no município). */
 export function useAreasRiscoApp() {
+  const sb = useAppClient();
   const { perfil } = useAppAuth();
   return useQuery({
     queryKey: ["app-areas-risco", perfil?.municipio_id],
     enabled: !!perfil?.municipio_id,
     staleTime: 10 * 60 * 1000,
     queryFn: async () => {
-      const { data, error } = await appSupabase.from("areas_risco").select("id, nome, nivel, area_geojson").eq("municipio_id", perfil!.municipio_id);
+      const { data, error } = await sb.from("areas_risco").select("id, nome, nivel, area_geojson").eq("municipio_id", perfil!.municipio_id);
       if (error) throw error;
       return data;
     },

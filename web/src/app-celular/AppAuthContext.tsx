@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { APP_VERSAO, appSupabase, tokenSimulado } from "./client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { APP_VERSAO, tokenSimulado, useAppClient } from "./client";
+import type { Database } from "@/integrations/supabase/types";
 import type { AuthPerfil } from "@/integrations/supabase/types";
 
 export interface PerfilApp extends AuthPerfil {
@@ -31,14 +33,14 @@ const AppAuthContext = createContext<Ctx>({
 
 export const useAppAuth = () => useContext(AppAuthContext);
 
-async function carregar(userId: string, email: string): Promise<PerfilApp | null> {
-  const { data: rpc, error } = await appSupabase.rpc("auth_perfil");
+async function carregar(sb: SupabaseClient<Database>, userId: string, email: string): Promise<PerfilApp | null> {
+  const { data: rpc, error } = await sb.rpc("auth_perfil");
   if (error || !rpc?.[0]) return null;
   const base = rpc[0];
   const [{ data: p }, { data: n }, { data: m }] = await Promise.all([
-    appSupabase.from("perfis").select("nome").eq("id", userId).maybeSingle(),
-    base.nucleo_id ? appSupabase.from("nucleos").select("nome").eq("id", base.nucleo_id).maybeSingle() : Promise.resolve({ data: null }),
-    appSupabase.from("municipios").select("nome").eq("id", base.municipio_id).maybeSingle(),
+    sb.from("perfis").select("nome").eq("id", userId).maybeSingle(),
+    base.nucleo_id ? sb.from("nucleos").select("nome").eq("id", base.nucleo_id).maybeSingle() : Promise.resolve({ data: null }),
+    sb.from("municipios").select("nome").eq("id", base.municipio_id).maybeSingle(),
   ]);
   return {
     ...base,
@@ -51,8 +53,8 @@ async function carregar(userId: string, email: string): Promise<PerfilApp | null
 }
 
 /** Equivalente ao registro do token Expo no app real (expo-notifications). */
-async function registrarDispositivo(userId: string) {
-  await appSupabase.rpc("registrar_dispositivo", {
+async function registrarDispositivo(sb: SupabaseClient<Database>, userId: string) {
+  await sb.rpc("registrar_dispositivo", {
     p_token: tokenSimulado(userId),
     p_plataforma: "android-simulado",
     p_app_versao: APP_VERSAO,
@@ -60,44 +62,45 @@ async function registrarDispositivo(userId: string) {
 }
 
 export function AppAuthProvider({ children }: { children: React.ReactNode }) {
+  const sb = useAppClient();
   const [session, setSession] = useState<Session | null>(null);
   const [perfil, setPerfil] = useState<PerfilApp | null>(null);
   const [loading, setLoading] = useState(true);
 
   const recarregar = useCallback(async () => {
-    const { data } = await appSupabase.auth.getSession();
+    const { data } = await sb.auth.getSession();
     const s = data.session;
     setSession(s);
     if (s?.user) {
-      setPerfil(await carregar(s.user.id, s.user.email ?? ""));
+      setPerfil(await carregar(sb, s.user.id, s.user.email ?? ""));
     } else {
       setPerfil(null);
     }
-  }, []);
+  }, [sb]);
 
   useEffect(() => {
     void recarregar().finally(() => setLoading(false));
-    const { data: sub } = appSupabase.auth.onAuthStateChange((_e, s) => {
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       if (!s) setPerfil(null);
     });
     return () => sub.subscription.unsubscribe();
-  }, [recarregar]);
+  }, [recarregar, sb]);
 
   const signIn = useCallback(async (email: string, senha: string) => {
-    const { data, error } = await appSupabase.auth.signInWithPassword({ email, password: senha });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
     if (error) return error.message === "Invalid login credentials" ? "E-mail ou senha incorretos." : error.message;
     if (data.user) {
-      await registrarDispositivo(data.user.id);
-      setPerfil(await carregar(data.user.id, data.user.email ?? ""));
+      await registrarDispositivo(sb, data.user.id);
+      setPerfil(await carregar(sb, data.user.id, data.user.email ?? ""));
     }
     return null;
-  }, []);
+  }, [sb]);
 
   const signOut = useCallback(async () => {
-    await appSupabase.auth.signOut();
+    await sb.auth.signOut();
     setPerfil(null);
-  }, []);
+  }, [sb]);
 
   return (
     <AppAuthContext.Provider value={{ session, perfil, loading, signIn, signOut, recarregar }}>

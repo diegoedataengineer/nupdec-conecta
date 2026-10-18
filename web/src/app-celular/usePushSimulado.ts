@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { appSupabase } from "./client";
+import { useAppClient } from "./client";
 import { useAppAuth } from "./AppAuthContext";
 
 export interface NotificacaoPush {
@@ -41,6 +41,7 @@ function bipar() {
  */
 export function usePushSimulado() {
   const { perfil } = useAppAuth();
+  const sb = useAppClient();
   const qc = useQueryClient();
   const [notificacao, setNotificacao] = useState<NotificacaoPush | null>(null);
   const [vibrando, setVibrando] = useState(false);
@@ -50,7 +51,7 @@ export function usePushSimulado() {
     if (vistas.current.has(alertaId)) return;
     vistas.current.add(alertaId);
     // a entrega chega antes de o alerta ser visível na lista → busca o alerta
-    const { data: a, error } = await appSupabase.from("alertas").select("id, titulo, mensagem, severidade").eq("id", alertaId).maybeSingle();
+    const { data: a, error } = await sb.from("alertas").select("id, titulo, mensagem, severidade").eq("id", alertaId).maybeSingle();
     if (!a) {
       console.warn("[push-sim] entrega recebida mas alerta não legível ainda", alertaId, error?.message ?? "");
       vistas.current.delete(alertaId);
@@ -62,11 +63,11 @@ export function usePushSimulado() {
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     setTimeout(() => setVibrando(false), 900);
     void qc.invalidateQueries({ queryKey: ["app-alertas"] });
-  }, [qc]);
+  }, [qc, sb]);
 
   useEffect(() => {
     if (!perfil?.membro_id) return;
-    const canal = appSupabase
+    const canal = sb
       .channel(`app-push:${perfil.membro_id}`)
       .on(
         "postgres_changes",
@@ -82,9 +83,9 @@ export function usePushSimulado() {
         if (status !== "SUBSCRIBED" && status !== "CLOSED") console.warn("[push-sim] canal", status, err?.message ?? "");
       });
     return () => {
-      void appSupabase.removeChannel(canal);
+      void sb.removeChannel(canal);
     };
-  }, [perfil?.membro_id, mostrar, qc]);
+  }, [perfil?.membro_id, mostrar, qc, sb]);
 
   const fechar = useCallback(() => setNotificacao(null), []);
   return { notificacao, fechar, vibrando };

@@ -156,7 +156,7 @@
 <p>As regras de negócio que precisam de privilégio rodam como funções <code>security definer</code> no banco: <code>gerar_entregas</code> (interseção e criação das entregas), <code>previa_alerta</code> (quantos núcleos e membros uma área atinge, antes de disparar), <code>criar_alerta</code>, <code>confirmar_alerta</code>, <code>registrar_dispositivo</code> e os gatilhos <code>handle_novo_usuario</code> (cria perfil e vínculo pendente no cadastro) e <code>ocorrencia_area_risco</code>. As três Edge Functions (<code>ingerir-alerta</code>, <code>disparar-alerta</code>, <code>recibos-push</code>) foram testadas de ponta a ponta no projeto remoto: um alerta injetado pela ingestão gerou 36 entregas por interseção, a deduplicação por <code>origem_ref</code> recusou a repetição e a fila ficou "concluído".</p>
 
 <h2 class="quebra">7. Protótipo</h2>
-<p>O protótipo está publicado em <a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> e conversa com o backend real. Tem três partes no mesmo build: a página pública de download, o painel da Compdec (<code>/painel</code>) e o <b>simulador do aplicativo</b> (<code>/app</code>) — uma moldura de celular com as telas do app, sessão própria do membro (de modo que o membro e o coordenador convivem no mesmo navegador) e a notificação push simulada por Realtime: quando a Edge Function cria a entrega, o "celular" vibra, bipa e mostra o banner. O app Android nativo (Expo) está especificado e decidido em ADR, com a mesma stack do app em produção do autor; não foi compilado no prazo, e o simulador cobre a demonstração com o mesmo backend, as mesmas regras e o mesmo fluxo.</p>
+<p>O protótipo está publicado em <a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a> e conversa com o backend real. Tem quatro partes no mesmo build: a página pública de download, o painel da Compdec (<code>/painel</code>), o <b>simulador do aplicativo</b> (<code>/app</code>) e o modo de demonstração com quatro celulares (<code>/demo</code>) — uma moldura de celular com as telas do app, sessão própria do membro (de modo que o membro e o coordenador convivem no mesmo navegador) e a notificação push simulada por Realtime: quando a Edge Function cria a entrega, o "celular" vibra, bipa e mostra o banner. O app Android nativo (Expo) está especificado e decidido em ADR, com a mesma stack do app em produção do autor; não foi compilado no prazo, e o simulador cobre a demonstração com o mesmo backend, as mesmas regras e o mesmo fluxo.</p>
 <h3>7.1 Painel da Compdec</h3>
 <figure>
   <img src="figs/pan-02-visao-geral.png" alt="Visão geral do painel">
@@ -205,7 +205,11 @@
 </figure>
 <figure>
   <img src="figs/pan-09-chat.png" alt="Chat dos núcleos no painel">
-  <figcaption><b>Figura 12.</b> Chat dos núcleos no painel: a Compdec vê a conversa de cada Nupdec (lista à esquerda, ordenada pela última mensagem) e responde como Defesa Civil; a mensagem chega em tempo real no aplicativo dos membros, destacada com o escudo "Defesa Civil" (Figura 9, à direita).</figcaption>
+  <figcaption><b>Figura 12.</b> Chat dos núcleos no painel: a Compdec vê a conversa de cada Nupdec (lista à esquerda, ordenada pela última mensagem) e responde como Defesa Civil; a mensagem chega em tempo real no aplicativo dos membros, destacada com o escudo "Defesa Civil" (Figura 9, à direita). Toda ocorrência reportada por um membro, e cada mudança de status na triagem, entra automaticamente no chat do núcleo como um cartão, por gatilhos no banco.</figcaption>
+</figure>
+<figure>
+  <img src="figs/web-02-demo-quad-chat.png" alt="Demonstração com quatro celulares">
+  <figcaption><b>Figura 13.</b> Modo de demonstração (<code>/demo</code>): quatro celulares lado a lado, cada um com sessão e navegação próprias, logados como membros diferentes. O celular 2 reportou uma ocorrência e ela apareceu no chat do núcleo no celular 1 como "ocorrência do núcleo"; a mesma conversa é visível à Compdec na Figura 12.</figcaption>
 </figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
@@ -276,7 +280,7 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–12, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–13, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>

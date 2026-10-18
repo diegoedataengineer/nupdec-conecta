@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Bell, BellRing, Camera, ExternalLink, Home, MessagesSquare, User, Users, Wifi, WifiOff, X } from "lucide-react";
 import { useAppAuth } from "./AppAuthContext";
+import { useAppSlot } from "./client";
 import { useOnline } from "./hooks";
 import { usePushSimulado } from "./usePushSimulado";
 import { SEVERIDADES } from "@/lib/rotulos";
@@ -35,6 +36,7 @@ export function CelularFrame({ comAbas = true }: { comAbas?: boolean }) {
   const { perfil } = useAppAuth();
   const { notificacao, fechar, vibrando } = usePushSimulado();
   const navigate = useNavigate();
+  const compacto = useAppSlot() > 0;
 
   const abrirNotificacao = () => {
     if (!notificacao) return;
@@ -46,7 +48,7 @@ export function CelularFrame({ comAbas = true }: { comAbas?: boolean }) {
   const sev = notificacao ? SEVERIDADES[notificacao.severidade as SeveridadeAlerta] : null;
 
   return (
-    <div className="min-h-screen bg-muted/60 flex flex-col items-center justify-center gap-4 py-8 px-4">
+    <div className={cn("flex flex-col items-center justify-center gap-4", compacto ? "py-1" : "min-h-screen bg-muted/60 py-8 px-4")}>
       <div
         className={cn(
           "relative isolate w-[390px] h-[800px] max-h-[calc(100vh-7rem)] rounded-[2.75rem] border-[10px] border-slate-900 bg-background shadow-2xl overflow-hidden",
@@ -127,13 +129,13 @@ export function CelularFrame({ comAbas = true }: { comAbas?: boolean }) {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground text-center max-w-md">
+      {!compacto && <p className="text-xs text-muted-foreground text-center max-w-md">
         <Home className="inline h-3 w-3 mr-1 align-[-2px]" />
         Simulador do app Android — mesmo backend e mesmas regras do painel; a notificação chega via Realtime no lugar do push.{" "}
         <a href="/painel" target="_blank" rel="noreferrer" className="underline inline-flex items-center gap-0.5">
           abrir o painel <ExternalLink className="h-3 w-3" />
         </a>
-      </p>
+      </p>}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { ArrowLeft, Loader2, MailCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { appSupabase } from "../client";
+import { useAppClient } from "../client";
 import { useAppAuth } from "../AppAuthContext";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 export default function Cadastrar() {
   const navigate = useNavigate();
   const { recarregar } = useAppAuth();
+  const sb = useAppClient();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -31,7 +32,7 @@ export default function Cadastrar() {
   const municipios = useQuery({
     queryKey: ["app-municipios"],
     queryFn: async () => {
-      const { data, error } = await appSupabase.from("municipios").select("id, nome, uf").order("nome");
+      const { data, error } = await sb.from("municipios").select("id, nome, uf").order("nome");
       if (error) throw error;
       return data;
     },
@@ -40,7 +41,7 @@ export default function Cadastrar() {
     queryKey: ["app-nucleos-cadastro", municipioId],
     enabled: !!municipioId,
     queryFn: async () => {
-      const { data, error } = await appSupabase.from("nucleos").select("id, nome, comunidade").eq("municipio_id", municipioId).eq("status", "ativo").order("nome");
+      const { data, error } = await sb.from("nucleos").select("id, nome, comunidade").eq("municipio_id", municipioId).eq("status", "ativo").order("nome");
       if (error) throw error;
       return data;
     },
@@ -57,7 +58,7 @@ export default function Cadastrar() {
     if (senha.length < 6) return setErro("A senha precisa ter pelo menos 6 caracteres.");
     if (!municipioId || !nucleoId) return setErro("Escolha o município e o núcleo.");
     setEnviando(true);
-    const { data, error } = await appSupabase.auth.signUp({
+    const { data, error } = await sb.auth.signUp({
       email: email.trim(),
       password: senha,
       options: { data: { nome: nome.trim(), telefone: telefone.trim() || null, municipio_id: municipioId, nucleo_id: nucleoId, papel: "membro" } },
@@ -68,7 +69,7 @@ export default function Cadastrar() {
       return;
     }
     if (data.session) {
-      await appSupabase.rpc("registrar_dispositivo", { p_token: `ExponentPushToken[sim-${data.session.user.id.slice(0, 8)}]`, p_plataforma: "android-simulado" });
+      await sb.rpc("registrar_dispositivo", { p_token: `ExponentPushToken[sim-${data.session.user.id.slice(0, 8)}]`, p_plataforma: "android-simulado" });
       await recarregar();
       navigate("/app", { replace: true }); // a guarda mostra "cadastro em análise"
     } else {

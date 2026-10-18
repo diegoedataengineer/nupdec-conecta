@@ -18,6 +18,7 @@ import AlertaAcompanhamento from "./pages/painel/AlertaAcompanhamento";
 import Ocorrencias from "./pages/painel/Ocorrencias";
 import ChatNucleos from "./pages/painel/ChatNucleos";
 import AppCelular from "./app-celular/AppCelular";
+import QuadCelulares from "./app-celular/QuadCelulares";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,10 +30,15 @@ const queryClient = new QueryClient({
   },
 });
 
+// /demo tem quatro MemoryRouters (um por celular); o React Router não aceita
+// Router aninhado, então essa rota é decidida antes do BrowserRouter.
+const ehDemo = window.location.pathname.replace(/\/+$/, "") === "/demo";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster position="top-right" richColors closeButton />
+      {ehDemo ? <QuadCelulares /> : (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -63,6 +69,7 @@ const App = () => (
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+      )}
     </TooltipProvider>
   </QueryClientProvider>
 );

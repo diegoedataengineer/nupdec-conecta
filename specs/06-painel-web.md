@@ -82,6 +82,12 @@ ocorrências do núcleo, núcleo, perfil). Pontos de desenho:
 - **Mapas** nas telas de alerta, núcleo e novo reporte com o mesmo MapLibre do painel
   (`MapaCelular`).
 
+- **Modo de demonstração `/demo`**: quatro celulares lado a lado, cada um com cliente Supabase próprio
+  (`storageKey` por aparelho) e `MemoryRouter` próprio, logados como membros diferentes.
+- **Ocorrência → chat**: gatilhos `ocorrencias_para_chat` e `ocorrencias_triagem_para_chat`
+  (migration 20261018001200) publicam no chat do núcleo cada ocorrência reportada e cada mudança de
+  status; a mensagem leva `ocorrencia_id` e o app a renderiza como cartão.
+
 Código em `web/src/app-celular/`. Rota pública de entrada: `/app/entrar`; link na página de download.
 
 ## Build e deploy

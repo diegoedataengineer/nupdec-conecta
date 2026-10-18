@@ -5,17 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppAuth } from "../AppAuthContext";
+import { useAppSlot } from "../client";
 
 const CONTAS_DEMO = [
   { rotulo: "Líder · Morro da Esperança", email: "lider.esperanca@valesereno.exemplo" },
   { rotulo: "Membro 03", email: "membro03@valesereno.exemplo" },
-  { rotulo: "Membro 25", email: "membro25@valesereno.exemplo" },
+  { rotulo: "Membro 10", email: "membro10@valesereno.exemplo" },
+  { rotulo: "Membro 25 · Vila do Córrego", email: "membro25@valesereno.exemplo" },
 ];
 
 export default function Entrar() {
   const { signIn } = useAppAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState(CONTAS_DEMO[0].email);
+  const slot = useAppSlot();
+  const [email, setEmail] = useState(CONTAS_DEMO[slot > 0 ? (slot - 1) % CONTAS_DEMO.length : 0].email);
   const [senha, setSenha] = useState("Nupdec@2026");
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);

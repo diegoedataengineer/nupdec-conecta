@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, isToday, isYesterday } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Loader2, MessagesSquare, SendHorizonal, Shield } from "lucide-react";
-import { appSupabase } from "../client";
+import { Loader2, MapPin, MessagesSquare, SendHorizonal, Shield } from "lucide-react";
+import { useAppClient } from "../client";
 import { useAppAuth } from "../AppAuthContext";
 import { cn } from "@/lib/utils";
 
@@ -13,10 +13,11 @@ interface Mensagem {
   autor_id: string;
   texto: string;
   criado_em: string;
+  ocorrencia_id: string | null;
   autor: { nome: string; papel: "membro" | "agente" | "coordenador" } | null;
 }
 
-const SELECT = "id, nucleo_id, autor_id, texto, criado_em, autor:perfis!mensagens_nucleo_autor_id_fkey(nome, papel)";
+const SELECT = "id, nucleo_id, autor_id, texto, criado_em, ocorrencia_id, autor:perfis!mensagens_nucleo_autor_id_fkey(nome, papel)";
 
 function rotuloDia(d: Date) {
   if (isToday(d)) return "Hoje";
@@ -31,6 +32,7 @@ function rotuloDia(d: Date) {
  */
 export default function Chat() {
   const { perfil } = useAppAuth();
+  const sb = useAppClient();
   const qc = useQueryClient();
   const nucleoId = perfil?.nucleo_id ?? null;
   const [texto, setTexto] = useState("");
@@ -40,7 +42,7 @@ export default function Chat() {
     queryKey: ["app-chat", nucleoId],
     enabled: !!nucleoId,
     queryFn: async () => {
-      const { data, error } = await appSupabase.from("mensagens_nucleo").select(SELECT).eq("nucleo_id", nucleoId!).order("criado_em", { ascending: true }).limit(300);
+      const { data, error } = await sb.from("mensagens_nucleo").select(SELECT).eq("nucleo_id", nucleoId!).order("criado_em", { ascending: true }).limit(300);
       if (error) throw error;
       return data as unknown as Mensagem[];
     },
@@ -49,16 +51,16 @@ export default function Chat() {
   // realtime: nova mensagem de qualquer membro entra na lista
   useEffect(() => {
     if (!nucleoId) return;
-    const canal = appSupabase
+    const canal = sb
       .channel(`app-chat:${nucleoId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens_nucleo", filter: `nucleo_id=eq.${nucleoId}` }, () => {
         void qc.invalidateQueries({ queryKey: ["app-chat", nucleoId] });
       })
       .subscribe();
     return () => {
-      void appSupabase.removeChannel(canal);
+      void sb.removeChannel(canal);
     };
-  }, [nucleoId, qc]);
+  }, [nucleoId, qc, sb]);
 
   useEffect(() => {
     fimRef.current?.scrollIntoView({ block: "end" });
@@ -66,7 +68,7 @@ export default function Chat() {
 
   const enviar = useMutation({
     mutationFn: async (t: string) => {
-      const { error } = await appSupabase.from("mensagens_nucleo").insert({ nucleo_id: nucleoId!, autor_id: perfil!.id, texto: t });
+      const { error } = await sb.from("mensagens_nucleo").insert({ nucleo_id: nucleoId!, autor_id: perfil!.id, texto: t });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -117,8 +119,14 @@ export default function Chat() {
                     className={cn(
                       "max-w-[82%] rounded-2xl px-3 py-2 text-sm shadow-sm",
                       minha ? "bg-primary text-primary-foreground rounded-br-md" : gestor ? "bg-secondary text-secondary-foreground rounded-bl-md border border-primary/20" : "bg-card border border-border rounded-bl-md",
+                      m.ocorrencia_id && "border-l-4 border-l-sev-atencao",
                     )}
                   >
+                    {m.ocorrencia_id && (
+                      <p className={cn("text-[10px] font-mono uppercase tracking-wider mb-0.5 flex items-center gap-1", minha ? "text-primary-foreground/80" : "text-sev-atencao")}>
+                        <MapPin className="h-3 w-3" /> ocorrência do núcleo
+                      </p>
+                    )}
                     {!minha && !mesmoAutor && (
                       <p className={cn("text-[11px] font-semibold mb-0.5 inline-flex items-center gap-1", gestor ? "text-primary" : "text-muted-foreground")}>
                         {gestor && <Shield className="h-3 w-3" />}
