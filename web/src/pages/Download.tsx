@@ -73,7 +73,7 @@ const Download = () => {
             </p>
             <div className="flex gap-2 shrink-0">
               <Button asChild size="sm" variant="secondary"><Link to="/app"><Smartphone className="h-4 w-4" /> Simular 1 celular</Link></Button>
-              <Button asChild size="sm" variant="outline"><Link to="/demo">4 celulares</Link></Button>
+              <Button asChild size="sm" variant="outline"><a href="/demo">4 celulares</a></Button>
             </div>
           </div>
         </div>

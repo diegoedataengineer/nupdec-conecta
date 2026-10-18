@@ -38,6 +38,12 @@ const queryClient = new QueryClient({
 // Router aninhado, então essa rota é decidida antes do BrowserRouter.
 const ehDemo = window.location.pathname.replace(/\/+$/, "") === "/demo";
 
+/** Chegou em /demo por navegação interna (Link): recarrega para montar os quatro roteadores. */
+function RecarregarDemo() {
+  window.location.replace("/demo");
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -78,6 +84,7 @@ const App = () => (
             {/* simulador do app Android (sessão própria do membro) */}
             <Route path="/app/*" element={<AppCelular />} />
 
+            <Route path="/demo" element={<RecarregarDemo />} />
             <Route path="/download" element={<Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
