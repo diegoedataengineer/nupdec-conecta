@@ -1,6 +1,6 @@
 # Roteiro do pitch — Nupdec Conecta (até 5 minutos)
 
-Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~720 palavras ≈ 4 min 40 s**, com folga para as pausas de demonstração.
+Formato sugerido: gravação de tela com OBS, painel no navegador à esquerda e o simulador de celular à direita (ou `/demo` com 4 celulares), narração por cima. Texto pensado para ser lido em ritmo de apresentação: **~680 palavras ≈ 4 min 25 s**, com folga para as pausas de demonstração.
 
 Antes de gravar:
 - Abra duas janelas lado a lado: `https://nupdec-conecta.mundodosdadosbr.com/painel` (logado como `coordenador@valesereno.exemplo`) e `…/app` (logado como `lider.esperanca@valesereno.exemplo`), senha `Nupdec@2026`.
@@ -16,9 +16,7 @@ Antes de gravar:
 >
 > Entre a Defesa Civil e o morador existe um elo que o próprio Plano Nacional de Proteção e Defesa Civil reconhece: o **Nupdec**, o Núcleo Comunitário de Proteção e Defesa Civil — voluntários da própria comunidade que repassam o alerta porta a porta.
 >
-> Na prática, esses núcleos funcionam em grupos de WhatsApp. Sem cadastro de quem está ativo, sem registro de que o alerta chegou a cada pessoa, e sem um canal para dizer "tem uma trinca no muro da casa 14". A Compdec dispara e fica no escuro.
->
-> Esse é o problema: não falta sensor nem falta alerta. Falta **informação organizada** na ponta.
+> Na prática, esses núcleos funcionam em grupos de WhatsApp: sem cadastro de quem está ativo, sem registro de que o alerta chegou a cada pessoa, sem canal para dizer "tem uma trinca no muro da casa 14". A Compdec dispara e fica no escuro. Não falta alerta — falta **informação organizada** na ponta.
 
 ## 0:45 – 1:25 · 2. Qual meta do PN-PDC está sendo trabalhada?
 **Tela:** Quadro 11 do PN-PDC (Figura 1 do relatório), com a linha 8.1.2 em destaque.
@@ -27,16 +25,16 @@ Antes de gravar:
 >
 > Ela está no Objetivo 8.1, da diretriz de participação da sociedade civil, marcada nos cinco eixos — prevenção, mitigação, preparação, resposta e recuperação — e tem alvo numérico: **30% dos municípios prioritários com Nupdec apoiado até 2027, 40% até 2031 e 90% até 2035**. O indicador oficial é medido pela Sedec.
 >
-> Escolhi uma meta de participação, e não uma de monitoramento, porque o gargalo aqui é humano e de informação — e é exatamente onde a Computação resolve mais com menos.
+> Escolhi uma meta de participação, e não de monitoramento, porque o gargalo aqui é de informação — onde a Computação resolve mais com menos.
 
 ## 1:25 – 2:10 · 3. Como a Computação contribui para atingir essa meta?
 **Tela:** diagrama de arquitetura (Figura 4) e, depois, o diagrama de processos (Figuras 2–3).
 
 > O **Nupdec Conecta** fecha o ciclo *alerta → confirmação → ocorrência* com um backend único e dois clientes.
 >
-> No backend, o Supabase: Postgres com PostGIS guarda os polígonos dos núcleos e das áreas de risco; quando um alerta é criado, uma função cruza a área do alerta com os núcleos — `ST_Intersects` — e gera uma entrega por membro; o push sai em lotes; a confirmação de cada pessoa volta com hora; e uma view SQL calcula o indicador. Tudo protegido por regras de acesso por linha: cada perfil só vê o que é seu.
+> No backend, o Supabase: Postgres com PostGIS guarda os polígonos dos núcleos e das áreas de risco; ao criar um alerta, uma função cruza a área com os núcleos — `ST_Intersects` — e gera uma entrega por membro; o push sai em lotes; a confirmação volta com hora; uma view SQL calcula o indicador. Regras de acesso por linha garantem que cada perfil só vê o que é seu.
 >
-> Nos clientes: um painel web para a Compdec e para a diretoria, e um aplicativo no celular do voluntário — que hoje está simulado na web, com o mesmo backend.
+> Nos clientes: um painel web para a Compdec e para a diretoria, e o aplicativo do voluntário — hoje simulado na web, com o mesmo backend.
 >
 > E a governança acompanha a realidade do país: uma **diretoria** cria coordenações com área delimitada e designa os coordenadores; o coordenador cadastra núcleos e áreas de risco; o líder do núcleo pré-aprova quem entra; o coordenador dá a palavra final.
 
@@ -49,7 +47,7 @@ Antes de gravar:
 >
 > *(celular)* Dois segundos depois, o celular da líder do núcleo vibra: a notificação chega. Ela toca, vê a mensagem, o mapa com a área do alerta sobre a foto de satélite da encosta, e confirma: **"Recebi e estou ciente"**.
 >
-> *(painel → acompanhamento)* No painel, a confirmação aparece na hora. Clico em "simular comunidade" para representar os outros membros respondendo — e o painel sobe para **68%** em dez minutos, com a lista de quem não confirmou e, entre eles, quem nem tem o aplicativo: esses a líder avisa de porta em porta.
+> *(painel → acompanhamento)* No painel, a confirmação aparece na hora. Clico em "simular comunidade" para representar os outros membros — o painel sobe para **68%** em dez minutos e lista quem não confirmou, inclusive quem nem tem o aplicativo: esses a líder avisa de porta em porta.
 >
 > *(celular → Reportar ocorrência)* A líder vê uma trinca no muro de arrimo. Foto, GPS, tipo "trinca", enviar. *(painel → Ocorrências)* A ocorrência aparece no mapa da Compdec e, ao mesmo tempo, **no chat do núcleo**, para que todos saibam. A agente faz a triagem e o status volta para o núcleo.
 >
@@ -60,14 +58,12 @@ Antes de gravar:
 
 > O indicador de resultado é simples e sai do próprio banco: **percentual de membros que confirmam o recebimento do alerta em até dez minutos**. Linha de base, zero — hoje não existe confirmação. Meta, **80%**.
 >
-> Nos alertas de demonstração do protótipo o número foi 61%, 84% e 68%. O denominador inclui quem não tem o aplicativo de propósito: o problema que a Compdec precisa enxergar não pode ficar escondido.
->
-> E o próprio banco vira a evidência do indicador oficial da meta: núcleo cadastrado, membros aprovados, alertas confirmados, ocorrências reportadas — é isso que caracteriza um "Nupdec apoiado e ativo".
+> Nos alertas do protótipo deu 61%, 84% e 68%. O denominador inclui quem não tem o aplicativo, de propósito: o que a Compdec precisa enxergar não pode ficar escondido. E o próprio banco vira a evidência do indicador oficial: núcleo cadastrado, membros aprovados, alertas confirmados — um "Nupdec apoiado e ativo".
 
 ## 4:40 – 5:00 · Fechamento
 **Tela:** página inicial com o QR code e o link do repositório.
 
-> Limitações: o push não é garantido, por isso o app também consulta os alertas ao abrir; o aplicativo Android nativo só será compilado se o projeto for aprovado — por enquanto a demonstração roda na web, com o mesmo backend. Tudo está publicado, com código aberto no repositório.
+> Limitações: o push não é garantido, por isso o app também consulta os alertas ao abrir; o aplicativo Android nativo será compilado se o projeto for aprovado — por enquanto a demonstração roda na web. Tudo está publicado, com o código no repositório.
 >
 > Nupdec Conecta: para que o alerta chegue em quem conhece a rua — e a Defesa Civil saiba que chegou. Obrigado.
 
