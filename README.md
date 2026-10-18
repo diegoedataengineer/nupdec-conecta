@@ -20,7 +20,7 @@ Entrega até **18/10/2026, 23:55**.
 | [specs/](specs/) | Especificações: problema, meta, solução, arquitetura, dados, app, painel, indicadores, entrega |
 | [docs/pnpdc-quadro-11-p138-139.png](docs/pnpdc-quadro-11-p138-139.png) | Página do PN-PDC com a meta 8.1.2 (Quadro 11) |
 | [docs/relatorio/](docs/relatorio/) | Relatório da sistematização (HTML → PDF) e diagramas |
-| [docs/manual/](docs/manual/) | **Manual de operação** da Diretoria ao membro de apoio, com capturas de todas as telas (`manual.html` → `Nupdec-Conecta-Manual-de-Operacao.pdf`) |
+| [docs/manual/](docs/manual/) | **Manual de operação** da Diretoria ao membro de apoio, com capturas de todas as telas (`manual.html` → `Nupdec-Conecta-Manual-de-Operacao.pdf`; [PDF no Google Drive](https://drive.google.com/file/d/17_dPh-FTUo5UeAP_fmQJyRAzS301i_lr/view?usp=sharing)) |
 | [docs/contas-de-acesso.md](docs/contas-de-acesso.md) | Contas de demonstração por perfil |
 
 Comece por [specs/README.md](specs/README.md).
