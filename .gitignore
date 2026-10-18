@@ -24,3 +24,6 @@ Thumbs.db
 
 # pacotes de deploy
 web/*.zip
+
+# roteiro do pitch fica fora do repositório (está em ../entrega/)
+docs/relatorio/roteiro-pitch.md
