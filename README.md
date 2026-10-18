@@ -51,3 +51,9 @@ nupdec-conecta/
 
 Ministério da Integração e do Desenvolvimento Regional — Plano Nacional de Proteção e Defesa
 Civil 2025–2035: <https://www.gov.br/mdr/pt-br/assuntos/protecao-e-defesa-civil/pn-pdc>
+
+## Licença
+
+Código e documentação sob a licença [MIT](LICENSE) — © 2026 Diego Nunes de Morais. O uso é livre,
+desde que o aviso de copyright e a licença sejam mantidos. O PN-PDC 2025–2035 citado é documento
+público do Governo Federal e não está coberto por esta licença.
