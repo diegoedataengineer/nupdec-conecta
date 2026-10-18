@@ -4,7 +4,7 @@
 // Fluxo (ADR-0007): gerar_entregas() → push em lotes → grava tickets → marca disparo concluído.
 
 import { clienteAdmin, json } from "../_shared/supabase.ts";
-import { ehTokenExpo, emLotes, enviarLote, type MensagemPush } from "../_shared/expo-push.ts";
+import { ehTokenExpo, ehTokenSimulado, emLotes, enviarLote, type MensagemPush } from "../_shared/expo-push.ts";
 
 const ROTULO_SEVERIDADE: Record<string, string> = {
   observacao: "Observação",
@@ -32,10 +32,23 @@ async function processarAlerta(alertaId: string) {
   const { data: entregas, error: errEntregas } = await sb.rpc("gerar_entregas", { p_alerta_id: alertaId });
   if (errEntregas) throw new Error(`gerar_entregas: ${errEntregas.message}`);
 
-  const validas = (entregas as Entrega[]).filter((e) => ehTokenExpo(e.o_expo_push_token));
   const agora = new Date().toISOString();
   let enviados = 0;
   let falhas = 0;
+  let simulados = 0;
+
+  // Tokens de simulação (seed e simulador de celular do painel): não existem no
+  // Expo; marcamos como entregues na hora. O app real recebe pelo Expo Push.
+  const todas = entregas as Entrega[];
+  const simuladas = todas.filter((e) => ehTokenSimulado(e.o_expo_push_token));
+  if (simuladas.length) {
+    simulados = simuladas.length;
+    await sb.from("alerta_entregas")
+      .update({ status: "entregue", enviado_em: agora, entregue_em: agora, push_ticket: "simulado" })
+      .in("id", simuladas.map((e) => e.o_entrega_id));
+  }
+
+  const validas = todas.filter((e) => !ehTokenSimulado(e.o_expo_push_token) && ehTokenExpo(e.o_expo_push_token));
 
   for (const lote of emLotes(validas, 100)) {
     const mensagens: MensagemPush[] = lote.map((e) => ({
@@ -85,7 +98,7 @@ async function processarAlerta(alertaId: string) {
     .update({ status: "concluido", atualizado_em: new Date().toISOString(), erro: null })
     .eq("alerta_id", alertaId);
 
-  return { alerta_id: alertaId, destinatarios: (entregas as Entrega[]).length, enviados, falhas };
+  return { alerta_id: alertaId, destinatarios: todas.length, enviados, simulados, falhas };
 }
 
 Deno.serve(async (req) => {

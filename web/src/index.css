@@ -227,3 +227,10 @@
   border-radius: calc(var(--radius) - 6px);
   overflow: hidden;
 }
+
+/* Simulador de celular: entrada do banner de push (desce da barra de status). */
+@keyframes banner-push {
+  from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.banner-push { animation: banner-push 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }

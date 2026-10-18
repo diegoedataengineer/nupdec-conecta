@@ -31,6 +31,11 @@ function cabecalhos() {
   return h;
 }
 
+/** Tokens que não existem no Expo: seed e simulador de celular do painel. */
+export function ehTokenSimulado(token: string) {
+  return /^Expo(nent)?PushToken\[(sim|seed)-/.test(token);
+}
+
 export function ehTokenExpo(token: string) {
   return /^Expo(nent)?PushToken\[.+\]$/.test(token);
 }

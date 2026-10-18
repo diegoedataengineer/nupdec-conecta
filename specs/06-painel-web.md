@@ -54,6 +54,27 @@ Código em `web/`. React + Vite + TypeScript, `@supabase/supabase-js`, MapLibre 
   cadastrar. Uma captura por passo.
 - Rodapé: meta 8.1.2 do PN-PDC, link para o repositório, versão do build.
 
+## Simulador do app Android (`/app`) — adicionado em 18/10/2026
+
+Enquanto o APK não existe, o painel inclui um **simulador do app** para a demonstração:
+uma moldura de celular (390×800) com barra de status, abas inferiores e as telas da spec 05
+(entrar, alertas, detalhe com "Recebi e estou ciente", nova ocorrência com foto e GPS,
+ocorrências do núcleo, núcleo, perfil). Pontos de desenho:
+
+- **Sessão própria** (`storageKey: nupdec-app-auth`): o membro no "celular" e o coordenador no
+  painel convivem no mesmo navegador. Mesmo backend, mesma RLS.
+- **Push simulado via Realtime**: o celular assina `alerta_entregas` filtrando o próprio
+  `membro_id`; quando a Edge Function cria a entrega, o banner aparece com bipe e vibração.
+  No app real o mesmo evento chega pelo Expo Push.
+- **Token simulado** (`ExponentPushToken[sim-…]`): registrado no login via `registrar_dispositivo`;
+  a Edge Function marca essas entregas como `entregue` sem chamar o Expo.
+- **GPS**: usa o do navegador; se negado ou fora do município fictício, cai numa posição dentro
+  do polígono do núcleo (indicado na tela como "posição simulada").
+- **Botão "Simular comunidade (demo)"** no acompanhamento do alerta: RPC `simular_confirmacoes`
+  confirma ~80 % das entregas de dispositivos simulados (seed), nunca de dispositivos reais.
+
+Código em `web/src/app-celular/`. Rota pública de entrada: `/app/entrar`; link na página de download.
+
 ## Build e deploy
 
 ```bash

@@ -204,12 +204,33 @@ export function useCriarAlerta() {
         p_origem: "manual",
       });
       if (error) throw error;
+      // O trigger só enfileira; quem seleciona os destinatários (ST_Intersects) e
+      // envia o push é a Edge Function disparar-alerta (ADR-0007).
+      const { error: erroDisparo } = await supabase.functions.invoke("disparar-alerta", { body: { alerta_id: data } });
+      if (erroDisparo) console.warn("disparar-alerta:", erroDisparo.message);
       return data;
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["alertas-confirmacao"] });
       void qc.invalidateQueries({ queryKey: ["alertas-vigentes"] });
       void qc.invalidateQueries({ queryKey: ["municipio-resumo"] });
+    },
+  });
+}
+
+/** Demo: confirma p_pct % das entregas de dispositivos simulados (RPC security definer). */
+export function useSimularConfirmacoes(id: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (pct: number) => {
+      const { data, error } = await supabase.rpc("simular_confirmacoes", { p_alerta_id: id!, p_pct: pct });
+      if (error) throw error;
+      return data as number;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["alerta-confirmacao", id] });
+      void qc.invalidateQueries({ queryKey: ["alerta-confirmacao-nucleos", id] });
+      void qc.invalidateQueries({ queryKey: ["alerta-entregas", id] });
     },
   });
 }

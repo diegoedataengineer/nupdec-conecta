@@ -445,6 +445,10 @@ export type Database = {
         Args: { p_token: string; p_plataforma?: string; p_app_versao?: string };
         Returns: undefined;
       };
+      simular_confirmacoes: {
+        Args: { p_alerta_id: string; p_pct?: number };
+        Returns: number;
+      };
     };
     Enums: {
       papel: Papel;

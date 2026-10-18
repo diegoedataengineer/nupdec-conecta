@@ -16,6 +16,7 @@ import Alertas from "./pages/painel/Alertas";
 import NovoAlerta from "./pages/painel/NovoAlerta";
 import AlertaAcompanhamento from "./pages/painel/AlertaAcompanhamento";
 import Ocorrencias from "./pages/painel/Ocorrencias";
+import AppCelular from "./app-celular/AppCelular";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +52,9 @@ const App = () => (
                 <Route path="ocorrencias" element={<Ocorrencias />} />
               </Route>
             </Route>
+
+            {/* simulador do app Android (sessão própria do membro) */}
+            <Route path="/app/*" element={<AppCelular />} />
 
             <Route path="/download" element={<Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />

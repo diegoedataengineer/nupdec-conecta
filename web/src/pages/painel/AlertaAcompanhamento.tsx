@@ -34,6 +34,7 @@ import {
   useAlertaEntregas,
   useAlertaRealtime,
   useEncerrarAlerta,
+  useSimularConfirmacoes,
 } from "@/hooks/use-alertas";
 import { useNucleos } from "@/hooks/use-nucleos";
 import { SEVERIDADES, STATUS_ENTREGA, TIPOS_ALERTA, formatarIntervalo, pct } from "@/lib/rotulos";
@@ -60,6 +61,7 @@ const AlertaAcompanhamento = () => {
   const entregas = useAlertaEntregas(id);
   const nucleos = useNucleos();
   const encerrar = useEncerrarAlerta(id);
+  const simular = useSimularConfirmacoes(id);
   const [confirmandoEncerrar, setConfirmandoEncerrar] = useState(false);
   useAlertaRealtime(id);
 
@@ -143,10 +145,26 @@ const AlertaAcompanhamento = () => {
         }
         acoes={
           eCoordenador && vigente && (
-            <Button variant="destructive" onClick={() => setConfirmandoEncerrar(true)}>
-              <StopCircle className="h-4 w-4" />
-              Encerrar alerta
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                disabled={simular.isPending}
+                title="Demonstração: confirma ~80 % dos membros com dispositivo simulado"
+                onClick={() =>
+                  simular.mutate(80, {
+                    onSuccess: (n) => toast.success(`${n} confirmações simuladas.`, { description: "Somente dispositivos simulados (seed). Dispositivos reais não são tocados." }),
+                    onError: (e) => toast.error("Não foi possível simular.", { description: e.message }),
+                  })
+                }
+              >
+                {simular.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SmartphoneNfc className="h-4 w-4" />}
+                Simular comunidade (demo)
+              </Button>
+              <Button variant="destructive" onClick={() => setConfirmandoEncerrar(true)}>
+                <StopCircle className="h-4 w-4" />
+                Encerrar alerta
+              </Button>
+            </div>
           )
         }
       />

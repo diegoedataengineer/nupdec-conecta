@@ -93,6 +93,11 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-5px)" },
+          "40%, 80%": { transform: "translateX(5px)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -111,6 +116,7 @@ export default {
         },
       },
       animation: {
+        shake: "shake 0.45s ease-in-out 2",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-up": "fade-up 0.6s ease-out forwards",

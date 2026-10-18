@@ -87,6 +87,12 @@ const Download = () => {
                 <Button asChild size="lg" variant="outline" className="text-base h-12 px-6">
                   <a href="#instalar">Como instalar</a>
                 </Button>
+                <Button asChild size="lg" variant="secondary" className="text-base h-12 px-6">
+                  <Link to="/app">
+                    <Smartphone className="h-5 w-5" />
+                    Simular o app no navegador
+                  </Link>
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground font-mono">
                 versão {APK_VERSION} · Android 8 ou superior · instalação fora da Play Store (sideload)
