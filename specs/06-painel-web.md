@@ -81,7 +81,8 @@ ocorrências do núcleo, núcleo, perfil). Pontos de desenho:
 - **Chat do núcleo** (aba Chat): tabela `mensagens_nucleo` (RLS: membros aprovados do núcleo e
   gestores do município; Realtime). Substitui o grupo de WhatsApp, com histórico ligado ao núcleo.
 - **Mapas** nas telas de alerta, núcleo e novo reporte com o mesmo MapLibre do painel
-  (`MapaCelular`).
+  (`MapaCelular`). Todo mapa tem o botão **Mapa / Satélite** (Esri World Imagery + rótulos; preferência
+  guardada no navegador); o componente reaplica as camadas após o `setStyle`.
 
 - **Modo de demonstração `/demo`**: quatro celulares lado a lado, cada um com cliente Supabase próprio
   (`storageKey` por aparelho) e `MemoryRouter` próprio, logados como membros diferentes.

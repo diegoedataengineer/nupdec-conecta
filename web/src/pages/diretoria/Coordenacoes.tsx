@@ -118,7 +118,7 @@ export function FormularioCoordenacao({ coordenacao, aberto, onFechar }: { coord
             </div>
             <div className="space-y-1.5">
               <p className="text-sm font-medium">Área de abrangência</p>
-              <Mapa camadas={[]} bounds={poligono ? bboxDe([poligono]) : null} className="h-[360px]" onCarregado={setMapa}>
+              <Mapa camadas={[]} bounds={poligono ? bboxDe([poligono]) : null} className="h-[360px]" onCarregado={setMapa} alternarBase={false}>
                 <DesenhoPoligono mapa={mapa} valor={inicial} onChange={setPoligono} cor="#6423C8" />
               </Mapa>
               {erroArea && <p className="text-sm font-medium text-destructive">{erroArea}</p>}

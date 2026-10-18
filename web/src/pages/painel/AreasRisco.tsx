@@ -190,7 +190,7 @@ function FormularioArea({
 
             <div className="space-y-1.5">
               <p className="text-sm font-medium">Polígono</p>
-              <Mapa camadas={[]} bounds={poligono ? bboxDe([poligono]) : bounds} className="h-[360px]" onCarregado={setMapa}>
+              <Mapa camadas={[]} bounds={poligono ? bboxDe([poligono]) : bounds} className="h-[360px]" onCarregado={setMapa} alternarBase={false}>
                 <DesenhoPoligono
                   mapa={mapa}
                   valor={area?.area_geojson ?? null}

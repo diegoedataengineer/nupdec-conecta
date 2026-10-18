@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Map as MapIcon, Satellite } from "lucide-react";
 import maplibregl, { type ExpressionSpecification, type MapGeoJSONFeature, type MapMouseEvent } from "maplibre-gl";
 import type { FeatureCollection, Geometry } from "geojson";
 import { MAP_STYLE_URL } from "@/integrations/supabase/client";
@@ -41,6 +42,8 @@ interface MapaProps {
   /** recebe o mapa depois do `load` (para o desenho de polígonos) */
   onCarregado?: (mapa: maplibregl.Map) => void;
   children?: ReactNode;
+  /** mostra o botão Mapa/Satélite (desligar nos formulários de desenho) */
+  alternarBase?: boolean;
 }
 
 /** Listras diagonais 45° em canvas, para `fill-pattern`. */
@@ -67,21 +70,60 @@ function gerarHachura(cor: string): ImageData {
 
 const TIPO_LAYER = { fill: "fill", line: "line", circle: "circle", symbol: "symbol" } as const;
 
-export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarregado, children }: MapaProps) {
+/**
+ * Mapa base: "mapa" (OpenFreeMap, vetorial) ou "satelite" (imagens Esri World
+ * Imagery + rótulos de referência da Esri; uso livre com atribuição, sem chave).
+ * A preferência fica no navegador e vale para painel, diretoria e celular.
+ */
+export type BaseMapa = "mapa" | "satelite";
+const CHAVE_BASE = "nupdec-mapa-base";
+export function lerBase(): BaseMapa {
+  try { return localStorage.getItem(CHAVE_BASE) === "satelite" ? "satelite" : "mapa"; } catch { return "mapa"; }
+}
+const ESTILO_SATELITE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    satelite: {
+      type: "raster",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "Imagens © Esri, Maxar, Earthstar Geographics, GIS User Community",
+    },
+    rotulos: {
+      type: "raster",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],
+      tileSize: 256,
+      maxzoom: 19,
+    },
+  },
+  layers: [
+    { id: "satelite", type: "raster", source: "satelite" },
+    { id: "rotulos", type: "raster", source: "rotulos", paint: { "raster-opacity": 0.9 } },
+  ],
+};
+const estiloDe = (b: BaseMapa) => (b === "satelite" ? ESTILO_SATELITE : MAP_STYLE_URL);
+
+export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarregado, children, alternarBase = true }: MapaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapaRef = useRef<maplibregl.Map | null>(null);
   const [pronto, setPronto] = useState(false);
   const camadasRef = useRef<CamadaMapa[]>(camadas);
   camadasRef.current = camadas;
   const handlersRef = useRef(new Map<string, (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => void>());
+  const eventosRef = useRef(new Set<string>());
   const popupRef = useRef<maplibregl.Popup | null>(null);
+  const [base, setBase] = useState<BaseMapa>(lerBase);
+  const [versaoEstilo, setVersaoEstilo] = useState(0);
+  const padroesRef = useRef(padroes);
+  padroesRef.current = padroes;
 
   // 1) cria o mapa uma vez
   useEffect(() => {
     if (!containerRef.current || mapaRef.current) return;
     const mapa = new maplibregl.Map({
       container: containerRef.current,
-      style: MAP_STYLE_URL,
+      style: estiloDe(lerBase()),
       center: centro ?? CENTRO_PADRAO,
       zoom: zoom ?? 12,
       attributionControl: { compact: true },
@@ -106,6 +148,21 @@ export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarr
     // criação única: props iniciais só valem no mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 1b) troca de base: setStyle apaga sources/layers; depois do style.load, reaplica
+  const trocarBase = (nova: BaseMapa) => {
+    const mapa = mapaRef.current;
+    if (!mapa || nova === base) return;
+    setBase(nova);
+    try { localStorage.setItem(CHAVE_BASE, nova); } catch { /* sem storage */ }
+    mapa.once("style.load", () => {
+      for (const p of padroesRef.current ?? []) {
+        if (!mapa.hasImage(p.nome)) mapa.addImage(p.nome, gerarHachura(p.cor), { pixelRatio: 1 });
+      }
+      setVersaoEstilo((v) => v + 1);
+    });
+    mapa.setStyle(estiloDe(nova));
+  };
 
   // 2) sincroniza camadas
   useEffect(() => {
@@ -152,6 +209,8 @@ export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarr
         layout: c.layout ?? {},
       } as maplibregl.AddLayerObject);
 
+      if (eventosRef.current.has(c.id)) continue; // handlers sobrevivem ao setStyle; não duplicar
+      eventosRef.current.add(c.id);
       if (c.onClick || c.popupHtml) {
         mapa.on("mouseenter", idLayer, () => (mapa.getCanvas().style.cursor = "pointer"));
         mapa.on("mouseleave", idLayer, () => {
@@ -181,7 +240,7 @@ export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarr
         mapa.on("click", idLayer, handler);
       }
     }
-  }, [camadas, pronto]);
+  }, [camadas, pronto, versaoEstilo]);
 
   // 3) enquadra
   const chaveBounds = bounds ? bounds.join(",") : "";
@@ -195,6 +254,16 @@ export function Mapa({ camadas, bounds, centro, zoom, padroes, className, onCarr
   return (
     <div className={cn("relative w-full h-[420px] rounded-xl overflow-hidden border bg-muted", className)}>
       <div ref={containerRef} className="absolute inset-0" />
+      {alternarBase && (
+        <div className="absolute top-2 left-2 z-[1] inline-flex rounded-lg border bg-card/95 backdrop-blur shadow-bp-card overflow-hidden text-xs">
+          <button type="button" onClick={() => trocarBase("mapa")} className={cn("px-2.5 py-1.5 inline-flex items-center gap-1", base === "mapa" ? "bg-primary text-primary-foreground" : "hover:bg-accent")} title="Mapa">
+            <MapIcon className="h-3.5 w-3.5" /> Mapa
+          </button>
+          <button type="button" onClick={() => trocarBase("satelite")} className={cn("px-2.5 py-1.5 inline-flex items-center gap-1", base === "satelite" ? "bg-primary text-primary-foreground" : "hover:bg-accent")} title="Satélite">
+            <Satellite className="h-3.5 w-3.5" /> Satélite
+          </button>
+        </div>
+      )}
       {children}
     </div>
   );

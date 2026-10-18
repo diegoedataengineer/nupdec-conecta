@@ -144,7 +144,7 @@ export function FormularioNucleo({
                 camadas={[]}
                 bounds={poligono ? bboxDe([poligono]) : bounds}
                 className="h-[360px]"
-                onCarregado={setMapa}
+                onCarregado={setMapa} alternarBase={false}
               >
                 <DesenhoPoligono mapa={mapa} valor={nucleo?.area_geojson ?? null} onChange={setPoligono} />
               </Mapa>

@@ -132,7 +132,7 @@
   <tr><td>1</td><td>Aplicativo móvel</td><td>Expo SDK 54 / React Native 0.81 (APK por sideload); no protótipo, simulador web em <code>/app</code></td><td>Colocar alerta, confirmação, reporte e chat no bolso do voluntário, inclusive com rede instável</td></tr>
   <tr><td>2</td><td>Aplicação web</td><td>React 18 + Vite 5 + TypeScript, Tailwind + shadcn/ui</td><td>Dar à Compdec um lugar para cadastrar áreas, disparar alertas e acompanhar resultados</td></tr>
   <tr><td>3</td><td>Banco de dados</td><td>PostgreSQL 17 (Supabase), 11 tabelas, 23 políticas RLS</td><td>Verdade única de cadastro, alertas, entregas e ocorrências, com controle de acesso por linha</td></tr>
-  <tr><td>4</td><td>Geoprocessamento / SIG</td><td>PostGIS (<code>ST_Intersects</code>, <code>ST_DWithin</code>) + MapLibre GL com tiles abertos (OpenFreeMap)</td><td>Decidir quem recebe o alerta por interseção de polígonos; desenhar áreas; mapa de ocorrências</td></tr>
+  <tr><td>4</td><td>Geoprocessamento / SIG</td><td>PostGIS (<code>ST_Intersects</code>, <code>ST_DWithin</code>, <code>ST_Contains</code>) + MapLibre GL com mapa vetorial aberto (OpenFreeMap) e <b>imagens de satélite</b> (Esri World Imagery, uso livre com atribuição), alternáveis em todos os mapas do painel e do app</td><td>Decidir quem recebe o alerta por interseção de polígonos; desenhar áreas sobre a foto real da encosta ou do córrego; mapa de ocorrências</td></tr>
   <tr><td>5</td><td>Computação em nuvem</td><td>Supabase (Auth, Storage, Edge Functions em Deno, Realtime) em São Paulo + Hostinger</td><td>Não manter servidor; escalar o disparo; hospedar o painel com HTTPS</td></tr>
   <tr><td>6</td><td>Sistema de alerta</td><td>Expo Push Service sobre FCM; fila com retentativas; recibos</td><td>Entregar a notificação em segundos a centenas de aparelhos e saber se chegou</td></tr>
   <tr><td>7</td><td>Redes de computadores</td><td>HTTPS/REST (PostgREST), RPC, WebSocket (Realtime), cache offline com sincronização</td><td>Funcionar com rede instável e mostrar confirmações ao vivo</td></tr>
@@ -222,6 +222,11 @@
   <img src="figs/pan-11-diretoria.png" alt="Visão da diretoria">
   <figcaption><b>Figura 15.</b> Área da diretoria (<code>/diretoria</code>): coordenações ativas, núcleos cobertos, membros e confirmação média; mapa com as áreas das coordenações (tracejado por nível) e os núcleos por cima; resumo por coordenação. A diretoria cria coordenações desenhando o polígono, cria as contas dos coordenadores e agentes e os vincula a cada coordenação.</figcaption>
 </figure>
+<figure class="row dois">
+  <img src="figs/pan-14-satelite.png" alt="Áreas de risco sobre satélite">
+  <img src="figs/cel-13-satelite.png" alt="Alerta sobre satélite no app" style="max-width:30%">
+  <figcaption><b>Figura 16.</b> Mapa base alternável em todos os mapas (botão "Mapa / Satélite"): áreas de risco do painel sobre a imagem de satélite (esquerda) e a área do alerta no app sobre a foto real da encosta (direita). Imagens Esri World Imagery com rótulos de referência; a preferência fica guardada no navegador.</figcaption>
+</figure>
 <h3>7.3 Verificação</h3>
 <p>Além dos testes manuais, o fluxo de demonstração foi executado por um roteiro automatizado em navegador (Chrome headless): login do membro no simulador e do coordenador no painel; criação do alerta com prévia; disparo; chegada do banner no celular; confirmação; subida do percentual no painel; reporte de ocorrência; encerramento. O roteiro termina sem erros de console, e as figuras deste relatório foram capturadas por ele. O backend tem testes de RLS por papel (membro vê só as próprias entregas e não consegue criar alerta; coordenador cria e vê tudo do município) executados nas migrations locais antes de cada publicação.</p>
 
@@ -291,7 +296,7 @@
   <tr><td>2</td><td>Integrante</td><td>Capa</td><td>11</td><td>Entrada, processamento e saída</td><td>Seção 4.1</td></tr>
   <tr><td>3</td><td>Problema</td><td>Seção 2</td><td>12</td><td>Arquitetura</td><td>Seção 5, Figura 2, Seção 6</td></tr>
   <tr><td>4</td><td>Público afetado</td><td>Seção 2</td><td>13</td><td>Tecnologias utilizadas</td><td>Seção 5.1</td></tr>
-  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–15, site</td></tr>
+  <tr><td>5</td><td>Meta do PN-PDC</td><td>Seção 3</td><td>14</td><td>Protótipo</td><td>Seção 7, Figuras 3–16, site</td></tr>
   <tr><td>6</td><td>Objetivo relacionado</td><td>Seção 3 (8.1)</td><td>15</td><td>Indicador de resultado</td><td>Seção 8</td></tr>
   <tr><td>7</td><td>Eixo de atuação</td><td>Seção 3 (cinco eixos)</td><td>16</td><td>Benefício esperado</td><td>Seção 9</td></tr>
   <tr><td>8</td><td>Prazo da meta</td><td>Seção 3 (2027/2031/2035)</td><td>17</td><td>Limitação ou risco</td><td>Seção 10</td></tr>
@@ -299,7 +304,7 @@
 </table>
 
 <p class="peq"><b>Declaração de uso de IA.</b> Ferramentas de IA generativa (Claude Code) foram utilizadas como assistente de desenvolvimento ao longo do trabalho — na escrita de código, migrations, documentação, roteiros de teste e na redação deste relatório — sob direção, revisão e validação do autor. A escolha da meta, as decisões de arquitetura registradas nas ADRs, a definição do indicador, a configuração dos serviços em nuvem e a verificação dos resultados no banco de dados e no protótipo publicado são de responsabilidade e autoria do autor.</p>
-<p class="peq"><b>Referências.</b> Brasil. Ministério da Integração e do Desenvolvimento Regional. <i>Plano Nacional de Proteção e Defesa Civil 2025–2035</i>. Brasília, 2025 (Quadro 11, p. 138–139) · Brasil. Decreto nº 12.652, de 2025, que institui o PN-PDC 2025–2035 · Brasil. Lei nº 12.608/2012 (Política Nacional de Proteção e Defesa Civil) · Supabase. <i>Row Level Security</i>; <i>Edge Functions</i>; <i>Realtime</i>. Documentação, 2026 · PostGIS Project. <i>PostGIS Reference</i> — ST_Intersects, ST_DWithin · Expo. <i>Sending notifications with Expo's Push API</i>, 2026 · MapLibre GL JS; OpenFreeMap (tiles abertos, OpenStreetMap) · Open-Meteo. <i>Weather Forecast API</i> (dados abertos, CC BY 4.0), 2026 · Zebulon, I. <i>Arquiteturas Convergentes — webaulas 1 a 8</i>, CEUB, 2026.</p>
+<p class="peq"><b>Referências.</b> Brasil. Ministério da Integração e do Desenvolvimento Regional. <i>Plano Nacional de Proteção e Defesa Civil 2025–2035</i>. Brasília, 2025 (Quadro 11, p. 138–139) · Brasil. Decreto nº 12.652, de 2025, que institui o PN-PDC 2025–2035 · Brasil. Lei nº 12.608/2012 (Política Nacional de Proteção e Defesa Civil) · Supabase. <i>Row Level Security</i>; <i>Edge Functions</i>; <i>Realtime</i>. Documentação, 2026 · PostGIS Project. <i>PostGIS Reference</i> — ST_Intersects, ST_DWithin · Expo. <i>Sending notifications with Expo's Push API</i>, 2026 · MapLibre GL JS; OpenFreeMap (tiles abertos, OpenStreetMap); Esri. <i>World Imagery</i> e <i>World Boundaries and Places</i> (serviços de tiles, termos de uso Esri) · Open-Meteo. <i>Weather Forecast API</i> (dados abertos, CC BY 4.0), 2026 · Zebulon, I. <i>Arquiteturas Convergentes — webaulas 1 a 8</i>, CEUB, 2026.</p>
 
 </body>
 </html>

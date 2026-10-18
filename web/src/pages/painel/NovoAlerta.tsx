@@ -345,7 +345,7 @@ const NovoAlerta = () => {
 
           {/* coluna direita */}
           <div className="space-y-6">
-            <Mapa camadas={camadas} bounds={bounds} padroes={PADROES} className="h-[420px]" onCarregado={setMapa}>
+            <Mapa camadas={camadas} bounds={bounds} padroes={PADROES} className="h-[420px]" onCarregado={setMapa} alternarBase={false}>
               {modo === "desenhar" && <DesenhoPoligono mapa={mapa} valor={null} onChange={setDesenho} cor="#d9531e" />}
             </Mapa>
 
