@@ -4,7 +4,9 @@ import type { Point } from "geojson";
 import { ArrowLeft, Camera, Crosshair, ImagePlus, Loader2, MapPin, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useNucleoDoMembro, useReportarOcorrencia } from "../hooks";
+import { useAreasRiscoApp, useNucleoDoMembro, useReportarOcorrencia } from "../hooks";
+import { MapaCelular } from "../MapaCelular";
+import type { Geometry } from "geojson";
 import { TIPOS_OCORRENCIA } from "@/lib/rotulos";
 import { cn } from "@/lib/utils";
 import type { TipoOcorrencia } from "@/integrations/supabase/types";
@@ -32,6 +34,7 @@ export default function OcorrenciaNova() {
   const [params] = useSearchParams();
   const nucleo = useNucleoDoMembro();
   const reportar = useReportarOcorrencia();
+  const areas = useAreasRiscoApp();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [tipo, setTipo] = useState<TipoOcorrencia>("trinca");
@@ -160,6 +163,15 @@ export default function OcorrenciaNova() {
           {buscandoGps ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
         </Button>
       </div>
+
+      {pos && (
+        <MapaCelular
+          className="h-40"
+          nucleo={(nucleo.data?.nucleo?.area_geojson as Geometry | null) ?? null}
+          areasRisco={(areas.data ?? []) as never}
+          pontos={[{ id: "aqui", rotulo: "Você está aqui", geometria: { type: "Point", coordinates: [pos.lon, pos.lat] }, cor: "hsl(212 72% 32%)" }]}
+        />
+      )}
 
       {reportar.isError && <p className="text-xs text-destructive">{reportar.error.message}</p>}
 

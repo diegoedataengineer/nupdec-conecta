@@ -1,6 +1,9 @@
 import { Phone, Shield, Users } from "lucide-react";
 import { useAppAuth } from "../AppAuthContext";
-import { useNucleoDoMembro } from "../hooks";
+import { useAreasRiscoApp, useNucleoDoMembro, useOcorrenciasDoNucleo } from "../hooks";
+import { MapaCelular } from "../MapaCelular";
+import type { Geometry } from "geojson";
+import { TIPOS_OCORRENCIA } from "@/lib/rotulos";
 import { STATUS_MEMBRO } from "@/lib/rotulos";
 import { cn } from "@/lib/utils";
 import type { StatusMembro } from "@/integrations/supabase/types";
@@ -8,6 +11,8 @@ import type { StatusMembro } from "@/integrations/supabase/types";
 export default function Nucleo() {
   const { perfil } = useAppAuth();
   const q = useNucleoDoMembro();
+  const areas = useAreasRiscoApp();
+  const ocorrencias = useOcorrenciasDoNucleo();
   const n = q.data?.nucleo;
   const membros = q.data?.membros ?? [];
   const aprovados = membros.filter((m) => m.status === "aprovado");
@@ -20,6 +25,15 @@ export default function Nucleo() {
         <h1 className="font-display text-2xl font-bold">{n?.nome ?? "Meu núcleo"}</h1>
         {n && <p className="text-sm text-muted-foreground">{n.comunidade}</p>}
       </header>
+
+      {n && (
+        <MapaCelular
+          className="h-52"
+          nucleo={n.area_geojson as Geometry | null}
+          areasRisco={(areas.data ?? []) as never}
+          pontos={(ocorrencias.data ?? []).filter((o) => o.local_geojson).map((o) => ({ id: o.id, rotulo: TIPOS_OCORRENCIA[o.tipo], geometria: o.local_geojson! }))}
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-border p-3">

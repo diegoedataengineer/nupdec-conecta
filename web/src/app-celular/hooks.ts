@@ -170,3 +170,18 @@ export function useOnline() {
   }, []);
   return online;
 }
+
+/** Áreas de risco do município do membro (RLS: leitura no município). */
+export function useAreasRiscoApp() {
+  const { perfil } = useAppAuth();
+  return useQuery({
+    queryKey: ["app-areas-risco", perfil?.municipio_id],
+    enabled: !!perfil?.municipio_id,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await appSupabase.from("areas_risco").select("id, nome, nivel, area_geojson").eq("municipio_id", perfil!.municipio_id);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
