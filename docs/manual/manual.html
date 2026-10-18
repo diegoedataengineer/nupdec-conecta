@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Nupdec Conecta — Manual de operação</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10.3pt; line-height: 1.42; color: #0f172a; }
+  .logo { height: 44px; margin: 0 0 14px; }
+  h1 { font-size: 21pt; line-height: 1.2; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { font-size: 11.5pt; font-weight: 600; color: #1e293b; margin: 0 0 12px; }
+  h2 { font-size: 14pt; font-weight: 700; margin: 22px 0 8px; padding-top: 6px; border-top: 1px solid #e2e8f0; page-break-after: avoid; }
+  h3 { font-size: 11.2pt; font-weight: 600; margin: 14px 0 5px; page-break-after: avoid; }
+  h4 { font-size: 10.3pt; font-weight: 600; margin: 10px 0 4px; page-break-after: avoid; color: #1e4e8c; }
+  p { margin: 0 0 7px; }
+  b, strong { font-weight: 600; }
+  code, .mono { font-family: "IBM Plex Mono", monospace; font-size: 9.2pt; background: #f1f5f9; padding: 0 3px; border-radius: 3px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.4pt; }
+  th, td { border: 1px solid #e2e8f0; padding: 4px 7px; vertical-align: top; text-align: left; }
+  th { background: #f1f5f9; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  table.meta td:first-child { width: 29%; background: #f8fafc; font-weight: 600; }
+  a { color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+  ul, ol { margin: 2px 0 8px 18px; padding: 0; } li { margin: 0 0 3px; }
+  ol.passos li { margin: 0 0 5px; }
+  figure { margin: 10px 0 12px; page-break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; max-height: 150mm; width: auto; border: 1px solid #e2e8f0; border-radius: 6px; }
+  figure.row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: flex-start; }
+  figure.row img { flex: 0 0 auto; }
+  figure.row.tres img { width: 32%; }
+  figure.row.dois img { width: 49%; }
+  figure.row.cel img { width: 31%; max-height: 120mm; object-fit: contain; }
+  figure.row.cel2 img { width: 40%; max-height: 120mm; }
+  figcaption { font-size: 8.8pt; color: #475569; margin-top: 5px; line-height: 1.35; text-align: left; }
+  figure.row figcaption { flex: 0 0 100%; }
+  .nota { background: #f8fafc; border-left: 3px solid #1e4e8c; padding: 6px 10px; margin: 8px 0 10px; font-size: 9.6pt; }
+  .atencao { background: #fff7ed; border-left: 3px solid #ea580c; padding: 6px 10px; margin: 8px 0 10px; font-size: 9.6pt; }
+  .quebra { page-break-before: always; }
+  .peq { font-size: 9.2pt; color: #334155; }
+  .papel { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 8.4pt; background: #e0e7ff; color: #1e3a8a; padding: 1px 6px; border-radius: 10px; margin-right: 4px; }
+  .sumario li { margin: 0 0 2px; }
+</style>
+</head>
+<body>
+
+<img class="logo" src="../relatorio/figs/ceub.png" alt="CEUB">
+
+<h1>Nupdec Conecta — Manual de operação</h1>
+<p class="sub">Da Diretoria ao membro de apoio do núcleo: como usar o painel e o aplicativo</p>
+
+<table class="meta">
+  <tr><td>Sistema</td><td>Nupdec Conecta — alerta, confirmação e reporte no celular dos Núcleos Comunitários de Proteção e Defesa Civil (meta 8.1.2 do PN-PDC 2025–2035)</td></tr>
+  <tr><td>Versão do manual</td><td>1.0 — 18 de outubro de 2026 (protótipo 0.1.0)</td></tr>
+  <tr><td>Autor</td><td>Diego Nunes de Morais — Sistematização de Arquiteturas Convergentes (CEUB, Prof. Me. Israel Zebulon)</td></tr>
+  <tr><td>Endereço</td><td><a href="https://nupdec-conecta.mundodosdadosbr.com">nupdec-conecta.mundodosdadosbr.com</a></td></tr>
+  <tr><td>Painel (gestores)</td><td><code>/painel/entrar</code> — Diretoria, coordenadores e agentes. A Diretoria é levada automaticamente para <code>/diretoria</code>.</td></tr>
+  <tr><td>Aplicativo (membros)</td><td><code>/app/entrar</code> — líderes e membros de apoio. Demonstração com quatro celulares lado a lado em <code>/demo</code>.</td></tr>
+  <tr><td>Contas de demonstração</td><td>Município fictício Vale Sereno – SP. Senha única <code>Nupdec@2026</code>. A lista completa está no documento <i>Nupdec Conecta — Contas de acesso</i>; as principais estão na seção 2.</td></tr>
+</table>
+
+<h3>Sumário</h3>
+<ol class="sumario">
+  <li>Visão geral: papéis e fluxo ponta a ponta</li>
+  <li>Acesso: endereços, contas e sessões</li>
+  <li>Diretoria: coordenações, áreas e gestores</li>
+  <li>Coordenador da Compdec: núcleos, áreas de risco, alertas, ocorrências e chat</li>
+  <li>Agente da Defesa Civil: acompanhamento e triagem</li>
+  <li>Líder do núcleo: pré-aprovação de cadastros</li>
+  <li>Membro de apoio: instalar, cadastrar, confirmar alertas, reportar e conversar</li>
+  <li>Modo de demonstração</li>
+  <li>Problemas comuns e respostas</li>
+</ol>
+
+<h2>1. Visão geral</h2>
+<p>O Nupdec Conecta fecha o ciclo do alerta entre a Defesa Civil e a comunidade organizada em Núcleos Comunitários (Nupdecs). A Defesa Civil dispara o alerta por área de risco no painel; o aplicativo do membro recebe a notificação, mostra a área no mapa e pede um toque em <b>"Recebi e estou ciente"</b>; o painel mostra, em tempo real, quem confirmou. No sentido inverso, o membro reporta ocorrências com foto e GPS, que caem no mapa da Compdec e no chat do núcleo para triagem. Tudo roda sobre o mesmo backend e as mesmas regras de acesso.</p>
+
+<h3>1.1 Papéis e responsabilidades</h3>
+<table>
+  <tr><th style="width:18%">Papel</th><th style="width:16%">Onde entra</th><th>O que faz</th><th style="width:22%">O que não faz</th></tr>
+  <tr><td><span class="papel">diretor</span>Diretoria</td><td>Painel → <code>/diretoria</code></td><td>Cria e delimita coordenações (municipal, regional ou estadual) no mapa; cria as contas de coordenadores e agentes e as vincula a uma coordenação; acompanha a rede inteira (núcleos cobertos, membros, confirmação por coordenação).</td><td>Não dispara alertas nem aprova membros: isso é da coordenação local.</td></tr>
+  <tr><td><span class="papel">coordenador</span>Coordenador da Compdec</td><td>Painel → <code>/painel</code></td><td>Cadastra áreas de risco e núcleos (polígonos no mapa); <b>dispara alertas</b>; acompanha confirmações; dá a <b>aprovação final</b> dos membros; desliga e reabre cadastros; define o líder do núcleo; faz triagem de ocorrências; responde no chat como Defesa Civil.</td><td>Não altera coordenações nem cria contas de gestores.</td></tr>
+  <tr><td><span class="papel">agente</span>Agente da Defesa Civil</td><td>Painel → <code>/painel</code></td><td>Acompanha tudo do município (visão geral, núcleos, áreas, alertas); faz <b>triagem de ocorrências</b>; responde no chat dos núcleos; monta a prévia de um alerta para o coordenador.</td><td>Não dispara alertas, não cria ou edita núcleos e áreas, não decide aprovações.</td></tr>
+  <tr><td><span class="papel">líder</span>Líder do núcleo</td><td>Aplicativo → <code>/app</code></td><td>Tudo que o membro faz, mais a <b>pré-aprovação</b> (ou rejeição) dos novos cadastros do seu núcleo. Aparece com o escudo na lista do núcleo e com telefone visível aos membros.</td><td>Não dá a aprovação final: a palavra final é do coordenador.</td></tr>
+  <tr><td><span class="papel">membro</span>Membro de apoio</td><td>Aplicativo → <code>/app</code></td><td>Recebe e confirma alertas; vê a área do alerta e do núcleo no mapa (com satélite); reporta ocorrências com foto e localização; conversa no chat do núcleo; consulta quem está na rede.</td><td>Só vê o próprio núcleo. Até ser aprovado, não recebe alertas.</td></tr>
+</table>
+
+<h3>1.2 Fluxo ponta a ponta</h3>
+<figure>
+  <img src="../relatorio/figs/processos-1.png" alt="Processo: diretoria, coordenação e cadastro">
+  <figcaption><b>Figura 1.</b> Parte 1 do processo: a Diretoria estrutura a rede (coordenações e gestores); o coordenador prepara o município (áreas de risco e núcleos); o morador se cadastra no app; o líder pré-aprova e o coordenador decide.</figcaption>
+</figure>
+<figure>
+  <img src="../relatorio/figs/processos-2.png" alt="Processo: alerta, confirmação, ocorrência e triagem">
+  <figcaption><b>Figura 2.</b> Parte 2 do processo: alerta disparado por área → push no celular → confirmação → acompanhamento; ocorrência reportada → chat do núcleo e mapa da Compdec → triagem.</figcaption>
+</figure>
+
+<h3>1.3 Ciclo de vida de um cadastro</h3>
+<table>
+  <tr><th>Situação</th><th>Como chega aqui</th><th>O que acontece</th></tr>
+  <tr><td><b>pendente</b></td><td>Morador criou a conta no app e escolheu o núcleo.</td><td>Aparece para o líder na aba Núcleo em "Cadastros em andamento" e para o coordenador na aba Pendentes do núcleo, marcado como "aguardando o líder". Não recebe alertas.</td></tr>
+  <tr><td><b>pré-aprovado</b></td><td>Líder tocou em "Pré-aprovar".</td><td>O coordenador passa a ver o botão <b>Aprovar</b>. O app mostra ao membro "Aguardando a aprovação final da Defesa Civil".</td></tr>
+  <tr><td><b>aprovado</b></td><td>Coordenador clicou em Aprovar.</td><td>Entra na lista do núcleo, recebe alertas e usa o chat. O chat do núcleo recebe a mensagem automática "<i>Fulano entrou no núcleo</i>".</td></tr>
+  <tr><td><b>rejeitado</b></td><td>Líder ou coordenador rejeitou.</td><td>O coordenador pode <b>Reabrir</b> o cadastro, que volta a pendente.</td></tr>
+  <tr><td><b>desligado</b></td><td>Coordenador desligou um membro aprovado.</td><td>Deixa de receber alertas; pode ser reaberto.</td></tr>
+</table>
+
+<h2 class="quebra">2. Acesso</h2>
+<h3>2.1 Endereços</h3>
+<table>
+  <tr><th>Quem</th><th>Endereço</th><th>Observação</th></tr>
+  <tr><td>Diretoria, coordenador, agente</td><td><code>https://nupdec-conecta.mundodosdadosbr.com/painel/entrar</code></td><td>Depois de entrar, a Diretoria vai para <code>/diretoria</code>; coordenador e agente, para <code>/painel</code>.</td></tr>
+  <tr><td>Líder e membro</td><td><code>https://nupdec-conecta.mundodosdadosbr.com/app/entrar</code></td><td>Simulador do aplicativo Android. O APK nativo só será gerado se o projeto for aprovado; a página inicial explica isso.</td></tr>
+  <tr><td>Demonstração</td><td><code>https://nupdec-conecta.mundodosdadosbr.com/demo</code></td><td>Quatro celulares, cada um com sessão própria.</td></tr>
+</table>
+<figure class="row dois">
+  <img src="figs/00-landing.png" alt="Página inicial">
+  <img src="figs/01-painel-entrar.png" alt="Entrar no painel">
+  <figcaption><b>Figura 3.</b> À esquerda, a página inicial com os cinco passos de instalação e a tarja sobre o APK; à direita, a tela de entrada do painel.</figcaption>
+</figure>
+
+<h3>2.2 Contas de demonstração</h3>
+<table>
+  <tr><th>Papel</th><th>Nome</th><th>Usuário (e-mail)</th><th>Senha</th></tr>
+  <tr><td>Diretoria</td><td>Helena Castro</td><td><code>diretoria.sp@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Coordenador</td><td>Marcos Vieira</td><td><code>coordenador@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Agente</td><td>Patrícia Ramos</td><td><code>agente1@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Líder (Morro da Esperança)</td><td>Maria das Dores</td><td><code>lider.esperanca@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Líder (Bairro Novo)</td><td>Ana Souza</td><td><code>membro78@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Membro de apoio</td><td>Diego Souza</td><td><code>membro03@valesereno.exemplo</code></td><td><code>Nupdec@2026</code></td></tr>
+  <tr><td>Cadastros para testar a aprovação</td><td colspan="3">Carla Lima e Sônia Costa (Bairro Novo) e Marta Pereira (Jardim das Águas) estão <b>pendentes</b>; Gisele Oliveira (Vila do Córrego) está <b>pré-aprovada</b>.</td></tr>
+</table>
+
+<h3>2.3 Sessões, senha e saída</h3>
+<ul>
+  <li>O painel e o aplicativo guardam sessões separadas no mesmo navegador: dá para ficar com o coordenador no painel e um membro no app ao mesmo tempo.</li>
+  <li>Para sair do painel, use o ícone ao lado do nome no rodapé da barra lateral. No app, aba <b>Perfil → Sair</b>.</li>
+  <li>A senha de um gestor é definida pela Diretoria ao criar a conta (senha temporária). A senha de um membro é a que ele escolheu no cadastro. O protótipo não tem "esqueci a senha": peça à Diretoria (gestores) ou crie um novo cadastro (membros).</li>
+  <li>O e-mail precisa ter um domínio válido (por exemplo <code>gmail.com</code>); o protótipo não exige confirmação por e-mail.</li>
+</ul>
+
+<h2 class="quebra">3. Diretoria <span class="papel">diretor</span></h2>
+<p>A Diretoria estrutura a rede acima das Compdecs. Entre com a conta de Diretoria em <code>/painel/entrar</code>; o sistema abre a <b>Visão da diretoria</b>. A barra lateral tem Visão da diretoria, Coordenações, Gestores e um atalho para o Painel operacional.</p>
+
+<h3>3.1 Visão da diretoria</h3>
+<figure>
+  <img src="figs/10-dir-visao.png" alt="Visão da diretoria">
+  <figcaption><b>Figura 4.</b> Quatro números (coordenações ativas, núcleos cobertos, membros aprovados, confirmação em 10 min), o mapa das áreas de todas as coordenações e o resumo por coordenação com nível, núcleos, membros, gestores, alertas, confirmação e ocorrências. O botão <b>abrir</b> leva ao detalhe.</figcaption>
+</figure>
+
+<h3>3.2 Criar uma coordenação</h3>
+<ol class="passos">
+  <li>Menu <b>Coordenações → + Nova coordenação</b>.</li>
+  <li>Preencha <b>Nome</b>, <b>Nível</b> (Municipal/Compdec, Regional ou Estadual), <b>Estado (UF)</b> e o <b>Município de referência (sede)</b>. A lista de municípios muda conforme a UF e contém os 5.570 municípios do IBGE.</li>
+  <li>Defina a <b>Área de abrangência</b>: clique em <b>Usar limite oficial do município (IBGE)</b> para carregar o contorno oficial, ou em <b>Desenhar</b> e clique no mapa ponto a ponto (duplo clique fecha o polígono). <b>Limpar</b> apaga o desenho.</li>
+  <li>Opcional: descrição e status (Ativa/Inativa).</li>
+  <li><b>Criar coordenação</b>.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/11-dir-coordenacoes.png" alt="Lista de coordenações">
+  <img src="figs/12-dir-nova-coordenacao.png" alt="Nova coordenação com limite do IBGE">
+  <figcaption><b>Figura 5.</b> Lista de coordenações com o mapa das áreas (esquerda) e o formulário de nova coordenação já com o limite oficial de Campos do Jordão carregado do IBGE (direita).</figcaption>
+</figure>
+<div class="nota"><b>Vínculo automático.</b> Um núcleo pertence à coordenação cuja área contém o centro do seu polígono. Quando duas áreas se sobrepõem (por exemplo, uma regional e uma municipal), vence a <b>menor</b>. Por isso a Diretoria não precisa vincular núcleos à mão: basta a área estar certa.</div>
+
+<h3>3.3 Detalhe da coordenação</h3>
+<figure>
+  <img src="figs/13-dir-coordenacao-detalhe.png" alt="Detalhe da coordenação">
+  <figcaption><b>Figura 6.</b> Detalhe da Compdec Vale Sereno: indicadores, mapa da área com os núcleos, equipe da coordenação (com telefone) e núcleos vinculados. <b>Editar área e dados</b> reabre o formulário; <b>Novo gestor</b> cria uma conta já vinculada a esta coordenação.</figcaption>
+</figure>
+
+<h3>3.4 Criar e vincular gestores (coordenadores e agentes)</h3>
+<ol class="passos">
+  <li>Menu <b>Gestores → + Novo gestor</b> (ou o botão de mesmo nome no detalhe da coordenação).</li>
+  <li>Preencha <b>Nome</b>, <b>E-mail</b> (será o usuário), <b>Senha temporária</b>, <b>Telefone</b>, <b>Papel</b> (Coordenador ou Agente) e a <b>Coordenação</b>.</li>
+  <li><b>Criar conta</b>. A conta é criada no servidor pela função <code>criar-gestor</code>, que verifica se quem pede é da Diretoria. Entregue o e-mail e a senha temporária ao gestor.</li>
+  <li>Para mudar um gestor de coordenação, use a caixa <b>Coordenação</b> na própria linha da lista de gestores.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/15-dir-gestores.png" alt="Lista de gestores">
+  <img src="figs/16-dir-novo-gestor.png" alt="Novo gestor">
+  <figcaption><b>Figura 7.</b> Lista de gestores com a coordenação de cada um (esquerda) e o formulário de criação de conta (direita).</figcaption>
+</figure>
+<div class="atencao"><b>Regra de ouro.</b> Cada coordenador e agente enxerga só o seu município/coordenação. Se um gestor "não vê nada" no painel, confira se ele está vinculado à coordenação certa.</div>
+
+<h2 class="quebra">4. Coordenador da Compdec <span class="papel">coordenador</span></h2>
+<p>Entre em <code>/painel/entrar</code>. A barra lateral tem Visão geral, Alertas, Núcleos, Áreas de risco, Ocorrências e Chat dos núcleos. Recomendação de preparação do município, nesta ordem: <b>áreas de risco → núcleos → líderes → aprovação dos membros</b>. Só depois disso um alerta tem a quem chegar.</p>
+
+<h3>4.1 Visão geral</h3>
+<figure>
+  <img src="figs/20-coord-visao-geral.png" alt="Visão geral">
+  <figcaption><b>Figura 8.</b> Núcleos ativos, membros aprovados, alertas em 30 dias e confirmação em 10 min (indicador da meta); cartão de tempo e chuva do município (Open-Meteo, com limiares de 25/50/80 mm em 24 h); mapa com núcleos e áreas de risco; alertas vigentes com a barra de confirmação. O botão <b>+ Novo alerta</b> fica no topo.</figcaption>
+</figure>
+
+<h3>4.2 Áreas de risco</h3>
+<ol class="passos">
+  <li>Menu <b>Áreas de risco → + Nova área</b>.</li>
+  <li>Preencha <b>Nome</b>, <b>Tipo</b> (deslizamento, inundação, enxurrada…), <b>Nível de risco</b> (baixo a muito alto) e a <b>Fonte</b> (setorização CPRM, vistoria da Compdec).</li>
+  <li>Clique em <b>Desenhar</b> e marque o polígono no mapa. Use <b>Satélite</b> para enxergar encostas e margens.</li>
+  <li><b>Salvar</b>. Para alterar ou excluir, use o lápis e a lixeira no cartão da área.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/24-coord-areas-risco.png" alt="Áreas de risco">
+  <img src="figs/25-coord-nova-area.png" alt="Nova área de risco">
+  <figcaption><b>Figura 9.</b> Mapa com hachura por nível de risco e lista das áreas (esquerda); formulário de nova área (direita).</figcaption>
+</figure>
+
+<h3>4.3 Núcleos</h3>
+<ol class="passos">
+  <li>Menu <b>Núcleos → + Novo núcleo</b>. Informe <b>Nome</b>, <b>Comunidade/bairro</b>, <b>Status</b> e desenhe a <b>Área do núcleo</b>. Esse polígono define quem recebe cada alerta: um alerta atinge o núcleo quando a área do alerta cruza a área do núcleo.</li>
+  <li>Na lista, cada cartão tem <b>Ativar/Inativar</b>, <b>Editar</b> e <b>Membros</b>.</li>
+  <li>Abra o núcleo para ver indicadores, mapa, e a lista de membros nas abas <b>Pendentes</b> e <b>Todos</b>.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/21-coord-nucleos.png" alt="Lista de núcleos">
+  <img src="figs/22-coord-novo-nucleo.png" alt="Novo núcleo">
+  <figcaption><b>Figura 10.</b> Lista de núcleos com mapa (esquerda) e formulário de novo núcleo (direita).</figcaption>
+</figure>
+
+<h4>Aprovar, rejeitar, desligar, reabrir e definir o líder</h4>
+<p>Na aba <b>Pendentes</b> do núcleo aparecem os cadastros novos. Enquanto o líder não pré-aprova, a linha mostra "aguardando o líder" e o botão Aprovar fica desativado. Depois da pré-aprovação, clique em <b>Aprovar</b> (ou <b>Rejeitar</b>). Na aba <b>Todos</b>, cada membro aprovado tem <b>Desligar</b>; um rejeitado ou desligado tem <b>Reabrir</b>. O botão de escudo torna o membro <b>líder</b> do núcleo (um por núcleo).</p>
+<figure class="row dois">
+  <img src="figs/64-coord-pendentes.png" alt="Pendentes do núcleo">
+  <img src="figs/65-coord-aprovado.png" alt="Membro aprovado">
+  <figcaption><b>Figura 11.</b> Esquerda: Sônia Costa ainda aguarda o líder e Carla Lima já foi pré-aprovada, com o botão Aprovar liberado. Direita: depois do clique, Carla entra na lista de aprovados e o chat do núcleo recebe o aviso.</figcaption>
+</figure>
+<figure>
+  <img src="figs/23-coord-nucleo-detalhe.png" alt="Detalhe do núcleo">
+  <figcaption><b>Figura 12.</b> Detalhe do Nupdec Morro da Esperança: indicadores, área do núcleo e a lista de membros.</figcaption>
+</figure>
+
+<h3 class="quebra">4.4 Disparar um alerta</h3>
+<ol class="passos">
+  <li><b>Alertas → + Novo alerta</b> (ou o botão na Visão geral).</li>
+  <li><b>Tipo e severidade</b>: escolha o tipo (deslizamento, inundação, vendaval…) e a severidade (Alerta ou Alerta máximo).</li>
+  <li><b>Área do alerta</b>: marque uma ou mais <b>áreas de risco</b>, ou <b>Desenhar</b> um polígono, ou <b>Município</b> inteiro. A <b>prévia do alcance</b> mostra na hora quantos núcleos e membros serão atingidos e quais núcleos.</li>
+  <li><b>Título e mensagem</b>: escreva ou use <b>Usar modelo</b> do tipo escolhido. O cartão "Como chega no celular" mostra a prévia da notificação.</li>
+  <li><b>Disparar alerta</b> e confirme na caixa "Disparar para N membros?". O sistema abre o acompanhamento.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/27-coord-novo-alerta.png" alt="Novo alerta">
+  <img src="figs/28-coord-confirmar-disparo.png" alt="Confirmação do disparo">
+  <figcaption><b>Figura 13.</b> Formulário do novo alerta com a área "Encosta do Morro da Esperança" marcada e a prévia "1 núcleo, 21 membros" (esquerda); caixa de confirmação do disparo (direita).</figcaption>
+</figure>
+<div class="nota">Quem não tem o aplicativo fica registrado como "sem dispositivo" e aparece na lista "Não confirmaram" do acompanhamento, para ser avisado por outro meio (telefone, rádio, visita).</div>
+
+<h3>4.5 Acompanhar e encerrar o alerta</h3>
+<figure>
+  <img src="figs/29-coord-acompanhamento.png" alt="Acompanhamento do alerta">
+  <figcaption><b>Figura 14.</b> Acompanhamento ao vivo: destinatários, confirmaram, confirmação em 10 minutos (meta 80%), tempo mediano; gráfico de confirmações acumuladas com a linha dos 10 min; área e núcleos no mapa; tabela por núcleo com o líder; lista de quem não confirmou; mensagem enviada.</figcaption>
+</figure>
+<ul>
+  <li>A tela atualiza sozinha a cada confirmação (Realtime).</li>
+  <li><b>Simular comunidade (demo)</b> confirma cerca de 80% dos membros com dispositivo simulado. Serve só para demonstração; nunca mexe em dispositivos reais.</li>
+  <li><b>Encerrar alerta</b> tira o alerta da lista de vigentes no app. As confirmações continuam contando para o indicador.</li>
+</ul>
+<figure class="row dois">
+  <img src="figs/26-coord-alertas.png" alt="Histórico de alertas">
+  <img src="figs/33-coord-encerrar.png" alt="Encerrar alerta">
+  <figcaption><b>Figura 15.</b> Histórico de alertas com a taxa de confirmação em 10 min de cada um (esquerda) e a confirmação de encerramento (direita).</figcaption>
+</figure>
+
+<h3 class="quebra">4.6 Ocorrências e triagem</h3>
+<ol class="passos">
+  <li>Menu <b>Ocorrências</b>. Filtre por status, tipo, núcleo e período; os cartões coloridos no topo filtram por status com um clique.</li>
+  <li>Clique num ponto do mapa ou num cartão da lista para abrir a ocorrência: foto, descrição, quem reportou, núcleo, coordenadas e a área de risco onde caiu.</li>
+  <li>Em <b>Triagem</b>, mude o <b>Status</b> (Nova → Em análise → Atendida ou Descartada) e escreva a <b>Observação</b> do que a equipe verificou. <b>Salvar triagem</b>.</li>
+  <li>A mudança de status vai automaticamente para o chat do núcleo que reportou, com a observação.</li>
+</ol>
+<figure class="row dois">
+  <img src="figs/30-coord-ocorrencias.png" alt="Ocorrências">
+  <img src="figs/31-coord-triagem.png" alt="Triagem">
+  <figcaption><b>Figura 16.</b> Mapa e lista de ocorrências (esquerda); detalhe com os campos de triagem (direita).</figcaption>
+</figure>
+
+<h3>4.7 Chat dos núcleos</h3>
+<figure>
+  <img src="figs/32-coord-chat.png" alt="Chat dos núcleos no painel">
+  <figcaption><b>Figura 17.</b> Lista de núcleos ordenada pela última mensagem; conversa em tempo real; o que a Compdec escreve aparece destacado como "Defesa Civil" no aplicativo. Ocorrências e aprovações entram como cartões automáticos.</figcaption>
+</figure>
+
+<h2 class="quebra">5. Agente da Defesa Civil <span class="papel">agente</span></h2>
+<p>O agente usa o mesmo painel do coordenador, com as mesmas telas de consulta. As diferenças são de permissão, aplicadas no servidor:</p>
+<table>
+  <tr><th>Ação</th><th>Agente</th><th>Coordenador</th></tr>
+  <tr><td>Ver visão geral, núcleos, áreas de risco, alertas e acompanhamento</td><td>Sim</td><td>Sim</td></tr>
+  <tr><td>Triagem de ocorrências (status + observação)</td><td>Sim</td><td>Sim</td></tr>
+  <tr><td>Responder no chat como Defesa Civil</td><td>Sim</td><td>Sim</td></tr>
+  <tr><td>Montar a prévia de um alerta</td><td>Sim (o botão Disparar fica desativado)</td><td>Sim</td></tr>
+  <tr><td>Disparar e encerrar alertas</td><td>Não</td><td>Sim</td></tr>
+  <tr><td>Criar/editar áreas de risco e núcleos</td><td>Não</td><td>Sim</td></tr>
+  <tr><td>Aprovação final, rejeição, desligamento, reabertura, definir líder</td><td>Não</td><td>Sim</td></tr>
+</table>
+<figure class="row dois">
+  <img src="figs/34-agente-visao-geral.png" alt="Visão geral do agente">
+  <img src="figs/35-agente-triagem.png" alt="Triagem pelo agente">
+  <figcaption><b>Figura 18.</b> Agente Patrícia Ramos na visão geral (esquerda) e fazendo a triagem de uma ocorrência (direita).</figcaption>
+</figure>
+<p><b>Rotina sugerida do agente:</b> ao começar o turno, abra Ocorrências filtrando "Nova"; faça a triagem de cada uma; durante um alerta, acompanhe a tela do alerta e ligue para quem está em "Não confirmaram"; use o chat para orientar o núcleo.</p>
+
+<h2 class="quebra">6. Líder do núcleo <span class="papel">líder</span></h2>
+<p>O líder entra no aplicativo (<code>/app/entrar</code>) como qualquer membro. O que muda é a aba <b>Núcleo</b>: abaixo da lista de quem está na rede aparece a seção <b>Cadastros em andamento</b>.</p>
+<ol class="passos">
+  <li>Aba <b>Núcleo</b>, role até <b>Cadastros em andamento</b>.</li>
+  <li>Cada cadastro novo aparece com a etiqueta "Aguardando o líder" e os botões <b>Pré-aprovar</b> e <b>Rejeitar</b>. Confirme que a pessoa mora na comunidade antes de pré-aprovar.</li>
+  <li>Depois do toque, a etiqueta muda para "Pré-aprovado pelo líder" e o texto "Aguardando a aprovação final da Defesa Civil". A decisão final é do coordenador no painel (seção 4.3).</li>
+</ol>
+<figure class="row cel2">
+  <img src="figs/62-lider-pendentes.png" alt="Pendentes para o líder">
+  <img src="figs/63-lider-pre-aprovado.png" alt="Pré-aprovado">
+  <figcaption><b>Figura 19.</b> Líder Ana Souza (Bairro Novo): dois cadastros aguardando (esquerda); Carla Lima pré-aprovada e aguardando a Defesa Civil (direita).</figcaption>
+</figure>
+<p>No chat, o líder é o ponto de contato da comunidade: as mensagens da Defesa Civil chegam destacadas e as ocorrências do núcleo aparecem como cartões. O telefone do líder fica visível aos membros na aba Núcleo.</p>
+<figure class="row cel2">
+  <img src="figs/61-lider-chat.png" alt="Chat do líder">
+  <img src="figs/60-lider-nucleo-pendentes.png" alt="Lista do núcleo">
+  <figcaption><b>Figura 20.</b> Chat do núcleo visto pela líder (esquerda) e a lista de membros do núcleo (direita).</figcaption>
+</figure>
+
+<h2 class="quebra">7. Membro de apoio <span class="papel">membro</span></h2>
+
+<h3>7.1 Instalar e criar a conta</h3>
+<p>No protótipo, o aplicativo roda no navegador em <code>/app</code>. Quando o APK existir, a instalação segue os cinco passos da página inicial: baixar, abrir o arquivo, permitir "instalar apps desconhecidos", instalar, abrir e cadastrar.</p>
+<ol class="passos">
+  <li>Abra <code>/app/entrar</code> e toque em <b>Criar conta</b> (ou acesse <code>/app/cadastrar</code>).</li>
+  <li>Preencha <b>Nome completo</b>, <b>E-mail</b>, <b>Senha</b> (mínimo 6), <b>Telefone</b> (opcional), <b>Município</b> e o <b>Núcleo</b> da sua comunidade (só aparecem municípios que já têm núcleo).</li>
+  <li><b>Criar conta</b>. A conta entra como <b>pendente</b>: o líder pré-aprova e a Defesa Civil confirma. Até lá o app mostra que o cadastro está em análise e não chegam alertas.</li>
+</ol>
+<figure class="row cel2">
+  <img src="figs/51-app-entrar.png" alt="Entrar no app">
+  <img src="figs/52-app-cadastrar.png" alt="Cadastro">
+  <figcaption><b>Figura 21.</b> Tela de entrada do aplicativo, com atalhos das contas de demonstração (esquerda), e o cadastro com escolha de município e núcleo (direita).</figcaption>
+</figure>
+
+<h3>7.2 Receber e confirmar um alerta</h3>
+<ol class="passos">
+  <li>Com o app aberto ou em segundo plano, a notificação aparece no topo com som e vibração. Toque nela, ou abra a aba <b>Alertas</b> e toque no cartão com "Toque para confirmar".</li>
+  <li>Leia a mensagem e veja no mapa a área do alerta (hachura) em relação ao seu núcleo (contorno azul). O botão <b>Satélite</b> troca o fundo por imagem de satélite.</li>
+  <li>Toque em <b>Recebi e estou ciente</b>. A tela mostra "Recebimento confirmado" com o horário; a Defesa Civil vê sua confirmação na hora.</li>
+  <li>Siga a orientação do alerta e avise os vizinhos sem celular.</li>
+</ol>
+<figure class="row cel">
+  <img src="figs/41-app-push.png" alt="Notificação">
+  <img src="figs/42-app-alerta-detalhe.png" alt="Detalhe do alerta">
+  <img src="figs/43-app-confirmado.png" alt="Confirmado">
+  <figcaption><b>Figura 22.</b> Notificação chegando sobre a aba Alertas; detalhe do alerta com o mapa e o botão de confirmação; recebimento confirmado.</figcaption>
+</figure>
+<figure class="row cel2">
+  <img src="figs/40-app-alertas-vazio.png" alt="Aba alertas">
+  <img src="figs/44-app-alerta-satelite.png" alt="Satélite">
+  <figcaption><b>Figura 23.</b> Aba Alertas com os vigentes (um já confirmado, outro "Toque para confirmar") e o histórico (esquerda); a mesma área sobre a imagem de satélite (direita).</figcaption>
+</figure>
+
+<h3 class="quebra">7.3 Reportar uma ocorrência</h3>
+<ol class="passos">
+  <li>Aba <b>Ocorrências → Reportar</b>, ou o atalho "Reportar ocorrência" dentro de um alerta.</li>
+  <li><b>Tirar foto ou escolher da galeria</b> (opcional, mas ajuda a triagem).</li>
+  <li>Escolha <b>o que você viu</b>: trinca, deslizamento, alagamento, árvore caída, bueiro entupido ou outro.</li>
+  <li>Descreva em uma frase: onde, o que e desde quando.</li>
+  <li>Confira a <b>localização</b>: o app usa o GPS do celular; se o GPS estiver negado ou fora do município, ele usa uma posição dentro do seu núcleo e avisa "posição simulada". O ponto aparece no mapa.</li>
+  <li><b>Enviar para a Defesa Civil</b>. A ocorrência entra na lista como "Nova", aparece no mapa da Compdec e no chat do seu núcleo. Quando a Defesa Civil fizer a triagem, o status muda na lista e no chat.</li>
+</ol>
+<figure class="row cel">
+  <img src="figs/46-app-ocorrencia-nova.png" alt="Reportar ocorrência">
+  <img src="figs/46b-app-ocorrencia-nova-enviar.png" alt="Localização e envio">
+  <img src="figs/47-app-ocorrencia-enviada.png" alt="Ocorrência enviada">
+  <figcaption><b>Figura 24.</b> Formulário de reporte (tipo e descrição), localização com mapa e botão de envio, e a lista com a ocorrência enviada.</figcaption>
+</figure>
+
+<h3>7.4 Chat do núcleo</h3>
+<p>Aba <b>Chat</b>. Escreva na caixa "Mensagem para o núcleo" e toque em enviar (ou Enter). Só membros aprovados do seu núcleo e a Defesa Civil do município leem. Mensagens da Defesa Civil vêm destacadas; ocorrências e aprovações entram como cartões automáticos.</p>
+
+<h3>7.5 Núcleo e perfil</h3>
+<ul>
+  <li><b>Núcleo</b>: mapa da área do núcleo (com satélite), número de membros ativos, nome do líder com telefone e a lista de quem está na rede.</li>
+  <li><b>Perfil</b>: seus dados, núcleo, situação do cadastro, versão do app e o dispositivo registrado para push. <b>Sair</b> encerra a sessão.</li>
+</ul>
+<figure class="row cel">
+  <img src="figs/48-app-chat.png" alt="Chat">
+  <img src="figs/49-app-nucleo.png" alt="Núcleo">
+  <img src="figs/50-app-perfil.png" alt="Perfil">
+  <figcaption><b>Figura 25.</b> Chat do núcleo, lista do núcleo e perfil do membro.</figcaption>
+</figure>
+
+<h2 class="quebra">8. Modo de demonstração</h2>
+<p>Para mostrar o ciclo completo numa única tela:</p>
+<ol class="passos">
+  <li>Abra <code>/demo</code>: quatro celulares, cada um com sessão própria. Entre, por exemplo, como líder (Morro da Esperança) no primeiro, dois membros do mesmo núcleo e um membro de outro núcleo (Vila do Córrego). A tela de entrada tem atalhos para essas contas.</li>
+  <li>Em outra aba, entre no painel como coordenador e dispare um alerta na "Encosta do Morro da Esperança". Os três primeiros celulares recebem; o quarto não (está fora da área).</li>
+  <li>Confirme em um ou dois celulares, clique em <b>Simular comunidade (demo)</b> no acompanhamento e mostre o gráfico subindo.</li>
+  <li>Reporte uma ocorrência num celular; mostre-a no mapa da Compdec, faça a triagem e mostre o cartão chegando no chat do núcleo.</li>
+  <li>Encerre o alerta.</li>
+</ol>
+<figure>
+  <img src="figs/70-demo-4-celulares.png" alt="Quatro celulares">
+  <figcaption><b>Figura 26.</b> Modo de demonstração com quatro celulares lado a lado.</figcaption>
+</figure>
+<div class="nota">A notificação no simulador chega por Realtime (assinatura da tabela de entregas), no lugar do push do Expo. O token <code>ExponentPushToken[sim-…]</code> identifica um dispositivo simulado; o servidor marca essas entregas como entregues sem chamar o Expo.</div>
+
+<h2>9. Problemas comuns e respostas</h2>
+<table>
+  <tr><th style="width:38%">Sintoma</th><th>Causa provável e o que fazer</th></tr>
+  <tr><td>Entrei no painel e não vejo núcleos, áreas nem alertas.</td><td>O gestor não está vinculado a uma coordenação/município. A Diretoria ajusta em Gestores → Coordenação.</td></tr>
+  <tr><td>O botão <b>Disparar alerta</b> está desativado.</td><td>Você é agente. Só o coordenador dispara; a prévia pode ser montada e repassada.</td></tr>
+  <tr><td>Disparei o alerta e a prévia dizia "0 núcleos".</td><td>A área do alerta não cruza nenhuma área de núcleo. Confira os polígonos em Núcleos e Áreas de risco; um núcleo precisa ter área desenhada e estar ativo.</td></tr>
+  <tr><td>O membro não recebeu a notificação.</td><td>Ele precisa estar <b>aprovado</b>, com o app aberto pelo menos uma vez após o login (é aí que o dispositivo é registrado) e dentro de um núcleo atingido. Veja a lista "Não confirmaram": "sem dispositivo" significa que nunca abriu o app.</td></tr>
+  <tr><td>O botão <b>Aprovar</b> está cinza no painel.</td><td>O líder do núcleo ainda não pré-aprovou. Peça a ele que abra a aba Núcleo do app.</td></tr>
+  <tr><td>O líder não vê "Cadastros em andamento".</td><td>Ou não há cadastro pendente no núcleo, ou a pessoa não é o líder definido pelo coordenador (botão de escudo no detalhe do núcleo).</td></tr>
+  <tr><td>Erro ao criar conta no app: e-mail inválido.</td><td>Use um domínio real (<code>gmail.com</code>, <code>outlook.com</code>); domínios inventados são recusados.</td></tr>
+  <tr><td>O mapa aparece em branco ou sem a área.</td><td>Aguarde o carregamento das camadas; troque Mapa/Satélite para forçar o redesenho; confira a conexão.</td></tr>
+  <tr><td>A localização da ocorrência está errada.</td><td>O navegador negou o GPS ou a posição está fora do município: o app usa uma posição dentro do núcleo e avisa "posição simulada". Permita a localização no navegador/celular.</td></tr>
+  <tr><td>A ocorrência não aparece no chat.</td><td>O cartão só vai para o chat do núcleo de quem reportou; confira se você está olhando o núcleo certo.</td></tr>
+  <tr><td>Abri <code>/demo</code> e deu "página não encontrada".</td><td>Acesse pelo link da página inicial ou digite o endereço completo; o modo demo recarrega a página para montar os quatro celulares.</td></tr>
+</table>
+
+<p class="peq" style="margin-top:14px">Documentos relacionados: <i>Relatório da Sistematização</i> (arquitetura, modelo de dados e indicador), <i>Contas de acesso</i> (todas as contas de demonstração) e o repositório <a href="https://github.com/diegoedataengineer/nupdec-conecta">github.com/diegoedataengineer/nupdec-conecta</a> (ADRs e specs 01–09).</p>
+
+</body>
+</html>
